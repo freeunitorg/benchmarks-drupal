@@ -19,8 +19,22 @@ DEST="$HERE/results"
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 
-echo "collect: listing runs on $HOST"
+# Another session shares the run directory on some hosts, so a run is collected
+# only when its job name is one of ours: COLLECT_ONLY is a space-separated list of
+# run-id prefixes (empty means every numbered run, which is right on our own box).
+COLLECT_ONLY=${COLLECT_ONLY:-}
+
+echo "collect: listing runs on $HOST${COLLECT_ONLY:+ (only: $COLLECT_ONLY)}"
 ssh "$HOST" "find $REMOTE_ROOT/run -maxdepth 1 -mindepth 1 -type d -printf '%f\n'" 2>/dev/null | grep -E '^[0-9]' > "$TMP/runs" || true
+if [ -n "$COLLECT_ONLY" ]; then
+    : > "$TMP/keep"
+    while read -r run; do
+        for prefix in $COLLECT_ONLY; do
+            case "$run" in "$prefix"*) echo "$run" >> "$TMP/keep"; break ;; esac
+        done
+    done < "$TMP/runs"
+    mv "$TMP/keep" "$TMP/runs"
+fi
 n=0
 while read -r run; do
     [ -n "$run" ] || continue
