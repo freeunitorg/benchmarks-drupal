@@ -1,0 +1,10 @@
+{
+    "name": "freeunitorg/fu-queue-test",
+    "description": "Drupal benchmark module: one queue worker with a known per-item cost, an HTTP drain route, and the `dr bench` console command (cron, queue fill/run, user-create, login-url, state-set, module enable/disable, cache-rebuild).",
+    "type": "drupal-module",
+    "license": "Apache-2.0",
+    "require": {
+        "php": ">=8.3",
+        "drupal/core": "^11 || ^12"
+    }
+}

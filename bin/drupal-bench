@@ -1,0 +1,159 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * drupal-bench -- one entry point to the benchmark, usable from a Composer
+ * install (`vendor/bin/drupal-bench`) or from a checkout (`bin/drupal-bench`).
+ *
+ * The scripts in this repository are the benchmark; this only finds the package
+ * root and hands the call to the right one, so a consumer such as the FreeUnit
+ * harness can `composer require` the package instead of copying the files.
+ *
+ *   drupal-bench path
+ *   drupal-bench build
+ *   drupal-bench site 11.4 [--force]
+ *   drupal-bench run bench/jobs/02-front-anon-freeunit-vs-fpm-11.4.job
+ *   drupal-bench tick freeunit B 20
+ *   drupal-bench campaign scripts/campaign.steps
+ *   drupal-bench watchdog 120
+ *   drupal-bench collect pro4s-2
+ *   drupal-bench report
+ *   drupal-bench compare <results.tsv> <meta.txt>
+ *   drupal-bench cli <DRUPAL operation...>      # apps/drupal_cli.php
+ *
+ * Everything runs from the package root, so the relative paths inside the
+ * scripts (docker/, modules/, bench/jobs/) resolve as they do in a checkout.
+ * The host and the box are the caller's business: the scripts keep reading
+ * RUNROOT, SESS_ROOT-style environment variables and run/lab.env.
+ */
+
+// A Composer proxy includes this file, so __FILE__ is the package's bin path;
+// realpath also resolves the case where a symlink was installed instead.
+$bin = realpath(__FILE__) ?: __FILE__;
+$root = dirname(dirname($bin));
+if (!is_file($root . '/bench/cells.sh')) {
+    fwrite(STDERR, "drupal-bench: cannot find the package root from $bin\n");
+    exit(2);
+}
+chdir($root);
+
+$argv = $_SERVER['argv'];
+array_shift($argv);
+$cmd = array_shift($argv) ?? 'help';
+
+/** Run a command, streaming its output, and exit with its status. */
+function run_cmd(array $parts): never {
+    $cmd = implode(' ', array_map('escapeshellarg', $parts));
+    passthru($cmd, $status);
+    exit($status);
+}
+
+/** True when the docker images the jobs expect look present. */
+function images_present(): bool {
+    exec('docker images --format {{.Repository}}:{{.Tag}} 2>/dev/null', $out);
+    $have = implode("\n", $out);
+    return str_contains($have, 'drupal-bench-freeunit:1.37.0')
+        && str_contains($have, 'drupal-bench-fpm:8.5')
+        && str_contains($have, 'drupal-bench-apache:8.5');
+}
+
+/** Build the three runtime images and pull the database image. */
+function build_images(string $root): never {
+    $cmds = [
+        ['docker', 'build', '-f', 'docker/Dockerfile.freeunit', '-t', 'drupal-bench-freeunit:1.37.0', '.'],
+        ['docker', 'build', '-f', 'docker/Dockerfile.php', '--target', 'php-fpm', '-t', 'drupal-bench-fpm:8.5', '.'],
+        ['docker', 'build', '-f', 'docker/Dockerfile.php', '--target', 'apache', '-t', 'drupal-bench-apache:8.5', '.'],
+        ['docker', 'pull', 'mariadb:10.11'],
+    ];
+    foreach ($cmds as $c) {
+        run_cmd($c);
+    }
+}
+
+switch ($cmd) {
+    case 'help':
+    case '--help':
+    case '-h':
+        $self = basename($argv[0] ?? 'drupal-bench');
+        fwrite(STDOUT, <<<TXT
+        drupal-bench: Drupal and Symfony runtime benchmarks (Apache, nginx+PHP-FPM, FreeUnit)
+
+        usage: {$self} <command> [args]
+
+          path                          print the package root
+          build                         build the runtime images and pull MariaDB
+          site <site> [--force]         build a site (11.4, 11.4-standard, 12.0, 12.0-standard, symfony, hello)
+          run <job file> [--no-gate]    one measured job (null band, swapped blocks, verdict)
+          tick <runtime> <A|B> [n]      the cron/queue arms (A = cold CLI, B = HTTP)
+          campaign <steps> [runroot]    run a steps file, resumable
+          watchdog [secs] [runroot]     health line loop for a running campaign
+          collect [host] [remote]       pull finished runs into results/ and render
+          report                        render report from results/
+          compare <tsv> <meta>          perf-compare on one results file
+          cli <operation> ...           apps/drupal_cli.php (settings-init, enable, user-create, ...)
+
+        Environment: RUNROOT (default /data/projects/benchmarks-drupal/run), OHA, IMAGE_TAG.
+        TXT);
+        fwrite(STDOUT, "\n        images present: " . (images_present() ? 'yes' : 'no') . "\n");
+        exit(0);
+
+    case 'path':
+        fwrite(STDOUT, $root . "\n");
+        exit(0);
+
+    case 'build':
+        build_images($root);
+
+    case 'site':
+        $site = $argv[0] ?? '';
+        if ($site === 'symfony') {
+            run_cmd(array_merge(['bash', 'scripts/site-build-symfony.sh'], array_slice($argv, 1)));
+        }
+        elseif ($site === 'hello') {
+            run_cmd(array_merge(['bash', 'scripts/site-build-hello.sh'], array_slice($argv, 1)));
+        }
+        elseif ($site === '') {
+            fwrite(STDERR, "drupal-bench: site needs a name (11.4, 11.4-standard, 12.0, 12.0-standard, symfony, hello)\n");
+            exit(2);
+        }
+        else {
+            run_cmd(array_merge(['bash', 'scripts/site-build.sh'], $argv));
+        }
+
+    case 'run':
+        if (empty($argv[0])) {
+            fwrite(STDERR, "drupal-bench: run needs a job file\n");
+            exit(2);
+        }
+        run_cmd(array_merge(['bash', 'bench/run.sh'], $argv));
+
+    case 'tick':
+        run_cmd(array_merge(['bash', 'bench/tick.sh'], $argv));
+
+    case 'cells':
+        run_cmd(['bash', 'bench/cells.sh']);
+
+    case 'campaign':
+        run_cmd(array_merge(['bash', 'scripts/campaign.sh'], $argv));
+
+    case 'watchdog':
+        run_cmd(array_merge(['bash', 'scripts/watchdog.sh'], $argv));
+
+    case 'collect':
+        run_cmd(array_merge(['bash', 'scripts/collect.sh'], $argv));
+
+    case 'report':
+        run_cmd(array_merge(['python3', 'report/render.py'], $argv ?: ['results', 'public/index.html']));
+
+    case 'compare':
+        run_cmd(array_merge(['python3', 'bench/perf-compare.py'], $argv));
+
+    case 'cli':
+        run_cmd(array_merge(['php', 'apps/drupal_cli.php'], $argv));
+
+    default:
+        fwrite(STDERR, "drupal-bench: unknown command '$cmd' (try --help)\n");
+        exit(2);
+}

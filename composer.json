@@ -1,0 +1,24 @@
+{
+    "name": "freeunitorg/benchmarks-drupal",
+    "description": "Reproducible Drupal and Symfony benchmarks on Apache + mod_php, nginx + PHP-FPM and FreeUnit, measured with the FreeUnit perf-lab method (null band, swapped blocks, schedstat CPU, perf counters).",
+    "type": "library",
+    "license": "Apache-2.0",
+    "keywords": ["benchmark", "drupal", "symfony", "php-fpm", "apache", "freeunit", "unit", "performance"],
+    "homepage": "https://freeunit.org/benchmarks-drupal",
+    "support": {
+        "issues": "https://github.com/freeunitorg/benchmarks-drupal/issues",
+        "source": "https://github.com/freeunitorg/benchmarks-drupal"
+    },
+    "require": {
+        "php": ">=8.3"
+    },
+    "bin": ["bin/drupal-bench"],
+    "extra": {
+        "branch-alias": {
+            "dev-main": "0.1.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

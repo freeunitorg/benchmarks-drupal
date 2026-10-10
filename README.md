@@ -45,6 +45,23 @@ results/         one directory per run: results.tsv, summary.json, meta.txt,
 scripts/         site-build.sh
 ```
 
+## Using it from another project
+
+The repository is a Composer package with one entry point, so the FreeUnit
+harness (or any other project) can depend on it instead of copying scripts:
+
+```bash
+composer require --dev freeunitorg/benchmarks-drupal:^0.1   # or a path repository
+vendor/bin/drupal-bench build
+vendor/bin/drupal-bench site 11.4
+vendor/bin/drupal-bench run bench/jobs/02-front-anon-freeunit-vs-fpm-11.4.job
+vendor/bin/drupal-bench collect && vendor/bin/drupal-bench report
+```
+
+See [docs/composer.md](docs/composer.md); the Drupal module (queue worker, drain
+route, `dr bench` command) is also published as `freeunitorg/fu-queue-test`
+(`type: drupal-module`).
+
 ## Running it
 
 ```bash
