@@ -16,8 +16,10 @@ HEALTH="$RUNROOT/campaign-health.log"
 mkdir -p "$RUNROOT"
 
 while true; do
-    step=$(tail -n 1 "$RUNROOT/campaign.done" 2>/dev/null | awk '{print $2}')
-    newest=$(ls -t "$RUNROOT"/campaign-logs/*.log 2>/dev/null | head -1)
+    step=$(grep -h ' START ' "$RUNROOT/campaign.log" 2>/dev/null | tail -1 | awk '{print $3}')
+    # progress = the newest measured cell, not the job wrapper's log
+    newest=$(ls -t "$RUNROOT"/*/cells.log 2>/dev/null | head -1)
+    [ -n "$newest" ] || newest=$(ls -t "$RUNROOT"/campaign-logs/*.log 2>/dev/null | head -1)
     age="n/a"
     [ -n "$newest" ] && age=$(( $(date +%s) - $(stat -c %Y "$newest") ))
     cont=$(docker ps -q 2>/dev/null | wc -l)

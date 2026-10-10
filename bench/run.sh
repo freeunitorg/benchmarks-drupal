@@ -33,8 +33,18 @@ OUTDIR="$RUNROOT/$RUN_ID"
 DBCLAIM="$CLAIM_DIR/CLAIMED-$${LAB_WHO:-$(whoami)}-drupal-$JOB"
 mkdir -p "$OUTDIR"
 
-cleanup() { rm -f "$DBCLAIM"; }
+cleanup() {
+    docker rm -f $(docker ps -aq --filter "label=bench-run=$RUN_ID") >/dev/null 2>&1 || true
+    rm -f "$DBCLAIM"
+}
 trap cleanup EXIT
+
+# One measured job at a time on the box, and no leftovers from a killed run: a
+# second MariaDB on the same data volume is a corruption risk, so sweep first.
+exec 9>"$RUNROOT/.run.lock"
+flock -n 9 || { echo "run.sh: another bench/run.sh holds the lock" >&2; exit 1; }
+docker rm -f $(docker ps -aq --filter "label=bench-run") >/dev/null 2>&1 || true
+docker rm -f $(docker ps -aq --filter "name=db-bench-" --filter "name=rt-" --filter "name=perf-") >/dev/null 2>&1 || true
 
 echo "$(date -u +%FT%TZ) $$ $(whoami) drupal-bench $JOB $RUN_ID" > "$DBCLAIM" 2>/dev/null || true
 cp "$JOBFILE" "$OUTDIR/job.txt"
@@ -42,13 +52,21 @@ cp "$JOBFILE" "$OUTDIR/job.txt"
 # ---- idle gate: no other container is running and the box is quiet -------------
 if [ "$NOGATE" != "--no-gate" ]; then
     # a 2 s busy sample from /proc/stat, like the lab
-    s0=$(awk '/^cpu /{t=0; for (i=2;i<=NF;i++) t+=$i; print t, $5}' /proc/stat)
-    sleep 2
-    s1=$(awk '/^cpu /{t=0; for (i=2;i<=NF;i++) t+=$i; print t, $5}' /proc/stat)
-    pct=$(awk -v a="$s0" -v b="$s1" 'BEGIN { split(a,x," "); split(b,y," "); dt=y[1]-x[1]; di=y[2]-x[2]; printf "%.1f", (dt > 0 ? 100 * (1 - di / dt) : 0) }')
-    others=$(docker ps -q | wc -l)
-    echo "run.sh: idle gate busy=${pct}% containers=$others (max ${IDLE_MAX_PCT}%)"
-    awk -v p="$pct" -v m="$IDLE_MAX_PCT" 'BEGIN{exit !(p <= m)}' || { echo "run.sh: box busy, refusing" >&2; exit 1; }
+    # A previous job's database can still be winding down; sample three times and
+    # take the first quiet one instead of failing a job on a decaying tail.
+    for try in 1 2 3; do
+        s0=$(awk '/^cpu /{t=0; for (i=2;i<=NF;i++) t+=$i; print t, $5}' /proc/stat)
+        sleep 3
+        s1=$(awk '/^cpu /{t=0; for (i=2;i<=NF;i++) t+=$i; print t, $5}' /proc/stat)
+        pct=$(awk -v a="$s0" -v b="$s1" 'BEGIN { split(a,x," "); split(b,y," "); dt=y[1]-x[1]; di=y[2]-x[2]; printf "%.1f", (dt > 0 ? 100 * (1 - di / dt) : 0) }')
+        others=$(docker ps -q | wc -l)
+        echo "run.sh: idle gate try=$try busy=${pct}% containers=$others (max ${IDLE_MAX_PCT}%)"
+        if awk -v p="$pct" -v m="$IDLE_MAX_PCT" 'BEGIN{exit !(p <= m)}'; then
+            gate_ok=1; break
+        fi
+        sleep 12
+    done
+    [ "${gate_ok:-0}" = 1 ] || { echo "run.sh: box busy, refusing" >&2; exit 1; }
 fi
 
 mkdir -p "$OUTDIR"

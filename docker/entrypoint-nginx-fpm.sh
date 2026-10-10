@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # nginx + php-fpm in one container (plan section 5.3: one server tree per runtime).
 set -eu
 php-fpm --nodaemonize --fpm-config /usr/local/etc/php-fpm.conf &

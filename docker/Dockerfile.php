@@ -45,6 +45,8 @@ COPY docker/php-production.ini /usr/local/etc/php/conf.d/zz-production.ini
 RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/runtimes/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 COPY docker/runtimes/nginx.conf /etc/nginx/conf.d/default.conf
+# the Debian package's default server would win the name conflict on :80
+RUN rm -f /etc/nginx/sites-enabled/default
 COPY docker/entrypoint-nginx-fpm.sh /usr/local/bin/entrypoint-nginx-fpm.sh
 RUN chmod +x /usr/local/bin/entrypoint-nginx-fpm.sh
 WORKDIR /app
@@ -59,6 +61,7 @@ RUN set -eux; \
     printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' > /etc/apt/apt.conf.d/80-retries; \
     install-php-extensions intl mbstring pdo_mysql gd zip opcache exif; \
     a2enmod rewrite; \
+    a2dissite 000-default; \
     rm -rf /var/lib/apt/lists/*
 COPY docker/php-production.ini /usr/local/etc/php/conf.d/zz-production.ini
 RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"

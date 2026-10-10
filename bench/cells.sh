@@ -87,7 +87,8 @@ perf_start() {  # name pids
     [ "$PERF" = 1 ] || return 0
     [ -n "$2" ] || return 0
     docker rm -f "perf-$$-$1" >/dev/null 2>&1 || true
-    docker run -d --name "perf-$$-$1" --rm --cap-add PERFMON --pid=host \
+    docker run -d --name "perf-$$-$1" --rm --label "bench-run=${RUN_ID:-manual}" --label bench-role=perf \
+        --cap-add PERFMON --pid=host \
         -v "$R:/out" "$PERF_IMAGE" \
         perf stat -x, -e "$PERF_EVENTS" -o "/out/perf.$1" -p "$2" >/dev/null || return 0
     sleep 0.4
@@ -106,6 +107,7 @@ start_db() {
     docker rm -f "$CNAME" >/dev/null 2>&1 || true
     DBCVOL=${DBCVOL:-drupal-bench-db-${SITE:-default}}
     docker run -d --name "$CNAME" --network "$NET" --cpuset-cpus "${DB_CPUS:-$SERVER_CPUS}" \
+        --label "bench-run=${RUN_ID:-manual}" --label bench-role=db \
         -v "$DBCVOL:/var/lib/mysql" \
         --network-alias db -e MARIADB_ROOT_HOST=% -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=drupal \
         mariadb:${MARIADB_TAG:-10.11} >/dev/null || die "cannot start mariadb"
@@ -129,6 +131,7 @@ start_rt() {  # runtime -> name
         local cfg="$RESROOT/runtimes/$rt.json"
         [ -f "$cfg" ] || cfg="$RESROOT/runtimes/freeunit.json"
         docker run -d --name "$name" --network "$NET" --cpuset-cpus "$SERVER_CPUS" \
+            --label "bench-run=${RUN_ID:-manual}" --label bench-role=runtime \
             -p "127.0.0.1:$PORT:80" \
             -v "$SITE_DIR:/app" \
             -v "$cfg:/docker-entrypoint.d/config.json:ro" \
@@ -137,6 +140,7 @@ start_rt() {  # runtime -> name
         ;;
     nginx-fpm|apache)
         docker run -d --name "$name" --network "$NET" --cpuset-cpus "$SERVER_CPUS" \
+            --label "bench-run=${RUN_ID:-manual}" --label bench-role=runtime \
             -p "127.0.0.1:$PORT:80" \
             -v "$SITE_DIR:/app" \
             -v "$RESROOT/apps:/app/apps:ro" \
@@ -162,7 +166,8 @@ oha_args() {  # conns -> OHA_A
     OHA_A=(-c "$1" --no-tui)
     [ -n "${RATE:-}" ] && [ "$RATE" != 0 ] && OHA_A+=(-q "$RATE")
     if [ "$WORKLOAD" = drupal-auth ]; then
-        OHA_A+=(-H "Cookie: $(grep -v '^#' "${COOKIE_FILE:-/dev/null}" | tr -d '\n')")
+        # the cookie jar is netscape format; Drupal must receive name=value pairs
+        OHA_A+=(-H "Cookie: $(awk '($1 ~ /^#HttpOnly_/ || $1 !~ /^#/) && NF >= 7 { printf "%s=%s; ", $6, $7 }' "${COOKIE_FILE:-/dev/null}")")
     fi
     [ -n "${AE:-}" ] && OHA_A+=(-H "Accept-Encoding: $AE")
     return 0
