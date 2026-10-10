@@ -1,0 +1,10 @@
+# WordPress suite: a full render (no page cache, mysqli only), the HTTP cron path,
+# and the persistent-connection drop-in against stock wpdb.
+site:wp
+site:wp-persistent
+job:bench/jobs/42-wp-front-freeunit-vs-nginx-fpm.job
+job:bench/jobs/43-wp-front-freeunit-master-vs-nginx-fpm.job
+job:bench/jobs/44-wp-front-nginx-fpm-vs-apache.job
+job:bench/jobs/45-wp-cron-freeunit-vs-nginx-fpm.job
+job:bench/jobs/46-wp-persistent-vs-default-freeunit.job
+job:bench/jobs/47-wp-persistent-vs-default-nginx-fpm.job

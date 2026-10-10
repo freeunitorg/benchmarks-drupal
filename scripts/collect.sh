@@ -8,6 +8,8 @@
 #   cells.log (raw cell lines), site-meta.txt
 # Smoke and non-numbered run directories are skipped. Nothing here computes a
 # number; report/render.py reads the summary.json files.
+# Numeric output must not follow the caller locale (awk/printf would use ",").
+export LC_ALL=C
 set -euo pipefail
 
 HOST=${1:-pro4s-2}

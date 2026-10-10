@@ -13,6 +13,8 @@
 # code; a rerun skips it. Progress and health go to $RUNROOT/campaign.log and
 # $RUNROOT/campaign-health.log. Nothing here is parallel: the box is claimed by
 # one step at a time, and bench/run.sh refuses a busy box.
+# Numeric output must not follow the caller locale (awk/printf would use ",").
+export LC_ALL=C
 set -u
 
 STEPS=${1:-$(cd "$(dirname "$0")/.." && pwd)/scripts/campaign.steps}
@@ -69,6 +71,10 @@ while IFS= read -r line; do
                  bash "$REPO/scripts/site-build-symfony.sh" "$RUNROOT" >>"$log" 2>&1 || rc=$?
              elif [ "$SITE" = hello ]; then
                  bash "$REPO/scripts/site-build-hello.sh" "$RUNROOT" >>"$log" 2>&1 || rc=$?
+             elif [ "$SITE" = wp ]; then
+                 bash "$REPO/scripts/site-build-wp.sh" "$RUNROOT" >>"$log" 2>&1 || rc=$?
+             elif [ "$SITE" = wp-persistent ]; then
+                 WP_PERSISTENT=1 bash "$REPO/scripts/site-build-wp.sh" "$RUNROOT" >>"$log" 2>&1 || rc=$?
              else
                  bash "$REPO/scripts/site-build.sh" "$SITE" "$RUNROOT" >>"$log" 2>&1 || rc=$?
              fi ;;

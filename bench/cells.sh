@@ -17,6 +17,8 @@
 # IMAGE_TAG FREEUNIT_CONFIG COOKIE_FILE NULL_GATE
 # Optional: OHA (default: oha on PATH)
 # Output: $RUNROOT/results.tsv
+# Numeric output must not follow the caller locale (awk/printf would use ",").
+export LC_ALL=C
 set -u
 RESROOT="${RESROOT:-${RUNROOT:-/data/projects/benchmarks-drupal/run}}"
 OUT="${OUT:-$RESROOT}/results.tsv"
@@ -266,6 +268,8 @@ url_for() {
     case "$WORKLOAD" in
     php-headers) echo "http://127.0.0.1:$PORT/?mode=headers" ;;
     php-body)    echo "http://127.0.0.1:$PORT/?mode=body" ;;
+    wp-front)    echo "http://127.0.0.1:$PORT/" ;;
+    wp-cron)     echo "http://127.0.0.1:$PORT/wp-cron.php?doing_wp_cron=1" ;;
     *)           echo "http://127.0.0.1:$PORT/" ;;
     esac
 }

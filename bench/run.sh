@@ -6,6 +6,8 @@
 #
 # The job file is KEY=value; see bench/jobs/*.job. This script is the only place
 # that sets RUN_ID or touches the claim file.
+# Numeric output must not follow the caller locale (awk/printf would use ",").
+export LC_ALL=C
 set -euo pipefail
 
 JOBFILE=${1:?usage: run.sh <job file> [--no-gate]}
@@ -16,6 +18,13 @@ CLAIM_DIR=${CLAIM_DIR:-/data/projects}
 IDLE_MAX_PCT=${IDLE_MAX_PCT:-5}
 SHORT_JOB_MIN=${SHORT_JOB_MIN:-15}
 PERF_WINDOW=${PERF_WINDOW:-01:00-06:00}
+
+# A caller may pin the CPU sets (another host has a different topology); those
+# values win over the job file, which carries the reference host's defaults.
+ENV_SERVER_CPUS=${SERVER_CPUS:-}
+ENV_LOAD_CPUS=${LOAD_CPUS:-}
+ENV_DB_CPUS=${DB_CPUS:-}
+ENV_BASE_PORT=${BASE_PORT:-}
 
 # defaults, overridden by the job file
 JOB="" PHASES="null ab" WORKLOAD=drupal-front RUNTIME_A=freeunit RUNTIME_B=nginx-fpm
@@ -31,7 +40,16 @@ PERF_IMAGE=${PERF_IMAGE:-freeunit-perf-lab:1}
 # shellcheck disable=SC1090
 . "$JOBFILE"
 
-RUN_ID="${JOB}-$(date -u +%Y%m%dT%H%M%SZ)"
+[ -n "$ENV_SERVER_CPUS" ] && SERVER_CPUS=$ENV_SERVER_CPUS
+[ -n "$ENV_LOAD_CPUS" ] && LOAD_CPUS=$ENV_LOAD_CPUS
+[ -n "$ENV_DB_CPUS" ] && DB_CPUS=$ENV_DB_CPUS
+[ -n "$ENV_BASE_PORT" ] && BASE_PORT=$ENV_BASE_PORT
+
+# The host is part of the identity: absolute means from two boxes must never be
+# pooled, and the page groups by it.
+BENCH_HOST=${BENCH_HOST:-$(hostname -s)}
+HOSTSLUG=$(printf '%s' "$BENCH_HOST" | tr -c 'a-zA-Z0-9' '-')
+RUN_ID="${JOB}-${HOSTSLUG}-$(date -u +%Y%m%dT%H%M%SZ)"
 OUTDIR="$RUNROOT/$RUN_ID"
 DBCLAIM="$CLAIM_DIR/CLAIMED-$${LAB_WHO:-$(whoami)}-drupal-$JOB"
 mkdir -p "$OUTDIR"
@@ -53,19 +71,38 @@ echo "$(date -u +%FT%TZ) $$ $(whoami) drupal-bench $JOB $RUN_ID" > "$DBCLAIM" 2>
 cp "$JOBFILE" "$OUTDIR/job.txt"
 
 # ---- idle gate: no other container is running and the box is quiet -------------
+
+# Busy percent on the CPUs this measurement uses, plus the cell port; a build host
+# with dozens of idle containers is not "busy" if none of them touches these.
+read_cpu_stat() { awk -v c="$1" '$1 == "cpu" c { t=0; for (i=2;i<=NF;i++) t+=$i; print t, $5 }' /proc/stat; }
+cpu_busy() {  # cpus -> busiest selected cpu, in percent
+    local cpus=$1 out=0 cpu a b t0 i0 t1 i1 v
+    declare -A A
+    for cpu in ${cpus//,/ }; do A[$cpu]=$(read_cpu_stat "$cpu"); done
+    sleep 3
+    for cpu in ${cpus//,/ }; do
+        b=$(read_cpu_stat "$cpu")
+        set -- ${A[$cpu]}; t0=$1; i0=$2
+        set -- $b; t1=$1; i1=$2
+        v=$(awk -v t=$((t1 - t0)) -v i=$((i1 - i0)) 'BEGIN{printf "%.1f", (t > 0 ? 100 * (1 - i / t) : 0)}')
+        out=$(awk -v a="$out" -v b="$v" 'BEGIN{print (b > a ? b : a)}')
+    done
+    echo "$out"
+}
+port_busy() { ss -ltn 2>/dev/null | awk -v p=":$PORT" '$4 ~ p "$" {found=1} END{exit !found}'; }
+
 if [ "$NOGATE" != "--no-gate" ]; then
     # a 2 s busy sample from /proc/stat, like the lab
-    # A previous job's database can still be winding down; sample three times and
-    # take the first quiet one instead of failing a job on a decaying tail.
+    local try
     for try in 1 2 3; do
-        s0=$(awk '/^cpu /{t=0; for (i=2;i<=NF;i++) t+=$i; print t, $5}' /proc/stat)
-        sleep 3
-        s1=$(awk '/^cpu /{t=0; for (i=2;i<=NF;i++) t+=$i; print t, $5}' /proc/stat)
-        pct=$(awk -v a="$s0" -v b="$s1" 'BEGIN { split(a,x," "); split(b,y," "); dt=y[1]-x[1]; di=y[2]-x[2]; printf "%.1f", (dt > 0 ? 100 * (1 - di / dt) : 0) }')
-        others=$(docker ps -q | wc -l)
-        echo "run.sh: idle gate try=$try busy=${pct}% containers=$others (max ${IDLE_MAX_PCT}%)"
-        if awk -v p="$pct" -v m="$IDLE_MAX_PCT" 'BEGIN{exit !(p <= m)}'; then
-            gate_ok=1; break
+        busy=$(cpu_busy "$SERVER_CPUS,$DB_CPUS,$LOAD_CPUS")
+        if port_busy; then
+            echo "run.sh: idle gate try=$try busy=${busy}% port=$PORT in use"
+        else
+            echo "run.sh: idle gate try=$try busy=${busy}% port=$PORT free containers=$(docker ps -q | wc -l) (max ${IDLE_MAX_PCT}%)"
+            if awk -v p="$busy" -v m="$IDLE_MAX_PCT" 'BEGIN{exit !(p <= m)}'; then
+                gate_ok=1; break
+            fi
         fi
         sleep 12
     done
@@ -96,6 +133,7 @@ cp -f "$RUNROOT/site/$SITE/meta.txt" "$OUTDIR/site-meta.txt" 2>/dev/null || true
 {
     echo "job=$JOB"
     echo "run_id=$RUN_ID"
+    echo "host=$BENCH_HOST"
     echo "date=$(date -u +%FT%TZ)"
     echo "workload=$WORKLOAD"
     echo "runtime_a=$RUNTIME_A"

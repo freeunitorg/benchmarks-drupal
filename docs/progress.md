@@ -211,3 +211,22 @@ PostgreSQL, SQLite and the experimental core `mysqli` driver, plus the cached pa
 on PostgreSQL; `scripts/campaign.steps.db` runs them after the site builds. The
 images must be rebuilt (the old three carry only `pdo_mysql`), which the idle box
 has not allowed yet -- nothing here is measured.
+
+## WordPress suite and a second host
+
+Added WordPress 7.1.3 (wp-cli 2.12.0, both pinned and checksum-verified) as a third
+application: no page cache, so `wp-front` is a full render, and `wpdb` is mysqli-only with
+no PDO path. `wordpress/db-persistent.php` is a `wp-content/db.php` drop-in that opens a
+persistent mysqli handle -- core's `parse_db_host()` even mangles the classic `p:host`
+trick, so the drop-in is the only seam -- and jobs 46/47 compare it against stock wpdb
+inside one job. `docs/wordpress.md` has the detail; `scripts/campaign.steps.wp` is the
+suite.
+
+Two hosts can now run the benchmark: the run id and `meta.txt` carry the host, and the
+page groups its summary by host as well as by database, because absolute means from two
+boxes must never be pooled. The idle gate was wrong for a build host: requiring zero
+containers never passes on pro4s-4 (52 idle containers from unitbuild and review work),
+so it now samples busy percent on exactly the CPUs a measurement uses
+(SERVER_CPUS/DB_CPUS/LOAD_CPUS) and requires the cell port to be free. Also forced
+`LC_ALL=C` in the measurement scripts: awk formatted 37.6 as "37,6" under this laptop's
+locale, which is how the gate would have printed nonsense.

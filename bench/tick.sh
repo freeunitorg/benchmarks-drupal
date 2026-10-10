@@ -14,6 +14,8 @@
 #
 # Arm C (fork-warm) is FreeUnit-only and needs the fork_spawn app wired into a
 # second target; not in phase 0. The gist's fork_spawn.php lives in apps/.
+# Numeric output must not follow the caller locale (awk/printf would use ",").
+export LC_ALL=C
 set -euo pipefail
 
 RUNTIME=${1:?usage: tick.sh <runtime> <arm> [ticks] [outdir]}

@@ -20,6 +20,8 @@ instructions per request as the headline metric).
 |---|---|---|
 | `drupal-front` | `GET /` anonymous | page-cache hit: server + cache-bin read + response copy |
 | `drupal-auth` | `GET /` with a session cookie | full render through `dynamic_page_cache` |
+| `wp-front` | `GET /` anonymous | WordPress render: bootstrap, queries, template, no page cache |
+| `wp-cron` | `GET /wp-cron.php?doing_wp_cron=1` | the WordPress HTTP cron path |
 | cron arm A | `drush core:cron` | cold one-shot CLI, the hosting-guide default |
 | cron arm B | `GET /cron/{key}` | a normal web worker; how `automated_cron` runs, and the issue 321 case |
 | queue arm A | `drush queue:run fu_queue_test` | 50 items, cold CLI |
@@ -89,6 +91,14 @@ chart.
    at least 3 of 4 adjacent slot pairs agreeing.
 3. `NOISY` is a result, not a retry ticket. `INVALID` means a non-200 answer, an
    alert in the runtime log, or a missing page-cache `HIT` in preflight.
+
+## WordPress
+
+WordPress 7.1.3 (wp-cli 2.12.0, both pinned) is a third application: no page cache, so
+its front page is a full render, and its `wpdb` is mysqli-only. `wordpress/db-persistent.php`
+is a `wp-content/db.php` drop-in that opens a persistent mysqli handle -- WordPress core
+has no persistent-connection support -- and jobs 46/47 compare it with stock wpdb in one
+job. See [docs/wordpress.md](docs/wordpress.md).
 
 ## Database backends
 
