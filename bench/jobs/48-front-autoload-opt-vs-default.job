@@ -1,0 +1,27 @@
+# The Composer autoloader, in one job: the classmap-authoritative autoloader against
+# the one composer create-project leaves behind, on the same Drupal 12.0, the same
+# profile and the same runtime. Both sides run freeunit, so the null phase of this
+# job is the freeunit-vs-freeunit band. This is the cheapest production step in
+# docs/drupal-perf-opportunities.md and it is applied to every runtime, so the
+# number to read is the delta here, not a cross-runtime verdict.
+JOB=48-front-autoload-opt-vs-default
+ISSUE=https://github.com/freeunitorg/benchmarks-drupal
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit
+SITE=12.0
+SITE_B=12.0-nopt
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the classmap-autoritative autoloader is at or below the default one per request"
+FALSIFY="NO CLAIM: the autoloader is not a measurable share at this cell"

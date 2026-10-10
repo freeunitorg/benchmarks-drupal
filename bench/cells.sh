@@ -238,6 +238,12 @@ start_rt() {  # runtime side -> name
         log "freeing port $PORT held by $(docker inspect -f '{{.Name}}' "$c" 2>/dev/null)"
         docker rm -f "$c" >/dev/null 2>&1 || true
     done
+    # A site built with PRELOAD=1 carries an ini fragment; mount it only when it is
+    # there, so a site without one runs exactly as before. opcache.preload is
+    # PHP_INI_SYSTEM, so it has to arrive with the process, not through the Unit
+    # application options.
+    local preload_vol=()
+    [ -f "$sitedir/preload.ini" ] && preload_vol=(-v "$sitedir/preload.ini:/usr/local/etc/php/conf.d/zz-preload.ini:ro")
     case "$rt" in
     freeunit|freeunit-direct|freeunit-master)
         local cfg="$RESROOT/runtimes/$rt.json"
@@ -248,6 +254,7 @@ start_rt() {  # runtime side -> name
             -v "$sitedir:/app" \
             -v "$cfg:/docker-entrypoint.d/config.json:ro" \
             -v "$RESROOT/apps:/app/apps:ro" \
+            ${preload_vol[@]+"${preload_vol[@]}"} \
             "$img" >/dev/null || die "cannot start $rt"
         ;;
     nginx-fpm|apache)
@@ -256,6 +263,7 @@ start_rt() {  # runtime side -> name
             -p "127.0.0.1:$PORT:80" \
             -v "$sitedir:/app" \
             -v "$RESROOT/apps:/app/apps:ro" \
+            ${preload_vol[@]+"${preload_vol[@]}"} \
             "$img" >/dev/null || die "cannot start $rt"
         ;;
     esac

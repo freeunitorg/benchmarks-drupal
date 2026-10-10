@@ -47,6 +47,10 @@ BENCH_PASS=bench-pass
 DBCVOL=${DBCVOL:-drupal-bench-db-$SITEKEY}
 
 DRUPAL_STABILITY=""
+# 0 keeps the unoptimized Composer autoloader and no preload, so a site built with
+# the defaults is a valid A/B baseline for the variants below.
+COMPOSER_OPT=${COMPOSER_OPT:-1}
+PRELOAD=${PRELOAD:-0}
 case "$SITE" in
 11.4)          DRUPAL_TAG=drupal/recommended-project:11.4.8;        PROFILE=demo_umami ;;
 11.4-standard) DRUPAL_TAG=drupal/recommended-project:11.4.8;        PROFILE=standard ;;
@@ -54,6 +58,13 @@ case "$SITE" in
 11.5-standard) DRUPAL_TAG=drupal/recommended-project:11.5.x-dev;    PROFILE=standard; DRUPAL_STABILITY="--stability=dev" ;;
 12.0)          DRUPAL_TAG=drupal/recommended-project:12.0.0-beta1; PROFILE=demo_umami ;;
 12.0-standard) DRUPAL_TAG=drupal/recommended-project:12.0.0-beta1; PROFILE=standard ;;
+# The same 12.0 install with the optimizations from docs/drupal-perf-opportunities.md:
+# a classmap-authoritative autoloader and an OPcache preload file. A job that pairs
+# this with 12.0 measures them inside one job, against that job's own null band.
+12.0-preload)  DRUPAL_TAG=drupal/recommended-project:12.0.0-beta1; PROFILE=demo_umami; PRELOAD=1 ;;
+# The pre-change baseline: the same site with the autoloader composer create-project
+# leaves behind. Only useful as the other half of an A/B.
+12.0-nopt)     DRUPAL_TAG=drupal/recommended-project:12.0.0-beta1; PROFILE=demo_umami; COMPOSER_OPT=0 ;;
 *) echo "site-build: unknown site $SITE" >&2; exit 2 ;;
 esac
 
@@ -189,6 +200,7 @@ docker run --rm --network "$NET" \
     -v "$RUNROOT:/run" -v "$REPO/modules:/run/modules-src:ro" -v "$REPO/apps:/run/apps-src:ro" \
     -v "$RUNROOT/cache/composer:/cache" -w /run -e HOME=/root -e COMPOSER_HOME=/cache \
     -e DB_URL="$DB_URL" -e DB_DRIVER="$DB" -e SITE_PASS=admin -e SITE_NAME="FreeUnit benchmark" \
+    -e COMPOSER_OPT="${COMPOSER_OPT:-1}" -e PRELOAD="${PRELOAD:-0}" \
     "$TOOL_IMAGE" sh -euc "
         if [ ! -f /run/site/$SITEKEY/composer.json ]; then
             composer create-project $DRUPAL_TAG /run/site/$SITEKEY $DRUPAL_STABILITY --no-interaction --no-progress
@@ -219,6 +231,21 @@ docker run --rm --network "$NET" \
             \$CLI install $PROFILE
         fi
 
+        # The autoloader composer create-project leaves behind is not optimized: every
+        # class outside core's small classmap costs a PSR-4 stat() per candidate
+        # directory on every request. Classmap-authoritative is the standard production
+        # step; see docs/drupal-perf-opportunities.md. COMPOSER_OPT=0 restores the
+        # unoptimized baseline for an A/B.
+        if [ \"\${COMPOSER_OPT:-1}\" = 1 ]; then
+            composer dump-autoload --optimize --classmap-authoritative --no-interaction --no-progress
+        fi
+
+        # Opt-in: an OPcache preload file for this site. Drupal core has none, and the
+        # cell helper mounts preload.ini only when it exists, so PRELOAD=0 is inert.
+        if [ \"\${PRELOAD:-0}\" = 1 ]; then
+            php /run/apps-src/drupal_preload.php /run/site/$SITEKEY
+        fi
+
         if [ \"\$HAS_DRUSH\" = 1 ]; then
             ./vendor/bin/drush pm:enable fu_queue_test page_cache dynamic_page_cache --yes
             ./vendor/bin/drush pm:uninstall big_pipe --yes || true
@@ -245,7 +272,7 @@ docker run --rm --network "$NET" \
 
         printf '\n\$settings[\"trusted_host_patterns\"] = [\".*\"];\n' >> web/sites/default/settings.php
         phpv=\$(php -r 'echo PHP_VERSION;')
-        echo \"tag=$DRUPAL_TAG drupal=\$drupal php=\$phpv profile=$PROFILE drush=\$HAS_DRUSH\" > /run/site/$SITEKEY/meta.txt
+        echo \"tag=$DRUPAL_TAG drupal=\$drupal php=\$phpv profile=$PROFILE drush=\$HAS_DRUSH composer_opt=$COMPOSER_OPT preload=$PRELOAD\" > /run/site/$SITEKEY/meta.txt
     "
 
 # the build above wrote as root; hand the tree back so the host can write the

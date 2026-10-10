@@ -1,0 +1,27 @@
+# The Composer autoloader, in one job: the OPcache preload file plus optimized autoloader against
+# request-path Symfony components, on top of the optimized autoloader, against the
+# same site with only the optimized autoloader. Drupal core ships no preload
+# support, so there is no published number for it anywhere.
+# Both sides run freeunit; the null phase bounds the comparison.
+
+JOB=49-front-preload-vs-autoload-opt
+ISSUE=https://github.com/freeunitorg/benchmarks-drupal
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit
+SITE=12.0
+SITE_B=12.0-preload
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the preload file removes per-request class loading for the preloaded set"
+FALSIFY="NO CLAIM: nothing measurable is left to preload at this cell"
