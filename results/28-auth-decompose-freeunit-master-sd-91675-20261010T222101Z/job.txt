@@ -1,0 +1,23 @@
+# Where does the authenticated-page cost sit: the front proxy or the PHP workers?
+# Same cell as 04/17 but with DECOMPOSE=1, so cells.sh samples the router/nginx
+# tree and the PHP worker tree separately (schedstat and perf counters each).
+JOB=28-auth-decompose-freeunit-master
+ISSUE=https://github.com/freeunitorg/benchmarks-drupal
+PHASES="null ab"
+WORKLOAD=drupal-auth
+RUNTIME_A=freeunit-master
+RUNTIME_B=nginx-fpm
+SITE=11.4
+CONNS=32
+WARM=2
+DUR=8
+REPS=2
+PERF=1
+DECOMPOSE=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=worker_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the extra cost sits in the PHP worker tree, not the front proxy"
+FALSIFY="the front tree carries the delta"
