@@ -60,6 +60,7 @@ def summary_section(summaries):
         workload = meta.get("workload")
         if not primary or not workload:
             continue
+        db = meta.get("db", "mysql")
         for r in d.get("results", []):
             if r.get("phase") != "ab" or r.get("metric") != primary:
                 continue
@@ -68,7 +69,7 @@ def summary_section(summaries):
                              (meta.get("runtime_b"), r.get("b_mean"))):
                 if rt is None or mean is None:
                     continue
-                groups.setdefault((workload, primary, cell), {}).setdefault(rt, []).append(float(mean))
+                groups.setdefault((workload, db, primary, cell), {}).setdefault(rt, []).append(float(mean))
 
     if not groups:
         return ""
@@ -80,14 +81,14 @@ def summary_section(summaries):
            'table pools absolute means from runs taken hours apart under a powersave governor, '
            'so use it for the order, not for a percentage; the per-run tables are the '
            'controlled measurement.</p>']
-    for (workload, primary, cell), runtimes in sorted(groups.items()):
+    for (workload, db, primary, cell), runtimes in sorted(groups.items()):
         means = {rt: sum(v) / len(v) for rt, v in runtimes.items()}
         best = min(means.values()) if primary in LOWER_IS_BETTER else max(means.values())
         order = sorted(means, key=means.get)
         if primary not in LOWER_IS_BETTER:
             order = list(reversed(order))
         out.append(f'<h3>{esc(WORKLOAD_TITLE.get(workload, workload))} '
-                   f'<span class="meta">({esc(cell)}, {esc(primary.replace("_", " "))})</span></h3>')
+                   f'<span class="meta">({esc(cell)}, {esc(db)}, {esc(primary.replace("_", " "))})</span></h3>')
         out.append('<table><thead><tr><th>runtime</th><th>' + esc(primary.replace("_", " "))
                    + '</th><th>relative</th></tr></thead><tbody>')
         for rt in order:
@@ -139,7 +140,7 @@ def render_one(d):
              f'server CPUs {esc(m.get("server_cpus"))} · DB CPUs {esc(m.get("db_cpus"))} · '
              f'governor {esc(m.get("governor"))} · kernel {esc(m.get("kernel"))} · '
              f'cells {esc(m.get("reps"))} blocks × 8 · {esc(m.get("conns"))} connections · '
-             f'{esc(m.get("dur"))} s window</p>')
+             f'{esc(m.get("dur"))} s window · db {esc(m.get("db", "mysql"))}</p>')
     h.append(f'<p class="headline">{esc(d.get("headline"))}</p>')
     h.append('<table><thead><tr><th>metric</th><th>'
              f'{esc(m.get("runtime_a"))}</th><th>{esc(m.get("runtime_b"))}</th>'

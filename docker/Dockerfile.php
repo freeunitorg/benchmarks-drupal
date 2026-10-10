@@ -17,7 +17,7 @@ COPY --from=php-extension-installer /usr/bin/install-php-extensions /usr/local/b
 COPY --from=composer /composer /usr/bin/composer
 RUN set -eux; \
     printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' > /etc/apt/apt.conf.d/80-retries; \
-    install-php-extensions intl mbstring pdo_mysql gd zip opcache exif; \
+    install-php-extensions intl mbstring pdo_mysql mysqli pdo_pgsql pdo_sqlite gd zip opcache exif; \
     apt-get update; \
     apt-get install -y --no-install-recommends curl default-mysql-client; \
     rm -rf /var/lib/apt/lists/*
@@ -37,7 +37,7 @@ COPY --from=php-extension-installer /usr/bin/install-php-extensions /usr/local/b
 COPY --from=composer /composer /usr/bin/composer
 RUN set -eux; \
     printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' > /etc/apt/apt.conf.d/80-retries; \
-    install-php-extensions intl mbstring pdo_mysql gd zip opcache exif; \
+    install-php-extensions intl mbstring pdo_mysql mysqli pdo_pgsql pdo_sqlite gd zip opcache exif; \
     apt-get update; \
     apt-get install -y --no-install-recommends nginx curl default-mysql-client; \
     rm -rf /var/lib/apt/lists/*
@@ -59,7 +59,7 @@ COPY --from=php-extension-installer /usr/bin/install-php-extensions /usr/local/b
 COPY --from=composer /composer /usr/bin/composer
 RUN set -eux; \
     printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' > /etc/apt/apt.conf.d/80-retries; \
-    install-php-extensions intl mbstring pdo_mysql gd zip opcache exif; \
+    install-php-extensions intl mbstring pdo_mysql mysqli pdo_pgsql pdo_sqlite gd zip opcache exif; \
     a2enmod rewrite; \
     a2dissite 000-default; \
     rm -rf /var/lib/apt/lists/*

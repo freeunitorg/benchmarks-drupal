@@ -33,6 +33,45 @@ if (!is_file($root . '/autoload.php')) {
     fail("no autoload.php under $root");
 }
 
+/**
+ * The database specification for DB_DRIVER, in the shape Drupal's installer and
+ * settings.php expect (the driver key is the namespace).
+ */
+function db_spec(): array {
+    $driver = getenv('DB_DRIVER') ?: 'mysql';
+    $url = getenv('DB_URL') ?: '';
+    $p = $url !== '' ? (parse_url($url) ?: []) : [];
+    $drivers = [
+        'mysql' => ['Drupal\\mysql\\Driver\\Database\\mysql', 'core/modules/mysql/src/Driver/Database/mysql/', 3306, 'root', 'db'],
+        'mysqli' => ['Drupal\\mysqli\\Driver\\Database\\mysqli', 'core/modules/mysqli/src/Driver/Database/mysqli/', 3306, 'root', 'db'],
+        'pgsql' => ['Drupal\\pgsql\\Driver\\Database\\pgsql', 'core/modules/pgsql/src/Driver/Database/pgsql/', 5432, 'postgres', 'db'],
+        'sqlite' => ['Drupal\\sqlite\\Driver\\Database\\sqlite', 'core/modules/sqlite/src/Driver/Database/sqlite/', 0, '', ''],
+    ];
+    if (!isset($drivers[$driver])) {
+        fail("unknown DB_DRIVER '$driver' (mysql, mysqli, pgsql, sqlite)");
+    }
+    [$namespace, $autoload, $port, $user, $host] = $drivers[$driver];
+    if ($driver === 'sqlite') {
+        return [
+            'database' => 'sites/default/files/.sqlite',
+            'driver' => 'sqlite',
+            'namespace' => $namespace,
+            'autoload' => $autoload,
+        ];
+    }
+    return [
+        'database' => ltrim($p['path'] ?? '/drupal', '/'),
+        'username' => $p['user'] ?? $user,
+        'password' => $p['pass'] ?? '',
+        'prefix' => '',
+        'host' => $p['host'] ?? $host,
+        'port' => (int) ($p['port'] ?? $port),
+        'driver' => $driver,
+        'namespace' => $namespace,
+        'autoload' => $autoload,
+    ];
+}
+
 // settings-init writes the database connection and a hash salt into settings.php.
 // The Drupal 12 installer (vendor/bin/dr install) has no --db-url and hardcodes
 // SQLite, but install.core.inc skips its settings form when settings.php verifies:
@@ -61,25 +100,21 @@ if ($cmd === 'settings-init') {
         echo json_encode(['settings' => 'already initialised']) . "\n";
         exit(0);
     }
-    $p = parse_url(getenv('DB_URL') ?: 'mysql://root@db/drupal') ?: [];
+    $spec = db_spec();
     $salt = bin2hex(random_bytes(16));
-    $block = sprintf(
-        "\n/* benchmarks-drupal: written by apps/drupal_cli.php settings-init */\n" .
-        "\$databases['default']['default'] = [\n" .
-        "  'database' => %s,\n  'username' => %s,\n  'password' => %s,\n  'prefix' => '',\n" .
-        "  'host' => %s,\n  'port' => %d,\n  'isolation_level' => 'READ COMMITTED',\n" .
-        "  'driver' => 'mysql',\n  'namespace' => 'Drupal\\\\mysql\\\\Driver\\\\Database\\\\mysql',\n" .
-        "  'autoload' => 'core/modules/mysql/src/Driver/Database/mysql/',\n];\n" .
-        "\$settings['hash_salt'] = '%s';\n",
-        var_export(ltrim($p['path'] ?? '/drupal', '/'), TRUE),
-        var_export($p['user'] ?? 'root', TRUE),
-        var_export($p['pass'] ?? '', TRUE),
-        var_export($p['host'] ?? 'db', TRUE),
-        (int) ($p['port'] ?? 3306),
-        $salt
-    );
+    $lines = [
+        '',
+        '/* benchmarks-drupal: written by apps/drupal_cli.php settings-init */',
+        "\$databases['default']['default'] = [",
+    ];
+    foreach ($spec as $key => $value) {
+        $lines[] = '  ' . var_export($key, TRUE) . ' => ' . var_export($value, TRUE) . ',';
+    }
+    $lines[] = '];';
+    $lines[] = "\$settings['hash_salt'] = '$salt';";
+    $block = implode("\n", $lines) . "\n";
     file_put_contents($settings_file, $block, FILE_APPEND);
-    echo json_encode(['settings' => $settings_file, 'database' => ltrim($p['path'] ?? '/drupal', '/')]) . "\n";
+    echo json_encode(['settings' => $settings_file, 'driver' => $spec['driver'], 'database' => $spec['database'], 'host' => $spec['host'] ?? ''], JSON_UNESCAPED_SLASHES) . "\n";
     exit(0);
 }
 
@@ -90,8 +125,6 @@ if ($cmd === 'install') {
     $profile = $args[0] ?? 'demo_umami';
     $pass = getenv('SITE_PASS') ?: 'admin';
     $site_name = getenv('SITE_NAME') ?: 'FreeUnit benchmark';
-    $db_url = getenv('DB_URL') ?: 'mysql://root@db/drupal';
-
     chdir($root);
     if (!is_file($root . '/core/includes/install.core.inc')) {
         fail("no install.core.inc under $root");
@@ -101,18 +134,8 @@ if ($cmd === 'install') {
     require_once $root . '/core/includes/install.inc';
     $class_loader = require_once $root . '/autoload.php';
 
-    $p = parse_url($db_url) ?: [];
-    $namespace = 'Drupal\\mysql\\Driver\\Database\\mysql';
-    $db_spec = [
-        'database' => ltrim($p['path'] ?? '/drupal', '/'),
-        'username' => $p['user'] ?? 'root',
-        'password' => $p['pass'] ?? '',
-        'host' => $p['host'] ?? 'db',
-        'port' => $p['port'] ?? 3306,
-        'driver' => 'mysql',
-        'namespace' => $namespace,
-        'autoload' => 'core/modules/mysql/src/Driver/Database/mysql/',
-    ];
+    $db_spec = db_spec();
+    $namespace = $db_spec['namespace'];
     $settings = [
         'parameters' => [
             'profile' => $profile,
@@ -148,8 +171,8 @@ if ($cmd === 'install') {
     echo json_encode([
         'install' => $profile,
         'database' => $db_spec['database'],
-        'host' => $db_spec['host'],
-    ]) . "\n";
+        'host' => $db_spec['host'] ?? '',
+    ], JSON_UNESCAPED_SLASHES) . "\n";
     exit(0);
 }
 

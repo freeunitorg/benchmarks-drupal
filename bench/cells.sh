@@ -127,20 +127,46 @@ perf_stop() {  # name
 start_db() {
     docker network create "$NET" >/dev/null 2>&1 || true
     docker rm -f "$CNAME" >/dev/null 2>&1 || true
-    DBCVOL=${DBCVOL:-drupal-bench-db-${SITE:-default}}
-    docker run -d --name "$CNAME" --network "$NET" --cpuset-cpus "${DB_CPUS:-$SERVER_CPUS}" \
-        --label "bench-run=${RUN_ID:-manual}" --label bench-role=db \
-        -v "$DBCVOL:/var/lib/mysql" \
-        --network-alias db -e MARIADB_ROOT_HOST=% -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=drupal \
-        mariadb:${MARIADB_TAG:-10.11} >/dev/null || die "cannot start mariadb"
+    DBVOLKEY="${SITE:-default}"
+    [ "${DB:-mysql}" != mysql ] && DBVOLKEY="$DBVOLKEY-${DB}"
+    DBCVOL=${DBCVOL:-drupal-bench-db-$DBVOLKEY}
     local i
-    for i in $(seq 60); do
-        docker exec "$CNAME" mariadb -uroot -e 'SELECT 1' >/dev/null 2>&1 && return 0
-        sleep 1
-    done
-    die "mariadb did not become ready"
+    case "${DB:-mysql}" in
+    sqlite)
+        # no server: the site's settings.php points at a file
+        NO_DB=1
+        return 0
+        ;;
+    pgsql)
+        docker run -d --name "$CNAME" --network "$NET" --cpuset-cpus "${DB_CPUS:-$SERVER_CPUS}" \
+            --label "bench-run=${RUN_ID:-manual}" --label bench-role=db \
+            -v "$DBCVOL:/var/lib/postgresql/data" \
+            --network-alias db -e POSTGRES_DB=drupal -e POSTGRES_HOST_AUTH_METHOD=trust \
+            "${PG_IMAGE:-postgres:17}" >/dev/null || die "cannot start postgres"
+        for i in $(seq 60); do
+            docker exec "$CNAME" pg_isready -U postgres -d drupal >/dev/null 2>&1 && return 0
+            sleep 1
+        done
+        die "postgres did not become ready"
+        ;;
+    *)
+        docker run -d --name "$CNAME" --network "$NET" --cpuset-cpus "${DB_CPUS:-$SERVER_CPUS}" \
+            --label "bench-run=${RUN_ID:-manual}" --label bench-role=db \
+            -v "$DBCVOL:/var/lib/mysql" \
+            --network-alias db -e MARIADB_ROOT_HOST=% -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=drupal \
+            mariadb:${MARIADB_TAG:-10.11} >/dev/null || die "cannot start mariadb"
+        for i in $(seq 60); do
+            docker exec "$CNAME" mariadb -uroot -e 'SELECT 1' >/dev/null 2>&1 && return 0
+            sleep 1
+        done
+        die "mariadb did not become ready"
+        ;;
+    esac
 }
-stop_db() { docker rm -f "$CNAME" >/dev/null 2>&1; docker network rm "$NET" >/dev/null 2>&1; }
+stop_db() {
+    [ "${NO_DB:-0}" = 1 ] || docker rm -f "$CNAME" >/dev/null 2>&1
+    docker network rm "$NET" >/dev/null 2>&1
+}
 
 # ---------------------------------------------------------------- runtime
 start_rt() {  # runtime -> name

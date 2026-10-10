@@ -66,6 +66,7 @@ function build_images(string $root): never {
         ['docker', 'build', '-f', 'docker/Dockerfile.php', '--target', 'php-fpm', '-t', 'drupal-bench-fpm:8.5', '.'],
         ['docker', 'build', '-f', 'docker/Dockerfile.php', '--target', 'apache', '-t', 'drupal-bench-apache:8.5', '.'],
         ['docker', 'pull', 'mariadb:10.11'],
+        ['docker', 'pull', 'postgres:17'],
     ];
     foreach ($cmds as $c) {
         run_cmd($c);

@@ -1,0 +1,22 @@
+# The cached front page on PostgreSQL: the page-cache path also reads and writes
+# the database, so this checks whether the runtime ordering is backend-bound.
+JOB=38-front-anon-pgsql-freeunit-vs-fpm-11.4
+ISSUE=https://github.com/freeunitorg/benchmarks-drupal
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=nginx-fpm
+SITE=11.4
+DB=pgsql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="FreeUnit still cheaper on the cached page with PostgreSQL behind it"
+FALSIFY="NO CLAIM, or FPM cheaper here while FreeUnit wins on mysql"

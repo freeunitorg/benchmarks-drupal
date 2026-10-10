@@ -1,0 +1,23 @@
+# Authenticated Drupal 11.4 on sqlite: FreeUnit 1.37.0 vs nginx + PHP-FPM.
+# The authenticated render is the database-heavy workload, so the backend is what
+# this pair isolates (each backend has its own installed site and its own volume).
+JOB=36-auth-freeunit-vs-fpm-11.4-sqlite
+ISSUE=https://github.com/freeunitorg/benchmarks-drupal
+PHASES="null ab"
+WORKLOAD=drupal-auth
+RUNTIME_A=freeunit
+RUNTIME_B=nginx-fpm
+SITE=11.4
+DB=sqlite
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the runtime order holds on sqlite; db_us shows what the backend costs"
+FALSIFY="NO CLAIM, or the runtime that won on mysql losing here"

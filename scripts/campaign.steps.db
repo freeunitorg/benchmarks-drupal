@@ -1,0 +1,10 @@
+# Database backends alongside MariaDB: the experimental core mysqli driver,
+# PostgreSQL and SQLite, each with its own installed site. The runtime pair stays
+# FreeUnit vs nginx+PHP-FPM, so the backend is the variable.
+site:11.4:mysqli
+site:11.4:pgsql
+site:11.4:sqlite
+job:bench/jobs/37-auth-freeunit-vs-fpm-11.4-mysqli.job
+job:bench/jobs/35-auth-freeunit-vs-fpm-11.4-pgsql.job
+job:bench/jobs/36-auth-freeunit-vs-fpm-11.4-sqlite.job
+job:bench/jobs/38-front-anon-pgsql-freeunit-vs-fpm-11.4.job

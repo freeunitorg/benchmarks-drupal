@@ -27,11 +27,17 @@ PORT=${PORT:-8081}
 NET="dbnet-sitebuild-$$"
 DBC="db-sitebuild-$$"
 RTC="rt-sitebuild-$$"
-SITEDIR="$RUNROOT/site/$SITE"
+# DB selects the backend: mysql (PDO, default), mysqli (the experimental core
+# driver), pgsql or sqlite. mysql keeps the bare site key so existing runs and
+# paths stay valid; every other backend gets its own directory and volume.
+DB=${DB:-mysql}
+SITEKEY=$SITE
+[ "$DB" != mysql ] && SITEKEY="$SITE-$DB"
+SITEDIR="$RUNROOT/site/$SITEKEY"
 REPO=$(cd "$(dirname "$0")/.." && pwd)
 BENCH_USER=bench-user
 BENCH_PASS=bench-pass
-DBCVOL=${DBCVOL:-drupal-bench-db-$SITE}
+DBCVOL=${DBCVOL:-drupal-bench-db-$SITEKEY}
 
 case "$SITE" in
 11.4)          DRUPAL_TAG=drupal/recommended-project:11.4.8;        PROFILE=demo_umami ;;
@@ -60,37 +66,61 @@ if site_installed && [ "$FORCE" != "--force" ]; then
 fi
 if { [ "$FORCE" = "--force" ] || [ -d "$SITEDIR" ]; } && ! site_installed; then
     echo "site-build: removing incomplete $SITEDIR"
-    docker run --rm -v "$RUNROOT:/run" alpine:3 sh -c "rm -rf /run/site/$SITE"
+    docker run --rm -v "$RUNROOT:/run" alpine:3 sh -c "rm -rf /run/site/$SITEKEY"
 fi
 mkdir -p "$SITEDIR" "$RUNROOT/cache/composer"
 
 docker network create "$NET" >/dev/null
-docker run -d --name "$DBC" --network "$NET" --network-alias db \
-    -v "$DBCVOL:/var/lib/mysql" \
-    -e MARIADB_ROOT_HOST=% -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=drupal \
-    "$DB_IMAGE" >/dev/null
-for _ in $(seq 60); do
-    docker exec "$DBC" mariadb -uroot -e 'SELECT 1' >/dev/null 2>&1 && break
-    sleep 1
-done
-# a rebuild starts from an empty database
-docker exec "$DBC" mariadb -uroot -e "DROP DATABASE IF EXISTS drupal; CREATE DATABASE drupal;" 2>/dev/null || true
+case "$DB" in
+mysql|mysqli)
+    DB_URL="mysql://root@db/drupal"
+    docker run -d --name "$DBC" --network "$NET" --network-alias db \
+        -v "$DBCVOL:/var/lib/mysql" \
+        -e MARIADB_ROOT_HOST=% -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=drupal \
+        "$DB_IMAGE" >/dev/null
+    for _ in $(seq 60); do
+        docker exec "$DBC" mariadb -uroot -e 'SELECT 1' >/dev/null 2>&1 && break
+        sleep 1
+    done
+    # a rebuild starts from an empty database
+    docker exec "$DBC" mariadb -uroot -e "DROP DATABASE IF EXISTS drupal; CREATE DATABASE drupal;" 2>/dev/null || true
+    ;;
+pgsql)
+    DB_URL="pgsql://postgres@db/drupal"
+    docker run -d --name "$DBC" --network "$NET" --network-alias db \
+        -v "$DBCVOL:/var/lib/postgresql/data" \
+        -e POSTGRES_DB=drupal -e POSTGRES_HOST_AUTH_METHOD=trust \
+        "${PG_IMAGE:-postgres:17}" >/dev/null
+    for _ in $(seq 60); do
+        docker exec "$DBC" pg_isready -U postgres -d drupal >/dev/null 2>&1 && break
+        sleep 1
+    done
+    ;;
+sqlite)
+    # no server: the database is a file under the site files directory
+    DB_URL="sqlite://localhost/sites/default/files/.sqlite"
+    ;;
+*) echo "site-build: unknown DB $DB (mysql, mysqli, pgsql, sqlite)" >&2; exit 2 ;;
+esac
 
-echo "site-build: $SITE -> $DRUPAL_TAG ($PROFILE)"
+echo "site-build: $SITE [$DB] -> $DRUPAL_TAG ($PROFILE)"
 docker run --rm --network "$NET" \
     -v "$RUNROOT:/run" -v "$REPO/modules:/run/modules-src:ro" -v "$REPO/apps:/run/apps-src:ro" \
     -v "$RUNROOT/cache/composer:/cache" -w /run -e HOME=/root -e COMPOSER_HOME=/cache \
-    -e DB_URL=mysql://root@db/drupal -e SITE_PASS=admin -e SITE_NAME="FreeUnit benchmark" \
+    -e DB_URL="$DB_URL" -e DB_DRIVER="$DB" -e SITE_PASS=admin -e SITE_NAME="FreeUnit benchmark" \
     "$TOOL_IMAGE" sh -euc "
-        if [ ! -f /run/site/$SITE/composer.json ]; then
-            composer create-project $DRUPAL_TAG /run/site/$SITE --no-interaction --no-progress
+        if [ ! -f /run/site/$SITEKEY/composer.json ]; then
+            composer create-project $DRUPAL_TAG /run/site/$SITEKEY --no-interaction --no-progress
         fi
-        cd /run/site/$SITE
+        cd /run/site/$SITEKEY
         mkdir -p web/modules/custom
         cp -r /run/modules-src/fu_queue_test web/modules/custom/
         chmod u+w web/sites/default
         HAS_DRUSH=1
         composer require --no-interaction --no-progress drush/drush:^13 >/dev/null 2>&1 || HAS_DRUSH=0
+        # drush cannot install the mysqli driver and its db-url handling differs per
+        # backend, so anything but mysql goes through settings-init + dr/install_drupal.
+        [ "$DB" != mysql ] && HAS_DRUSH=0
         if [ \"\$HAS_DRUSH\" = 1 ]; then
             ./vendor/bin/drush site:install $PROFILE \
                 --db-url=mysql://root@db/drupal \
@@ -131,7 +161,7 @@ docker run --rm --network "$NET" \
             drupal=\$(php -r 'require "core/lib/Drupal.php"; echo \\Drupal::VERSION;' 2>/dev/null || echo unknown)
         printf '\n\$settings[\"trusted_host_patterns\"] = [\".*\"];\n' >> web/sites/default/settings.php
         phpv=\$(php -r 'echo PHP_VERSION;')
-        echo \"tag=$DRUPAL_TAG drupal=\$drupal php=\$phpv profile=$PROFILE drush=\$HAS_DRUSH\" > /run/site/$SITE/meta.txt
+        echo \"tag=$DRUPAL_TAG drupal=\$drupal php=\$phpv profile=$PROFILE drush=\$HAS_DRUSH\" > /run/site/$SITEKEY/meta.txt
     "
 
 echo "site-build: login cookie for the drupal-auth workload"

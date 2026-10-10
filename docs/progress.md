@@ -198,3 +198,16 @@ Ready to run once the box is free (`scripts/campaign.steps.master`, then
 avoid drush entirely through `apps/drupal_cli.php` (core's own installer plus the Drupal
 APIs for enable/state/user/login/cron/queue), which is what the drush/guzzle-advisory
 block needed.
+
+## Database axis
+
+Added `DB=mysql|mysqli|pgsql|sqlite` to the builder, the job runner, the cells and
+the ticker; the sites, volumes and images now carry the backend (one PHP build with
+`pdo_mysql`, `mysqli`, `pdo_pgsql`, `pdo_sqlite`). Each backend needs its own
+installed site, so a DB comparison is a set of per-backend jobs against the same
+runtime pair; the page groups its summary tables by `(workload, db)` and each run's
+header names its database. Jobs 35-38 cover authenticated Drupal 11.4 on
+PostgreSQL, SQLite and the experimental core `mysqli` driver, plus the cached page
+on PostgreSQL; `scripts/campaign.steps.db` runs them after the site builds. The
+images must be rebuilt (the old three carry only `pdo_mysql`), which the idle box
+has not allowed yet -- nothing here is measured.

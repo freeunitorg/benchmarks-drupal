@@ -62,7 +62,9 @@ while IFS= read -r line; do
     say "START $line -> $log"
     rc=0
     case "$line" in
-    site:*)  SITE=${line#site:}
+    site:*)  SITE_DB=${line#site:}
+             IFS=: read -r SITE SITEDB <<<"$SITE_DB"
+             export DB="$SITEDB"
              if [ "$SITE" = symfony ]; then
                  bash "$REPO/scripts/site-build-symfony.sh" "$RUNROOT" >>"$log" 2>&1 || rc=$?
              elif [ "$SITE" = hello ]; then
@@ -71,11 +73,13 @@ while IFS= read -r line; do
                  bash "$REPO/scripts/site-build.sh" "$SITE" "$RUNROOT" >>"$log" 2>&1 || rc=$?
              fi ;;
     job:*)   job=${line#job:}
+             # a job file names its own database; never inherit the previous step's
+             unset DB
              RUNROOT="$RUNROOT" bash "$REPO/bench/run.sh" "$REPO/$job" >>"$log" 2>&1 || rc=$? ;;
     ticks:*) rest=${line#ticks:}
-             IFS=: read -r rt arm ticks site <<<"$rest"
-             tickdir="$RUNROOT/ticks-$rt-$arm-$site-$(date -u +%Y%m%dT%H%M%SZ)"
-             SITE="$site" bash "$REPO/bench/tick.sh" "$rt" "$arm" "$ticks" "$tickdir" >>"$log" 2>&1 || rc=$?
+             IFS=: read -r rt arm ticks site db <<<"$rest"
+             tickdir="$RUNROOT/ticks-$rt-$arm-$site${db:+-$db}-$(date -u +%Y%m%dT%H%M%SZ)"
+             SITE="$site" DB="${db:-}" bash "$REPO/bench/tick.sh" "$rt" "$arm" "$ticks" "$tickdir" >>"$log" 2>&1 || rc=$?
              ;;
     *)       say "unknown step $line"; rc=99 ;;
     esac

@@ -90,6 +90,26 @@ chart.
 3. `NOISY` is a result, not a retry ticket. `INVALID` means a non-200 answer, an
    alert in the runtime log, or a missing page-cache `HIT` in preflight.
 
+## Database backends
+
+The default is MariaDB 10.11 through Drupal's PDO `mysql` driver. Three more are
+selectable per site (`DB=mysql|mysqli|pgsql|sqlite`), each with its own installed
+site, volume and `meta.txt` line, because a driver cannot be swapped under an
+installed site:
+
+| DB | driver | server |
+|---|---|---|
+| `mysql` | `mysql` (PDO) | MariaDB 10.11 |
+| `mysqli` | the experimental core `mysqli` driver | the same MariaDB, different PHP extension |
+| `pgsql` | `pgsql` | PostgreSQL 17 (`trust`) |
+| `sqlite` | `sqlite` | a file under `sites/default/files/` |
+
+The images carry `pdo_mysql`, `mysqli`, `pdo_pgsql` and `pdo_sqlite`, so one PHP
+build serves every backend. `docs/db-drivers.md` has the namespaces and why the
+`mysqli` pair is interesting for a future PHP worker target (issue 596): a
+connection that survives between requests is where a persistent in-process worker
+can win.
+
 ## Pins (recorded per run in `meta.txt`)
 
 * PHP `8.5.11` for all three runtimes, `php-production.ini`, JIT off.

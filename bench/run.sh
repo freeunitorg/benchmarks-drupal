@@ -21,6 +21,7 @@ PERF_WINDOW=${PERF_WINDOW:-01:00-06:00}
 JOB="" PHASES="null ab" WORKLOAD=drupal-front RUNTIME_A=freeunit RUNTIME_B=nginx-fpm
 SITE=11.4 CONNS=32 DUR=8 WARM=2 REPS=2 RATE="" APP_PROCS=20 PERF=1 AE=""
 SERVER_CPUS=0,1 LOAD_CPUS=2,3,6,7 DB_CPUS=4,5 BASE_PORT=8081
+DB=${DB:-mysql}
 NULL_LIMIT_PCT=5 PRIMARY=s_instructions EXPECT="" FALSIFY="" ISSUE=""
 DECOMPOSE=${DECOMPOSE:-0}
 EXTRA_COOKIE_BYTES=${EXTRA_COOKIE_BYTES:-0}
@@ -71,10 +72,15 @@ if [ "$NOGATE" != "--no-gate" ]; then
 fi
 
 mkdir -p "$OUTDIR"
-SITE_DIR="$RUNROOT/site/$SITE"
+# The database backend is part of the site key: mysql keeps the bare name, every
+# other backend has its own directory (site-build.sh uses the same rule).
+DB=${DB:-mysql}
+SITEKEY=$SITE
+[ "$DB" != mysql ] && SITEKEY="$SITE-$DB"
+SITE_DIR="$RUNROOT/site/$SITEKEY"
 OUT="$OUTDIR"; RESROOT="$RUNROOT"; COOKIE_FILE="$SITE_DIR/cookie.txt"
 export SITE_DIR OUT RESROOT COOKIE_FILE JOB RUN_ID PHASES WORKLOAD
-export RUNTIME_A RUNTIME_B SITE CONNS DUR WARM REPS RATE APP_PROCS PERF AE DECOMPOSE EXTRA_COOKIE_BYTES
+export RUNTIME_A RUNTIME_B SITE CONNS DUR WARM REPS RATE APP_PROCS PERF AE DECOMPOSE EXTRA_COOKIE_BYTES DB
 export SERVER_CPUS LOAD_CPUS DB_CPUS BASE_PORT
 bash "$HERE/cells.sh" >"$OUTDIR/cells.log" 2>&1 || { tail -n 20 "$OUTDIR/cells.log" >&2; exit 1; }
 
@@ -87,6 +93,7 @@ cp -f "$RUNROOT/site/$SITE/meta.txt" "$OUTDIR/site-meta.txt" 2>/dev/null || true
     echo "runtime_a=$RUNTIME_A"
     echo "runtime_b=$RUNTIME_B"
     echo "site=$SITE"
+    echo "db=$DB"
     echo "phases=$PHASES conns=$CONNS dur=$DUR warm=$WARM reps=$REPS rate=$RATE"
     echo "server_cpus=$SERVER_CPUS load_cpus=$LOAD_CPUS db_cpus=$DB_CPUS"
     echo "governor=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null || echo unknown)"
