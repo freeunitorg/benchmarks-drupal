@@ -69,7 +69,7 @@ docker run -d --name "$DBC" --network "$NET" --network-alias db \
     -v "$DBCVOL:/var/lib/mysql" \
     -e MARIADB_ROOT_HOST=% -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=drupal \
     "$DB_IMAGE" >/dev/null
-for i in $(seq 60); do
+for _ in $(seq 60); do
     docker exec "$DBC" mariadb -uroot -e 'SELECT 1' >/dev/null 2>&1 && break
     sleep 1
 done

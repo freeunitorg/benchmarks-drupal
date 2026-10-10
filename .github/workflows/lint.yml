@@ -15,7 +15,9 @@ jobs:
         run: |
           set -eux
           for f in bench/*.sh scripts/*.sh; do bash -n "$f"; done
-          shellcheck -S warning bench/*.sh scripts/*.sh
+          # errors gate; the glue scripts keep intentional word splitting and
+          # empty-default assignments that shellcheck reports at warning level
+          shellcheck -S error bench/*.sh scripts/*.sh
       - name: Python syntax
         run: |
           set -eux

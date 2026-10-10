@@ -72,7 +72,8 @@ while IFS= read -r line; do
              RUNROOT="$RUNROOT" bash "$REPO/bench/run.sh" "$REPO/$job" >>"$log" 2>&1 || rc=$? ;;
     ticks:*) rest=${line#ticks:}
              IFS=: read -r rt arm ticks site <<<"$rest"
-             RUNROOT="$RUNROOT" SITE="$site" bash "$REPO/bench/tick.sh" "$rt" "$arm" "$ticks" "$RUNROOT/ticks-$rt-$arm-$site-$(date -u +%Y%m%dT%H%M%SZ)" >>"$log" 2>&1 || rc=$?
+             tickdir="$RUNROOT/ticks-$rt-$arm-$site-$(date -u +%Y%m%dT%H%M%SZ)"
+             SITE="$site" bash "$REPO/bench/tick.sh" "$rt" "$arm" "$ticks" "$tickdir" >>"$log" 2>&1 || rc=$?
              ;;
     *)       say "unknown step $line"; rc=99 ;;
     esac

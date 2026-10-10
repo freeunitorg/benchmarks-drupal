@@ -11,7 +11,6 @@ set -euo pipefail
 JOBFILE=${1:?usage: run.sh <job file> [--no-gate]}
 NOGATE=${2:-}
 HERE=$(cd "$(dirname "$0")" && pwd)
-REPO=$(dirname "$HERE")
 RUNROOT=${RUNROOT:-/data/projects/benchmarks-drupal/run}
 CLAIM_DIR=${CLAIM_DIR:-/data/projects}
 IDLE_MAX_PCT=${IDLE_MAX_PCT:-5}
@@ -19,10 +18,10 @@ SHORT_JOB_MIN=${SHORT_JOB_MIN:-15}
 PERF_WINDOW=${PERF_WINDOW:-01:00-06:00}
 
 # defaults, overridden by the job file
-JOB= PHASES="null ab" WORKLOAD=drupal-front RUNTIME_A=freeunit RUNTIME_B=nginx-fpm
-SITE=11.4 CONNS=32 DUR=8 WARM=2 REPS=2 RATE= APP_PROCS=20 PERF=1 AE=
+JOB="" PHASES="null ab" WORKLOAD=drupal-front RUNTIME_A=freeunit RUNTIME_B=nginx-fpm
+SITE=11.4 CONNS=32 DUR=8 WARM=2 REPS=2 RATE="" APP_PROCS=20 PERF=1 AE=""
 SERVER_CPUS=0,1 LOAD_CPUS=2,3,6,7 DB_CPUS=4,5 BASE_PORT=8081
-NULL_LIMIT_PCT=5 PRIMARY=s_instructions EXPECT= FALSIFY= ISSUE= NOTES=
+NULL_LIMIT_PCT=5 PRIMARY=s_instructions EXPECT="" FALSIFY="" ISSUE=""
 OHA=${OHA:-/data/projects/cache/cargo/bin/oha}
 PERF_IMAGE=${PERF_IMAGE:-freeunit-perf-lab:1}
 # shellcheck disable=SC1090
@@ -70,14 +69,11 @@ if [ "$NOGATE" != "--no-gate" ]; then
 fi
 
 mkdir -p "$OUTDIR"
-SITE_DIR="$RUNROOT/site/$SITE" \
-OUT="$OUTDIR" RESROOT="$RUNROOT" \
-JOB="$JOB" RUN_ID="$RUN_ID" PHASES="$PHASES" WORKLOAD="$WORKLOAD" \
-RUNTIME_A="$RUNTIME_A" RUNTIME_B="$RUNTIME_B" SITE="$SITE" \
-CONNS="$CONNS" DUR="$DUR" WARM="$WARM" REPS="$REPS" RATE="$RATE" \
-APP_PROCS="$APP_PROCS" PERF="$PERF" AE="$AE" \
-SERVER_CPUS="$SERVER_CPUS" LOAD_CPUS="$LOAD_CPUS" DB_CPUS="$DB_CPUS" BASE_PORT="$BASE_PORT" \
-COOKIE_FILE="$RUNROOT/site/$SITE/cookie.txt" \
+SITE_DIR="$RUNROOT/site/$SITE"
+OUT="$OUTDIR"; RESROOT="$RUNROOT"; COOKIE_FILE="$SITE_DIR/cookie.txt"
+export SITE_DIR OUT RESROOT COOKIE_FILE JOB RUN_ID PHASES WORKLOAD
+export RUNTIME_A RUNTIME_B SITE CONNS DUR WARM REPS RATE APP_PROCS PERF AE
+export SERVER_CPUS LOAD_CPUS DB_CPUS BASE_PORT
 bash "$HERE/cells.sh" >"$OUTDIR/cells.log" 2>&1 || { tail -n 20 "$OUTDIR/cells.log" >&2; exit 1; }
 
 cp -f "$RUNROOT/site/$SITE/meta.txt" "$OUTDIR/site-meta.txt" 2>/dev/null || true
