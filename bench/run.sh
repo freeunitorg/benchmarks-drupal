@@ -22,6 +22,7 @@ JOB="" PHASES="null ab" WORKLOAD=drupal-front RUNTIME_A=freeunit RUNTIME_B=nginx
 SITE=11.4 CONNS=32 DUR=8 WARM=2 REPS=2 RATE="" APP_PROCS=20 PERF=1 AE=""
 SERVER_CPUS=0,1 LOAD_CPUS=2,3,6,7 DB_CPUS=4,5 BASE_PORT=8081
 DB=${DB:-mysql}
+DB_A=${DB:-mysql}
 NULL_LIMIT_PCT=5 PRIMARY=s_instructions EXPECT="" FALSIFY="" ISSUE=""
 DECOMPOSE=${DECOMPOSE:-0}
 EXTRA_COOKIE_BYTES=${EXTRA_COOKIE_BYTES:-0}
@@ -78,9 +79,16 @@ DB=${DB:-mysql}
 SITEKEY=$SITE
 [ "$DB" != mysql ] && SITEKEY="$SITE-$DB"
 SITE_DIR="$RUNROOT/site/$SITEKEY"
-OUT="$OUTDIR"; RESROOT="$RUNROOT"; COOKIE_FILE="$SITE_DIR/cookie.txt"
-export SITE_DIR OUT RESROOT COOKIE_FILE JOB RUN_ID PHASES WORKLOAD
-export RUNTIME_A RUNTIME_B SITE CONNS DUR WARM REPS RATE APP_PROCS PERF AE DECOMPOSE EXTRA_COOKIE_BYTES DB
+# a job may name a second site/backend (SITE_B/DB_B) to compare two databases in
+# one job: then B gets its own site directory and cookie
+SITE_B=${SITE_B:-$SITE}; DB_B=${DB_B:-$DB}
+SITEKEY_B=$SITE_B
+[ "$DB_B" != mysql ] && SITEKEY_B="$SITE_B-$DB_B"
+SITE_DIR_B="$RUNROOT/site/$SITEKEY_B"
+OUT="$OUTDIR"; RESROOT="$RUNROOT"
+COOKIE_FILE="$SITE_DIR/cookie.txt"; COOKIE_FILE_B="$SITE_DIR_B/cookie.txt"
+export SITE_DIR SITE_DIR_A SITE_DIR_B OUT RESROOT COOKIE_FILE COOKIE_FILE_B JOB RUN_ID PHASES WORKLOAD
+export RUNTIME_A RUNTIME_B SITE CONNS DUR WARM REPS RATE APP_PROCS PERF AE DECOMPOSE EXTRA_COOKIE_BYTES DB DB_A DB_B
 export SERVER_CPUS LOAD_CPUS DB_CPUS BASE_PORT
 bash "$HERE/cells.sh" >"$OUTDIR/cells.log" 2>&1 || { tail -n 20 "$OUTDIR/cells.log" >&2; exit 1; }
 
@@ -94,6 +102,10 @@ cp -f "$RUNROOT/site/$SITE/meta.txt" "$OUTDIR/site-meta.txt" 2>/dev/null || true
     echo "runtime_b=$RUNTIME_B"
     echo "site=$SITE"
     echo "db=$DB"
+    [ "$SITE_DIR_B" != "$SITE_DIR" ] || [ "$DB_B" != "$DB" ] && {
+        echo "site_b=$SITE_B"
+        echo "db_b=$DB_B"
+    }
     echo "phases=$PHASES conns=$CONNS dur=$DUR warm=$WARM reps=$REPS rate=$RATE"
     echo "server_cpus=$SERVER_CPUS load_cpus=$LOAD_CPUS db_cpus=$DB_CPUS"
     echo "governor=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null || echo unknown)"

@@ -1,0 +1,28 @@
+# The experimental core mysqli driver against the PDO mysql driver, in one job:
+# both sides run FreeUnit, both sites are installed at 11.4 and both hit the same
+# MariaDB data, so the only difference is the driver and the PHP extension. The
+# null phase is the freeunit-vs-freeunit band of this job (the two sides are
+# identical in the null phase), so the driver delta is read against that, not
+# against another run.
+JOB=40-front-mysqli-vs-mysql-freeunit
+ISSUE=https://github.com/freeunitorg/benchmarks-drupal
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit
+SITE=11.4
+DB=mysql
+SITE_B=11.4
+DB_B=mysqli
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="mysqli at or below the PDO mysql driver; the null phase of this job bounds the delta"
+FALSIFY="NO CLAIM: the two drivers cost the same per request at this cell"

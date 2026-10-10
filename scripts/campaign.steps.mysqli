@@ -1,0 +1,6 @@
+# Pedantic mysqli pass: within-job A/B, same runtime, same null phase. Needs the
+# 11.4-mysqli site next to the 11.4 (mysql) one.
+site:11.4:mysqli
+job:bench/jobs/39-auth-mysqli-vs-mysql-freeunit.job
+job:bench/jobs/40-front-mysqli-vs-mysql-freeunit.job
+job:bench/jobs/41-auth-mysqli-vs-mysql-fpm.job

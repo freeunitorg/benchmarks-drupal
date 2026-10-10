@@ -1,0 +1,24 @@
+# The same driver pair on the other SAPI: nginx + PHP-FPM on both sides, so a
+# mysqli effect that only appears under one server is visible.
+JOB=41-auth-mysqli-vs-mysql-fpm
+ISSUE=https://github.com/freeunitorg/benchmarks-drupal
+PHASES="null ab"
+WORKLOAD=drupal-auth
+RUNTIME_A=nginx-fpm
+RUNTIME_B=nginx-fpm
+SITE=11.4
+DB=mysql
+SITE_B=11.4
+DB_B=mysqli
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the driver delta is the same shape under FPM"
+FALSIFY="NO CLAIM, or a different direction than under FreeUnit"

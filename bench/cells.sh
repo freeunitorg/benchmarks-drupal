@@ -27,20 +27,49 @@ PERF_IMAGE=${PERF_IMAGE:-freeunit-perf-lab:1}
 PERF_EVENTS=${PERF_EVENTS:-cycles,instructions,context-switches,cpu-migrations}
 TAG=${IMAGE_TAG:-8.5}
 PORT=${BASE_PORT:-8081}
-COOKIE_HDR=""
-[ -f "${COOKIE_FILE:-}" ] && COOKIE_HDR=$(awk '($1 ~ /^#HttpOnly_/ || $1 !~ /^#/) && NF >= 7 { printf "%s=%s; ", $6, $7 }' "$COOKIE_FILE")
 # A synthetic cookie of a chosen size tests whether the per-request overhead tracks
 # request bytes rather than PHP execution (job 29/30, the auth-page follow-up).
 if [ "${EXTRA_COOKIE_BYTES:-0}" -gt 0 ]; then
     pad=$(head -c "$EXTRA_COOKIE_BYTES" /dev/zero | tr '\0' 'x')
     COOKIE_HDR="${COOKIE_HDR}bench=${pad}; "
 fi
-CNAME="db-bench-$$"
-NET="dbnet-$$"
+# Per-side site and database. A job that compares two backends sets SITE_DIR_A/
+# SITE_DIR_B (or DB_A/DB_B); each side then has its own network, its own database
+# container under the alias `db`, and its own site directory, so the two differ
+# only in the backend. Without that, both sides are the one network and container.
+SITE_DIR_A=${SITE_DIR_A:-${SITE_DIR:-}}
+SITE_DIR_B=${SITE_DIR_B:-$SITE_DIR_A}
+DB_A=${DB_A:-${DB:-mysql}}
+DB_B=${DB_B:-$DB_A}
+SPLIT=0
+{ [ "$SITE_DIR_A" != "$SITE_DIR_B" ] || [ "$DB_A" != "$DB_B" ]; } && SPLIT=1
+NET_A="dbnet-$$-a"; CNAME_A="db-bench-$$-a"
+NET_B="$NET_A"; CNAME_B="$CNAME_A"
+if [ "$SPLIT" = 1 ]; then NET_B="dbnet-$$-b"; CNAME_B="db-bench-$$-b"; fi
+NET="$NET_A"; CNAME="$CNAME_A"
 ORDER=(X Y Y X Y X X Y)
 SWAP=(Y X X Y X Y Y X)
 
-die() { echo "cells.sh: $*" >&2; docker rm -f "$CNAME" >/dev/null 2>&1; docker network rm "$NET" >/dev/null 2>&1; exit 1; }
+# sv SIDE SUFFIX -> the value of <SUFFIX>_<SIDE>, e.g. sv A CNAME
+sv() { local n="$2_$1"; eval "printf '%s' \"\${$n}\""; }
+
+# Cookie bytes per side: an authenticated job needs the session cookie of that
+# side's site, and the two sides may be different installations.
+for _side in A B; do
+    _jar=${COOKIE_FILE_A:-${COOKIE_FILE:-}}
+    [ "$_side" = B ] && _jar=${COOKIE_FILE_B:-${COOKIE_FILE:-}}
+    [ -n "$_jar" ] && [ -f "$_jar" ] || continue
+    eval "COOKIE_FILE_$_side=$_jar"
+    eval "COOKIE_HDR_$_side=\"$(awk '($1 ~ /^#HttpOnly_/ || $1 !~ /^#/) && NF >= 7 { printf "%s=%s; ", $6, $7 }' "$_jar")\""
+done
+COOKIE_HDR="${COOKIE_HDR_A:-}"
+
+die() {
+    echo "cells.sh: $*" >&2
+    docker rm -f "$CNAME_A" "$CNAME_B" >/dev/null 2>&1
+    docker network rm "$NET_A" "$NET_B" >/dev/null 2>&1
+    exit 1
+}
 log() { echo "cells.sh: $*" >&2; }
 printf 'job\tphase\tside\trev\tcell\tblock\tslot\tmetric\tvalue\n' > "$OUT"
 
@@ -124,68 +153,71 @@ perf_stop() {  # name
 }
 
 # ---------------------------------------------------------------- database
-start_db() {
+start_db() {  # side
     docker network create "$NET" >/dev/null 2>&1 || true
     docker rm -f "$CNAME" >/dev/null 2>&1 || true
-    DBVOLKEY="${SITE:-default}"
-    [ "${DB:-mysql}" != mysql ] && DBVOLKEY="$DBVOLKEY-${DB}"
-    DBCVOL=${DBCVOL:-drupal-bench-db-$DBVOLKEY}
-    local i
-    if [ -n "${DBC_IMAGE:-}" ] && [ "${DB:-mysql}" != sqlite ]; then
+    local side=${1:-A} i
+    local db net cname
+    db=$(sv "$side" DB); net=$(sv "$side" NET); cname=$(sv "$side" CNAME)
+    DBCVOL=$(sv "$side" DBCVOL)
+    [ -n "$DBCVOL" ] || DBCVOL="drupal-bench-db-$(basename "$(sv "$side" SITE_DIR)")"
+    if [ -n "${DBC_IMAGE:-}" ] && [ "${db}" != sqlite ]; then
         # one image that can be any server; the entrypoint reads DB
-        docker run -d --name "$CNAME" --network "$NET" --cpuset-cpus "${DB_CPUS:-$SERVER_CPUS}" \
+        docker run -d --name "$cname" --network "$net" --cpuset-cpus "${DB_CPUS:-$SERVER_CPUS}" \
             --label "bench-run=${RUN_ID:-manual}" --label bench-role=db \
-            -v "$DBCVOL:/var/lib/bench-db" --network-alias db -e DB="$DB" \
+            -v "$DBCVOL:/var/lib/bench-db" --network-alias db -e DB="$db" \
             "$DBC_IMAGE" >/dev/null || die "cannot start $DBC_IMAGE"
         for i in $(seq 90); do
-            case "${DB:-mysql}" in
-            pgsql) docker exec "$CNAME" pg_isready -h 127.0.0.1 -U postgres >/dev/null 2>&1 && return 0 ;;
-            *)     docker exec "$CNAME" mariadb-admin --protocol=tcp -h127.0.0.1 -uroot ping >/dev/null 2>&1 && return 0 ;;
+            case "$db" in
+            pgsql) docker exec "$cname" pg_isready -h 127.0.0.1 -U postgres >/dev/null 2>&1 && return 0 ;;
+            *)     docker exec "$cname" mariadb-admin --protocol=tcp -h127.0.0.1 -uroot ping >/dev/null 2>&1 && return 0 ;;
             esac
             sleep 1
         done
-        die "$DBC_IMAGE did not become ready for DB=$DB"
+        die "$DBC_IMAGE did not become ready for DB=$db"
     fi
-    case "${DB:-mysql}" in
+    case "$db" in
     sqlite)
         # no server: the site's settings.php points at a file
-        NO_DB=1
+        eval "NO_DB_$side=1"
         return 0
         ;;
     pgsql)
-        docker run -d --name "$CNAME" --network "$NET" --cpuset-cpus "${DB_CPUS:-$SERVER_CPUS}" \
+        docker run -d --name "$cname" --network "$net" --cpuset-cpus "${DB_CPUS:-$SERVER_CPUS}" \
             --label "bench-run=${RUN_ID:-manual}" --label bench-role=db \
             -v "$DBCVOL:/var/lib/postgresql/data" \
             --network-alias db -e POSTGRES_DB=drupal -e POSTGRES_HOST_AUTH_METHOD=trust \
             "${PG_IMAGE:-postgres:17}" >/dev/null || die "cannot start postgres"
         for i in $(seq 60); do
-            docker exec "$CNAME" pg_isready -U postgres -d drupal >/dev/null 2>&1 && return 0
+            docker exec "$cname" pg_isready -U postgres -d drupal >/dev/null 2>&1 && return 0
             sleep 1
         done
         die "postgres did not become ready"
         ;;
     *)
-        docker run -d --name "$CNAME" --network "$NET" --cpuset-cpus "${DB_CPUS:-$SERVER_CPUS}" \
+        docker run -d --name "$cname" --network "$net" --cpuset-cpus "${DB_CPUS:-$SERVER_CPUS}" \
             --label "bench-run=${RUN_ID:-manual}" --label bench-role=db \
             -v "$DBCVOL:/var/lib/mysql" \
             --network-alias db -e MARIADB_ROOT_HOST=% -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=drupal \
             mariadb:${MARIADB_TAG:-10.11} >/dev/null || die "cannot start mariadb"
         for i in $(seq 60); do
-            docker exec "$CNAME" mariadb -uroot -e 'SELECT 1' >/dev/null 2>&1 && return 0
+            docker exec "$cname" mariadb -uroot -e 'SELECT 1' >/dev/null 2>&1 && return 0
             sleep 1
         done
         die "mariadb did not become ready"
         ;;
     esac
 }
-stop_db() {
-    [ "${NO_DB:-0}" = 1 ] || docker rm -f "$CNAME" >/dev/null 2>&1
-    docker network rm "$NET" >/dev/null 2>&1
+stop_db() {  # side
+    local side=${1:-A}
+    [ "$(sv "$side" NO_DB)" = 1 ] || docker rm -f "$(sv "$side" CNAME)" >/dev/null 2>&1
+    docker network rm "$(sv "$side" NET)" >/dev/null 2>&1
 }
 
 # ---------------------------------------------------------------- runtime
-start_rt() {  # runtime -> name
-    local rt=$1 img name args=""
+start_rt() {  # runtime side -> name
+    local rt=$1 side=${2:-A} img name args="" net sitedir
+    net=$(sv "$side" NET); sitedir=$(sv "$side" SITE_DIR)
     img=$(image_for "$rt")
     name="rt-$$-$rt"
     docker rm -f "$name" >/dev/null 2>&1 || true
@@ -199,19 +231,19 @@ start_rt() {  # runtime -> name
     freeunit|freeunit-direct|freeunit-master)
         local cfg="$RESROOT/runtimes/$rt.json"
         [ -f "$cfg" ] || cfg="$RESROOT/runtimes/freeunit.json"
-        docker run -d --name "$name" --network "$NET" --cpuset-cpus "$SERVER_CPUS" \
+        docker run -d --name "$name" --network "$net" --cpuset-cpus "$SERVER_CPUS" \
             --label "bench-run=${RUN_ID:-manual}" --label bench-role=runtime \
             -p "127.0.0.1:$PORT:80" \
-            -v "$SITE_DIR:/app" \
+            -v "$sitedir:/app" \
             -v "$cfg:/docker-entrypoint.d/config.json:ro" \
             -v "$RESROOT/apps:/app/apps:ro" \
             "$img" >/dev/null || die "cannot start $rt"
         ;;
     nginx-fpm|apache)
-        docker run -d --name "$name" --network "$NET" --cpuset-cpus "$SERVER_CPUS" \
+        docker run -d --name "$name" --network "$net" --cpuset-cpus "$SERVER_CPUS" \
             --label "bench-run=${RUN_ID:-manual}" --label bench-role=runtime \
             -p "127.0.0.1:$PORT:80" \
-            -v "$SITE_DIR:/app" \
+            -v "$sitedir:/app" \
             -v "$RESROOT/apps:/app/apps:ro" \
             "$img" >/dev/null || die "cannot start $rt"
         ;;
@@ -237,7 +269,7 @@ url_for() {
     *)           echo "http://127.0.0.1:$PORT/" ;;
     esac
 }
-oha_args() {  # conns -> OHA_A
+oha_args() {  # conns side -> OHA_A
     OHA_A=(-c "$1" --no-tui)
     [ -n "${RATE:-}" ] && [ "$RATE" != 0 ] && OHA_A+=(-q "$RATE")
     if [ -n "$COOKIE_HDR" ] && { [ "$WORKLOAD" = drupal-auth ] || [ "${EXTRA_COOKIE_BYTES:-0}" -gt 0 ]; }; then
@@ -250,8 +282,8 @@ oha_args() {  # conns -> OHA_A
 # Front-anon must be a page-cache hit on every runtime: a MISS makes the cell INVALID
 # (plan section 3.1). front-auth must bypass the page cache; its dynamic-cache header
 # is recorded on the first and last request (section 3.2).
-preflight() {  # runtime name -> 0 ok
-    local name=$1 hdr code bytes
+preflight() {  # runtime name side -> 0 ok
+    local name=$1 side=${2:-A} hdr code bytes
     # Use GET headers, not HEAD: the guard must see what the measured requests
     # see. One retry, because the first request on a cold page cache legitimately
     # misses and the cache is then warm for the measured window.
@@ -260,11 +292,12 @@ preflight() {  # runtime name -> 0 ok
     # The cookie belongs to the authenticated workload only: sending it on the
     # anonymous page turns the request into an authenticated render and the
     # page-cache guard can never pass.
-    local with_cookie=""
-    { [ "$WORKLOAD" = drupal-auth ] || [ "${EXTRA_COOKIE_BYTES:-0}" -gt 0 ]; } && [ -n "$COOKIE_HDR" ] && with_cookie="yes"
+    local with_cookie="" sidehdr
+    sidehdr=$(sv "$side" COOKIE_HDR)
+    { [ "$WORKLOAD" = drupal-auth ] || [ "${EXTRA_COOKIE_BYTES:-0}" -gt 0 ]; } && [ -n "$sidehdr" ] && with_cookie="yes"
     for try in 1 2; do
         if [ -n "$with_cookie" ]; then
-            hdr=$(curl -s -D - -o /dev/null -H "Cookie: $COOKIE_HDR" -w '\nHTTP %{http_code}' "$(url_for)" | tr -d '\r')
+            hdr=$(curl -s -D - -o /dev/null -H "Cookie: $sidehdr" -w '\nHTTP %{http_code}' "$(url_for)" | tr -d '\r')
         else
             hdr=$(curl -s -D - -o /dev/null -w '\nHTTP %{http_code}' "$(url_for)" | tr -d '\r')
         fi
@@ -315,13 +348,13 @@ perf_parse() {  # file prefix ok
 
 timed_cell() {  # phase side cell conns block slot runtime
     local ph=$1 side=$2 cell=$3 c=$4 k=$5 s=$6 rt=$7
-    local name; name=$(start_rt "$rt") || die "start failed: $rt"
+    local name; name=$(start_rt "$rt" "$side") || die "start failed: $rt"
     local pre=0
     wait_http "$(url_for)" 60 || { log "$rt did not answer on $PORT"; }
-    preflight "$name" || pre=1
-    oha_args "$c"
+    preflight "$name" "$side" || pre=1
+    oha_args "$c" "$side"
     taskset -c "$LOAD_CPUS" "$OHA" -z "${WARM}s" "${OHA_A[@]}" "$(url_for)" >/dev/null 2>&1
-    local pids rpids; pids=$(cg_pids "$name" | tr '\n' ' '); rpids=$(cg_pids "$CNAME" | tr '\n' ' ')
+    local pids rpids; pids=$(cg_pids "$name" | tr '\n' ' '); rpids=$(cg_pids "$(sv "$side" CNAME)" | tr '\n' ' ')
     rm -f "$R/perf.s" "$R/perf.db" "$R/perf.sf" "$R/perf.sw"
     perf_start s "$(echo $pids | tr ' ' ',')"
     perf_start db "$(echo $rpids | tr ' ' ',')"
@@ -387,7 +420,8 @@ PY
 }
 
 main() {
-    start_db
+    start_db A
+    [ "$SPLIT" = 1 ] && start_db B
     for k in $(seq 0 $((REPS - 1))); do
         if [ $((k % 2)) = 0 ]; then ord=("${ORDER[@]}"); else ord=("${SWAP[@]}"); fi
         for c in $CONNS; do
@@ -403,7 +437,8 @@ main() {
             done
         done
     done
-    stop_db
+    stop_db A
+    [ "$SPLIT" = 1 ] && stop_db B
     echo CELLS-DONE
 }
 main
