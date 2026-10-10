@@ -94,6 +94,8 @@ cp -f "$RUNROOT/site/$SITE/meta.txt" "$OUTDIR/site-meta.txt" 2>/dev/null || true
     echo "oha=$($OHA --version 2>/dev/null | head -1)"
     echo "perf_image=$(docker image inspect -f '{{.Id}}' "$PERF_IMAGE" 2>/dev/null | cut -c8-19)"
     echo "freeunit_image=$(docker image inspect -f '{{.Id}}' drupal-bench-freeunit:1.37.0 2>/dev/null | cut -c8-19)"
+    echo "freeunit_master_sha=$(cat "$RUNROOT/freeunit-master-sha" 2>/dev/null || echo unknown)"
+    echo "freeunit_master_image=$(docker image inspect -f '{{.Id}}' drupal-bench-freeunit:master 2>/dev/null | cut -c8-19)"
     echo "fpm_image=$(docker image inspect -f '{{.Id}}' drupal-bench-fpm:8.5 2>/dev/null | cut -c8-19)"
     echo "apache_image=$(docker image inspect -f '{{.Id}}' drupal-bench-apache:8.5 2>/dev/null | cut -c8-19)"
     echo "mariadb_image=$(docker image inspect -f '{{.Id}}' mariadb:10.11 2>/dev/null | cut -c8-19)"
@@ -107,5 +109,14 @@ python3 "$HERE/perf-compare.py" "$OUTDIR/results.tsv" --meta "$OUTDIR/meta.txt" 
     --json "$OUTDIR/summary.json" --primary "$PRIMARY" --null-limit "$NULL_LIMIT_PCT" \
     > "$OUTDIR/compare.txt" 2>&1 || true
 
+verdict=$(python3 -c 'import json,sys
+try:
+    d = json.load(open(sys.argv[1]))
+    print(d.get("headline", ""))
+except Exception:
+    print("")' "$OUTDIR/summary.json" 2>/dev/null || true)
 echo "run.sh: done -> $OUTDIR"
 sed -n '1,40p' "$OUTDIR/compare.txt"
+case "$verdict" in
+INVALID*) echo "run.sh: INVALID result, exiting nonzero so the campaign retries it" >&2; exit 1 ;;
+esac

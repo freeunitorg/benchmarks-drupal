@@ -52,6 +52,7 @@ docker run -d --name "$DBC" --network "$NET" --cpuset-cpus "${DB_CPUS:-4,5}" --l
     -v "$DBCVOL:/var/lib/mysql" \
     --network-alias db -e MARIADB_ROOT_HOST=% -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=drupal "$DB_IMAGE" >/dev/null
 for i in $(seq 60); do docker exec "$DBC" mariadb -uroot -e 'SELECT 1' >/dev/null 2>&1 && break; sleep 1; done
+for c in $(docker ps -q -f "publish=$PORT"); do docker rm -f "$c" >/dev/null 2>&1 || true; done
 docker run -d --name "$RTC" --network "$NET" --cpuset-cpus "${SERVER_CPUS:-0,1}" --label bench-run=tick \
     -p "127.0.0.1:$PORT:80" -v "$SITE_DIR:/app" \
     -v "$RUNROOT/runtimes/freeunit.json:/docker-entrypoint.d/config.json:ro" \

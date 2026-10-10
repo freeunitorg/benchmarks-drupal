@@ -126,8 +126,14 @@ start_rt() {  # runtime -> name
     img=$(image_for "$rt")
     name="rt-$$-$rt"
     docker rm -f "$name" >/dev/null 2>&1 || true
+    # a leftover container from a killed job would hold the port and silently
+    # turn a whole block into zeros; free it first
+    for c in $(docker ps -q -f "publish=$PORT"); do
+        log "freeing port $PORT held by $(docker inspect -f '{{.Name}}' "$c" 2>/dev/null)"
+        docker rm -f "$c" >/dev/null 2>&1 || true
+    done
     case "$rt" in
-    freeunit|freeunit-direct)
+    freeunit|freeunit-direct|freeunit-master)
         local cfg="$RESROOT/runtimes/$rt.json"
         [ -f "$cfg" ] || cfg="$RESROOT/runtimes/freeunit.json"
         docker run -d --name "$name" --network "$NET" --cpuset-cpus "$SERVER_CPUS" \
