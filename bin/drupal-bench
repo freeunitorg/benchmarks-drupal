@@ -59,18 +59,10 @@ function images_present(): bool {
         && str_contains($have, 'drupal-bench-apache:8.5');
 }
 
-/** Build the three runtime images and pull the database image. */
+/** Build the runtime images through the shell script, which is the one place the
+    image list lives and which works on hosts without PHP. */
 function build_images(string $root): never {
-    $cmds = [
-        ['docker', 'build', '-f', 'docker/Dockerfile.freeunit', '-t', 'drupal-bench-freeunit:1.37.0', '.'],
-        ['docker', 'build', '-f', 'docker/Dockerfile.php', '--target', 'php-fpm', '-t', 'drupal-bench-fpm:8.5', '.'],
-        ['docker', 'build', '-f', 'docker/Dockerfile.php', '--target', 'apache', '-t', 'drupal-bench-apache:8.5', '.'],
-        ['docker', 'pull', 'mariadb:10.11'],
-        ['docker', 'pull', 'postgres:17'],
-    ];
-    foreach ($cmds as $c) {
-        run_cmd($c);
-    }
+    run_cmd(['bash', "$root/scripts/build-images.sh"]);
 }
 
 switch ($cmd) {

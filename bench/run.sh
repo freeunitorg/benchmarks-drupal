@@ -44,6 +44,8 @@ PERF_IMAGE=${PERF_IMAGE:-freeunit-perf-lab:1}
 [ -n "$ENV_LOAD_CPUS" ] && LOAD_CPUS=$ENV_LOAD_CPUS
 [ -n "$ENV_DB_CPUS" ] && DB_CPUS=$ENV_DB_CPUS
 [ -n "$ENV_BASE_PORT" ] && BASE_PORT=$ENV_BASE_PORT
+# The idle gate runs before the cell port is computed, so keep the default here.
+PORT=${PORT:-$BASE_PORT}
 
 # The host is part of the identity: absolute means from two boxes must never be
 # pooled, and the page groups by it.

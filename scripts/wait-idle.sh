@@ -71,8 +71,18 @@ done
 
 echo "$(date -u +%FT%TZ) box idle: building the runtime images"
 cd "$H"
-bin/drupal-bench build > "$RUNROOT/wait-idle-build.log" 2>&1 \
-    || echo "$(date -u +%FT%TZ) WARNING image build failed; running anyway (see wait-idle-build.log)"
+# No host PHP here, and a stale image is worse than a missed window: retry once
+# and stop, so the next quiet window starts from a real build. (A missing mysqli
+# once cost a whole queue because this step only warned.)
+build_ok=0
+for attempt in 1 2; do
+    if scripts/build-images.sh > "$RUNROOT/wait-idle-build.log" 2>&1; then
+        build_ok=1; break
+    fi
+    echo "$(date -u +%FT%TZ) image build attempt $attempt failed (see wait-idle-build.log)"
+    sleep 20
+done
+[ "$build_ok" = 1 ] || { echo "$(date -u +%FT%TZ) FATAL image build failed; not starting the campaign"; exit 1; }
 
 echo "$(date -u +%FT%TZ) starting $STEPS"
 exec scripts/campaign.sh "$STEPS" "$RUNROOT"
