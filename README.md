@@ -86,7 +86,18 @@ chart.
 
 ## Status
 
-Phase 0 (classic mode, all three runtimes). Repository, Dockerfiles and the
-measurement harness are in place; site install and the first published chart
-follow. Phase 1 (FreeUnit PHP worker mode, issue 596) and phase 2 (schedules,
-PR 452) are planned but not started.
+Phase 0 (classic mode) has run: Drupal 11.4.8 and a Symfony 7.4 app, all three
+runtimes, null band in every job. Headlines on `s_instructions` per request:
+
+* nginx+PHP-FPM does **7.7% more** work than FreeUnit on the cached Drupal front
+  page (12/12 cells, null band 0.1%), and **5.8% more** on the Symfony page.
+* Apache+mod_php does **54.7% more** than nginx+PHP-FPM on the cached Drupal page.
+* On the authenticated Drupal render the order flips by a hair: FreeUnit does
+  **0.6% more** than PHP-FPM.
+* No claim for FreeUnit master vs the pinned 1.37.0 on either Drupal workload or
+  on Symfony, and none for the `share` probe.
+
+Drupal 12.0.0-beta1 is blocked: drush 13 needs `guzzlehttp/guzzle ^7`, every 7.x
+release is refused by the advisory policy, and the 12.0 lock pins guzzle 8, so the
+site cannot be installed; see `docs/progress.md`. Phase 1 (PHP worker mode, issue
+596) and phase 2 (schedules, PR 452) are planned but not started.
