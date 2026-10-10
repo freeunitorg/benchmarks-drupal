@@ -24,6 +24,14 @@ touch "$DONE"
 
 say() { printf '%s %s\n' "$(date -u +%FT%TZ)" "$*" | tee -a "$RUNROOT/campaign.log"; }
 
+# Hard stop: the box is granted until DEADLINE_UTC (default 13:00Z = 15:00 CEST).
+# A step that would start after it is recorded as skipped, so a rerun resumes.
+DEADLINE_UTC=${DEADLINE_UTC:-2026-10-10T13:00:00Z}
+past_deadline() {
+    case "${DEADLINE_UTC}" in ""|none) return 1 ;; esac
+    [ "$(date -u +%s)" -ge "$(date -u -d "$DEADLINE_UTC" +%s 2>/dev/null || echo 0)" ]
+}
+
 # The runtime configs cells.sh mounts live in $RUNROOT/runtimes; refresh them from
 # the repository every run so a config fix (e.g. the opcache string bug) cannot be
 # shadowed by a stale copy.
@@ -40,6 +48,10 @@ while IFS= read -r line; do
     line=$(printf '%s' "$line" | tr -d '[:space:]')
     [ -n "$line" ] || continue
     n=$((n + 1))
+    if past_deadline; then
+        say "deadline $DEADLINE_UTC reached before $line; stopping"
+        break
+    fi
     if done_already "$line"; then
         say "skip $line (already done)"
         continue

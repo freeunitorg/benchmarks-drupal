@@ -1,0 +1,32 @@
+name: lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Shell syntax and shellcheck
+        run: |
+          set -eux
+          for f in bench/*.sh scripts/*.sh; do bash -n "$f"; done
+          shellcheck -S warning bench/*.sh scripts/*.sh
+      - name: Python syntax
+        run: |
+          set -eux
+          python3 -m py_compile report/render.py bench/perf-compare.py
+      - name: JSON configs parse
+        run: |
+          set -eux
+          for f in docker/runtimes/*.json; do python3 -c 'import json,sys; json.load(open(sys.argv[1]))' "$f"; done
+      - name: Job files source cleanly
+        run: |
+          set -eux
+          for f in bench/jobs/*.job; do bash -c "set -e; . $f" >/dev/null; done
+      - name: Render the report from committed results
+        run: python3 report/render.py results public/index.html

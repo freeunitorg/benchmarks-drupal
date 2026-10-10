@@ -49,3 +49,40 @@ entry was written. Next: site install for 11.4, then job 01 (null band) and job 
 Host state at the time: perf host idle (load 0.12, no containers), a stale claim file
 from 2026-09-04 present and ignored; the box's `PERF_WINDOW` is 01:00-06:00, so full
 16-minute matrices wait for that window while short cells and builds do not.
+
+## 2026-10-10 ~07:30 CEST — campaign launched on the perf host
+
+The box was granted for eight hours. `scripts/campaign.sh` runs the phase-0 matrix
+sequentially (site builds first, then the null bands, the runtime comparisons, the
+FreeUnit 1.37.0-vs-master column, the share probe, the cron/queue arms, Drupal 12.0 and
+finally the Symfony app). It is resumable through `run/campaign.done` and stops at
+`DEADLINE_UTC` (13:00Z by default) so it cannot overrun the grant. `scripts/watchdog.sh`
+appends a health line every two minutes and flags a stall; it kills nothing.
+
+Bugs found and fixed before the first job (all of them would have silently produced a
+page of zeros):
+
+* **Unit config rejected.** `"opcache.enable": 1` must be a string. With integers Unit
+  logged `the previous configuration is invalid: The "opcache.enable" PHP option must be
+  a string` and served nothing; the symptom seen first was curl exit 56 while fetching the
+  site's one-time login link.
+* **Stale runtime config.** `cells.sh` mounts `$RUNROOT/runtimes/*.json`; those copies are
+  now refreshed from the repository at the top of every campaign run.
+* **Perf counters.** The host blocks `perf` for this user (`perf_event_paranoid=4`) and
+  sudo needs a password, so the counters run in a `--cap-add PERFMON --pid=host` container
+  from `freeunit-perf-lab:1`, the harness method. Verified: a probe on pid 1 printed
+  cycles and instructions.
+* **Empty `ok`.** The oha JSON was parsed with its stdout redirected into a file *inside*
+  a command substitution, so `ok` was empty and every per-request metric (s_instructions,
+  server_us, db_us) became 0. Caught by the smoke job: it printed `ok=` with no value.
+* **Ephemeral database.** MariaDB data now lives on a per-site named volume
+  (`drupal-bench-db-11.4`); the first design started a fresh database per job, so the
+  installed site had no tables and Drupal redirected to `/core/install.php`.
+* **Idle gate.** `/proc/stat` has ten fields after `cpu`; the previous `read` split them
+  and arithmetic on the tail failed. Now computed in awk from two samples.
+* **Job files.** `PHASES=null ab` was a shell statement (`ab(1)` ran); `EXPECT`/`FALSIFY`
+  with spaces are quoted. A lint workflow now sources every job file.
+
+Smoke result (one block, c6, 3 s, FreeUnit 1.37.0, Drupal 11.4.8): null gate PASS,
+`s_instructions` +0.03 percent, band 0.35 percent; `server_us` 4.05 ms vs 3.86 ms,
+`db_us` 2.08 ms, `rps` ~500. Real counters, so the pipeline is trustworthy.
