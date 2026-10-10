@@ -41,7 +41,15 @@ cleanup() {
 }
 trap cleanup EXIT
 
-if [ -f "$SITEDIR/web/index.php" ] && [ "$FORCE" != "--force" ]; then
+# composer create-project leaves web/index.php behind before the install runs, so
+# the marker for "installed" is the completed install (meta.txt with the tag plus
+# a database block in settings.php), never the presence of the webroot.
+site_installed() {
+    [ -f "$SITEDIR/meta.txt" ] && grep -q '^tag=' "$SITEDIR/meta.txt" 2>/dev/null \
+        && [ -f "$SITEDIR/web/sites/default/settings.php" ] \
+        && grep -q "databases\['default'\]\['default'\]" "$SITEDIR/web/sites/default/settings.php" 2>/dev/null
+}
+if site_installed && [ "$FORCE" != "--force" ]; then
     echo "site-build: $SITEDIR already installed (use --force to rebuild)"
     exit 0
 fi

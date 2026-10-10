@@ -1,5 +1,4 @@
 {
-    "_comment": "Placeholder for phase 2 (issue 596 / PR 452): a schedule into a jobs application with processes 1, no listener. Not used by phase 0.",
     "listeners": {
         "*:80": {
             "pass": "routes"

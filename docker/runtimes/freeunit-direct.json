@@ -1,5 +1,4 @@
 {
-    "_comment": "A/B variant for plan section 5.4 'the share probe costs a measurable share': dynamic prefixes go straight to the application, everything else still goes through share + fallback. Run the same URLs against freeunit.json to measure the probe.",
     "listeners": {
         "*:80": {
             "pass": "routes"

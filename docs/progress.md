@@ -86,3 +86,11 @@ page of zeros):
 Smoke result (one block, c6, 3 s, FreeUnit 1.37.0, Drupal 11.4.8): null gate PASS,
 `s_instructions` +0.03 percent, band 0.35 percent; `server_us` 4.05 ms vs 3.86 ms,
 `db_us` 2.08 ms, `rps` ~500. Real counters, so the pipeline is trustworthy.
+
+### Unit config rejection: no `_comment` key
+
+Unit validates the configuration strictly: a `_comment` key at the top level aborts the
+whole config with `Unknown parameter "_comment"`, and the application never starts. Both
+`freeunit-direct.json` and `freeunit-worker.json` carried one; the share-probe job then
+produced an INVALID result (36 cells with `ok=0`, HTTP 000) before the key was removed.
+Notes about a config go in this file, not in the JSON.
