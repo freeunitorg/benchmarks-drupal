@@ -1,0 +1,20 @@
+# Harness smoke test: one block, one phase, short window. Not for the page.
+JOB=00-smoke
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES=null
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit
+SITE=11.4
+CONNS=6
+WARM=1
+DUR=3
+REPS=1
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="smoke only"
+FALSIFY="n/a"

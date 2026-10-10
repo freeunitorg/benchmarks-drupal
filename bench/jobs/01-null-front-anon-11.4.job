@@ -3,7 +3,7 @@
 # null band under every chart (plan section 5.1). Longer cells (8 s) because the
 # powersave governor gives wide bands at 2 s (perf-lab.md:140-152).
 JOB=01-null-front-anon-11.4
-ISSUE=https://github.com/freeunitorg/benchmarks-drupal
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
 PHASES=null
 WORKLOAD=drupal-front
 RUNTIME_A=freeunit
@@ -19,5 +19,5 @@ LOAD_CPUS=2,3,6,7
 DB_CPUS=4,5
 PRIMARY=s_instructions
 NULL_LIMIT_PCT=5
-EXPECT=null band under 5 percent on s_instructions; rps and latency bands recorded as they come
-FALSIFY=a null band over 5 percent on s_instructions: the box is too noisy for an instructions claim at this cell
+EXPECT="null band under 5 percent on s_instructions; rps and latency bands recorded as they come"
+FALSIFY="a null band over 5 percent on s_instructions: the box is too noisy for an instructions claim at this cell"

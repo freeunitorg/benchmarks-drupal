@@ -1,0 +1,20 @@
+# front-anon, FreeUnit 1.37.0 vs nginx + PHP-FPM, Drupal 12.0.0-beta1.
+JOB=09-front-anon-freeunit-vs-fpm-12.0
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=nginx-fpm
+SITE=12.0
+CONNS=32
+WARM=2
+DUR=8
+REPS=4
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="FreeUnit lower s_instructions on the page-cache hit"
+FALSIFY="NO CLAIM or FreeUnit higher"

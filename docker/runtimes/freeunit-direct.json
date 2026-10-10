@@ -60,8 +60,8 @@
             },
             "options": {
                 "admin": {
-                    "opcache.enable": 1,
-                    "opcache.validate_timestamps": 0
+                    "opcache.enable": "1",
+                    "opcache.validate_timestamps": "0"
                 }
             }
         }

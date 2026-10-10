@@ -1,0 +1,40 @@
+# Phase-0 campaign, 2026-10-10. One step per line; resumable via campaign.done.
+# Drupal 11.4 first (primary deliverable), then the FreeUnit master column, then
+# the classic-runtime comparison, then cron/queue arms, then Drupal 12.0, then
+# Symfony.
+
+site:11.4
+
+# bands first, then the comparisons (plan phase 0 item 3)
+job:bench/jobs/01-null-front-anon-11.4.job
+job:bench/jobs/02-front-anon-freeunit-vs-fpm-11.4.job
+job:bench/jobs/04-front-auth-freeunit-vs-fpm-11.4.job
+
+# FreeUnit 1.37.0 vs master on Drupal (the post-release delta)
+job:bench/jobs/06-front-anon-master-vs-1370-11.4.job
+job:bench/jobs/07-front-auth-master-vs-1370-11.4.job
+
+# the share probe and the classic pair
+job:bench/jobs/05-share-probe-freeunit-11.4.job
+job:bench/jobs/03-front-anon-fpm-vs-apache-11.4.job
+
+# cron and queue arms (plan section 3.3); B is the issue-321 shape
+ticks:freeunit:A:20:11.4
+ticks:freeunit:B:20:11.4
+ticks:nginx-fpm:B:20:11.4
+ticks:apache:B:20:11.4
+
+site:12.0
+job:bench/jobs/08-null-front-anon-12.0.job
+job:bench/jobs/09-front-anon-freeunit-vs-fpm-12.0.job
+job:bench/jobs/10-front-auth-freeunit-vs-fpm-12.0.job
+job:bench/jobs/06-front-anon-master-vs-1370-12.0.job
+job:bench/jobs/07-front-auth-master-vs-1370-12.0.job
+ticks:freeunit:A:20:12.0
+ticks:freeunit:B:20:12.0
+
+# Symfony skeleton app (7.4): a DB-backed Twig page on the same three runtimes.
+site:symfony
+job:bench/jobs/13-null-symfony-11.4.job
+job:bench/jobs/14-symfony-freeunit-vs-fpm-11.4.job
+job:bench/jobs/15-symfony-master-vs-1370.job

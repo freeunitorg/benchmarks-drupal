@@ -2,8 +2,8 @@
 # Claim under test (plan section 5.4): FreeUnit serves the cached front page
 # with less server CPU per request. Read the null band from job 01 first.
 JOB=02-front-anon-freeunit-vs-fpm-11.4
-ISSUE=https://github.com/freeunitorg/benchmarks-drupal
-PHASES=null ab
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
 WORKLOAD=drupal-front
 RUNTIME_A=freeunit
 RUNTIME_B=nginx-fpm
@@ -18,5 +18,5 @@ LOAD_CPUS=2,3,6,7
 DB_CPUS=4,5
 PRIMARY=s_instructions
 NULL_LIMIT_PCT=5
-EXPECT=FreeUnit lower s_instructions per request than nginx+fpm on the page-cache hit
-FALSIFY=NO CLAIM, or FreeUnit higher
+EXPECT="FreeUnit lower s_instructions per request than nginx+fpm on the page-cache hit"
+FALSIFY="NO CLAIM, or FreeUnit higher"

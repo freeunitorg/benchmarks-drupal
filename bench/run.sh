@@ -23,6 +23,8 @@ JOB= PHASES="null ab" WORKLOAD=drupal-front RUNTIME_A=freeunit RUNTIME_B=nginx-f
 SITE=11.4 CONNS=32 DUR=8 WARM=2 REPS=2 RATE= APP_PROCS=20 PERF=1 AE=
 SERVER_CPUS=0,1 LOAD_CPUS=2,3,6,7 DB_CPUS=4,5 BASE_PORT=8081
 NULL_LIMIT_PCT=5 PRIMARY=s_instructions EXPECT= FALSIFY= ISSUE= NOTES=
+OHA=${OHA:-/data/projects/cache/cargo/bin/oha}
+PERF_IMAGE=${PERF_IMAGE:-freeunit-perf-lab:1}
 # shellcheck disable=SC1090
 . "$JOBFILE"
 
@@ -40,12 +42,10 @@ cp "$JOBFILE" "$OUTDIR/job.txt"
 # ---- idle gate: no other container is running and the box is quiet -------------
 if [ "$NOGATE" != "--no-gate" ]; then
     # a 2 s busy sample from /proc/stat, like the lab
-    read -r _ a b c d e f g <<<"$(awk '/^cpu /{print}' /proc/stat)"
-    t0=$((a + b + c + d + e + f + g)); i0=$d
+    s0=$(awk '/^cpu /{t=0; for (i=2;i<=NF;i++) t+=$i; print t, $5}' /proc/stat)
     sleep 2
-    read -r _ a b c d e f g <<<"$(awk '/^cpu /{print}' /proc/stat)"
-    t1=$((a + b + c + d + e + f + g)); i1=$d
-    pct=$(awk -v t=$((t1 - t0)) -v i=$((i1 - i0)) 'BEGIN{printf "%.1f", 100 * (1 - i / (t > 0 ? t : 1))}')
+    s1=$(awk '/^cpu /{t=0; for (i=2;i<=NF;i++) t+=$i; print t, $5}' /proc/stat)
+    pct=$(awk -v a="$s0" -v b="$s1" 'BEGIN { split(a,x," "); split(b,y," "); dt=y[1]-x[1]; di=y[2]-x[2]; printf "%.1f", (dt > 0 ? 100 * (1 - di / dt) : 0) }')
     others=$(docker ps -q | wc -l)
     echo "run.sh: idle gate busy=${pct}% containers=$others (max ${IDLE_MAX_PCT}%)"
     awk -v p="$pct" -v m="$IDLE_MAX_PCT" 'BEGIN{exit !(p <= m)}' || { echo "run.sh: box busy, refusing" >&2; exit 1; }
@@ -73,7 +73,8 @@ cp -f "$RUNROOT/site/$SITE/meta.txt" "$OUTDIR/site-meta.txt" 2>/dev/null || true
     echo "governor=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null || echo unknown)"
     echo "epp=$(cat /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference 2>/dev/null || echo unknown)"
     echo "kernel=$(uname -r)"
-    echo "oha=$(${OHA:-oha} --version 2>/dev/null | head -1)"
+    echo "oha=$($OHA --version 2>/dev/null | head -1)"
+    echo "perf_image=$(docker image inspect -f '{{.Id}}' "$PERF_IMAGE" 2>/dev/null | cut -c8-19)"
     echo "freeunit_image=$(docker image inspect -f '{{.Id}}' drupal-bench-freeunit:1.37.0 2>/dev/null | cut -c8-19)"
     echo "fpm_image=$(docker image inspect -f '{{.Id}}' drupal-bench-fpm:8.5 2>/dev/null | cut -c8-19)"
     echo "apache_image=$(docker image inspect -f '{{.Id}}' drupal-bench-apache:8.5 2>/dev/null | cut -c8-19)"

@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Symfony benchmark page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h1>Symfony benchmark page</h1>
+  <p>{{ total }} items, showing {{ items|length }}{% if q %} matching "{{ q }}"{% endif %}.</p>
+  <ul>
+  {% for item in items %}
+    <li>{{ item.id }} — {{ item.title }}</li>
+  {% endfor %}
+  </ul>
+</body>
+</html>

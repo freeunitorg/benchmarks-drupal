@@ -1,8 +1,8 @@
 # front-auth, FreeUnit vs nginx + PHP-FPM, Drupal 11.4.8. Bypasses the page cache,
 # so the full render path runs; Drupal-bound, so the runtimes may tie.
 JOB=04-front-auth-freeunit-vs-fpm-11.4
-ISSUE=https://github.com/freeunitorg/benchmarks-drupal
-PHASES=null ab
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
 WORKLOAD=drupal-auth
 RUNTIME_A=freeunit
 RUNTIME_B=nginx-fpm
@@ -17,5 +17,5 @@ LOAD_CPUS=2,3,6,7
 DB_CPUS=4,5
 PRIMARY=s_instructions
 NULL_LIMIT_PCT=5
-EXPECT=render-bound: within or near the null band; record db_us so a runtime driving the DB harder is visible
-FALSIFY=a CLAIM in either direction: then say which runtime, not "tie"
+EXPECT="render-bound: within or near the null band; record db_us so a runtime driving the DB harder is visible"
+FALSIFY="a CLAIM in either direction: then say which runtime, not \"tie\""
