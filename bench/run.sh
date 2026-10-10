@@ -127,6 +127,9 @@ OUT="$OUTDIR"; RESROOT="$RUNROOT"
 COOKIE_FILE="$SITE_DIR/cookie.txt"; COOKIE_FILE_B="$SITE_DIR_B/cookie.txt"
 export SITE_DIR SITE_DIR_A SITE_DIR_B OUT RESROOT COOKIE_FILE COOKIE_FILE_B JOB RUN_ID PHASES WORKLOAD
 export RUNTIME_A RUNTIME_B SITE CONNS DUR WARM REPS RATE APP_PROCS PERF AE DECOMPOSE EXTRA_COOKIE_BYTES DB DB_A DB_B
+# cells.sh has its own OHA default of bare "oha" on PATH; the host that has oha
+# outside PATH answered "no oha (oha)" until this was exported.
+export OHA
 export SERVER_CPUS LOAD_CPUS DB_CPUS BASE_PORT
 bash "$HERE/cells.sh" >"$OUTDIR/cells.log" 2>&1 || { tail -n 20 "$OUTDIR/cells.log" >&2; exit 1; }
 

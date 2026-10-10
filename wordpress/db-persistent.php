@@ -50,9 +50,15 @@ class FU_Persistent_WPDB extends wpdb {
                 htmlspecialchars($this->dbhost, ENT_QUOTES), mysqli_connect_error()
             )) : false;
         }
-        // wpdb::$has_connected is private and is only read by the core db_connect()
-        // this method replaces, so there is nothing to set here.
+        // Core's db_connect() (wp-includes/class-wpdb.php) does four more things
+        // after the connection; leaving out the last two leaves the handle without
+        // a selected database, and every query then fails with "No database
+        // selected", which wp-cli reports as "The site you have requested is not
+        // installed".
         $this->set_charset($this->dbh);
+        $this->ready = true;
+        $this->set_sql_mode();
+        $this->select($this->dbname, $this->dbh);
         return true;
     }
 
