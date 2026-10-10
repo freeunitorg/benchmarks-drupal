@@ -1,0 +1,920 @@
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2428134 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2428188 unit: controller                                            
+  pid=2428189 unit: router                                                
+  pid=2428191 unit: "drupal" prototype                                    
+  pid=2428195 unit: "drupal" application                                  
+  pid=2428196 unit: "drupal" application                                  
+  pid=2428197 unit: "drupal" application                                  
+  pid=2428198 unit: "drupal" application                                  
+  pid=2428199 unit: "drupal" application                                  
+  pid=2428200 unit: "drupal" application                                  
+  pid=2428201 unit: "drupal" application                                  
+  pid=2428202 unit: "drupal" application                                  
+  pid=2428203 unit: "drupal" application                                  
+  pid=2428204 unit: "drupal" application                                  
+  pid=2428205 unit: "drupal" application                                  
+  pid=2428206 unit: "drupal" application                                  
+  pid=2428207 unit: "drupal" application                                  
+  pid=2428208 unit: "drupal" application                                  
+  pid=2428209 unit: "drupal" application                                  
+  pid=2428210 unit: "drupal" application                                  
+  pid=2428211 unit: "drupal" application                                  
+  pid=2428212 unit: "drupal" application                                  
+  pid=2428213 unit: "drupal" application                                  
+  pid=2428214 unit: "drupal" application                                  
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2429128 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2429193 unit: controller                                            
+  pid=2429194 unit: router                                                
+  pid=2429195 unit: "drupal" prototype                                    
+  pid=2429200 unit: "drupal" application                                  
+  pid=2429201 unit: "drupal" application                                  
+  pid=2429202 unit: "drupal" application                                  
+  pid=2429203 unit: "drupal" application                                  
+  pid=2429204 unit: "drupal" application                                  
+  pid=2429205 unit: "drupal" application                                  
+  pid=2429206 unit: "drupal" application                                  
+  pid=2429207 unit: "drupal" application                                  
+  pid=2429208 unit: "drupal" application                                  
+  pid=2429209 unit: "drupal" application                                  
+  pid=2429210 unit: "drupal" application                                  
+  pid=2429211 unit: "drupal" application                                  
+  pid=2429212 unit: "drupal" application                                  
+  pid=2429213 unit: "drupal" application                                  
+  pid=2429214 unit: "drupal" application                                  
+  pid=2429215 unit: "drupal" application                                  
+  pid=2429216 unit: "drupal" application                                  
+  pid=2429217 unit: "drupal" application                                  
+  pid=2429218 unit: "drupal" application                                  
+  pid=2429219 unit: "drupal" application                                  
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2430121 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2430191 unit: controller                                            
+  pid=2430192 unit: router                                                
+  pid=2430193 unit: "drupal" prototype                                    
+  pid=2430195 unit: "drupal" application                                  
+  pid=2430196 unit: "drupal" application                                  
+  pid=2430197 unit: "drupal" application                                  
+  pid=2430198 unit: "drupal" application                                  
+  pid=2430199 unit: "drupal" application                                  
+  pid=2430200 unit: "drupal" application                                  
+  pid=2430201 unit: "drupal" application                                  
+  pid=2430202 unit: "drupal" application                                  
+  pid=2430203 unit: "drupal" application                                  
+  pid=2430204 unit: "drupal" application                                  
+  pid=2430205 unit: "drupal" application                                  
+  pid=2430206 unit: "drupal" application                                  
+  pid=2430207 unit: "drupal" application                                  
+  pid=2430208 unit: "drupal" application                                  
+  pid=2430209 unit: "drupal" application                                  
+  pid=2430210 unit: "drupal" application                                  
+  pid=2430211 unit: "drupal" application                                  
+  pid=2430212 unit: "drupal" application                                  
+  pid=2430213 unit: "drupal" application                                  
+  pid=2430214 unit: "drupal" application                                  
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2431113 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2431183 unit: controller                                            
+  pid=2431184 unit: router                                                
+  pid=2431186 unit: "drupal" prototype                                    
+  pid=2431187 unit: "drupal" application                                  
+  pid=2431188 unit: "drupal" application                                  
+  pid=2431189 unit: "drupal" application                                  
+  pid=2431190 unit: "drupal" application                                  
+  pid=2431191 unit: "drupal" application                                  
+  pid=2431192 unit: "drupal" application                                  
+  pid=2431193 unit: "drupal" application                                  
+  pid=2431194 unit: "drupal" application                                  
+  pid=2431195 unit: "drupal" application                                  
+  pid=2431196 unit: "drupal" application                                  
+  pid=2431197 unit: "drupal" application                                  
+  pid=2431198 unit: "drupal" application                                  
+  pid=2431199 unit: "drupal" application                                  
+  pid=2431200 unit: "drupal" application                                  
+  pid=2431201 unit: "drupal" application                                  
+  pid=2431202 unit: "drupal" application                                  
+  pid=2431203 unit: "drupal" application                                  
+  pid=2431204 unit: "drupal" application                                  
+  pid=2431205 unit: "drupal" application                                  
+  pid=2431206 unit: "drupal" application                                  
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2432108 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2432179 unit: controller                                            
+  pid=2432180 unit: router                                                
+  pid=2432181 unit: "drupal" prototype                                    
+  pid=2432183 unit: "drupal" application                                  
+  pid=2432184 unit: "drupal" application                                  
+  pid=2432185 unit: "drupal" application                                  
+  pid=2432186 unit: "drupal" application                                  
+  pid=2432187 unit: "drupal" application                                  
+  pid=2432188 unit: "drupal" application                                  
+  pid=2432189 unit: "drupal" application                                  
+  pid=2432190 unit: "drupal" application                                  
+  pid=2432191 unit: "drupal" application                                  
+  pid=2432192 unit: "drupal" application                                  
+  pid=2432193 unit: "drupal" application                                  
+  pid=2432194 unit: "drupal" application                                  
+  pid=2432195 unit: "drupal" application                                  
+  pid=2432196 unit: "drupal" application                                  
+  pid=2432197 unit: "drupal" application                                  
+  pid=2432198 unit: "drupal" application                                  
+  pid=2432199 unit: "drupal" application                                  
+  pid=2432200 unit: "drupal" application                                  
+  pid=2432201 unit: "drupal" application                                  
+  pid=2432202 unit: "drupal" application                                  
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2433089 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2433156 unit: controller                                            
+  pid=2433157 unit: router                                                
+  pid=2433158 unit: "drupal" prototype                                    
+  pid=2433163 unit: "drupal" application                                  
+  pid=2433164 unit: "drupal" application                                  
+  pid=2433165 unit: "drupal" application                                  
+  pid=2433166 unit: "drupal" application                                  
+  pid=2433167 unit: "drupal" application                                  
+  pid=2433168 unit: "drupal" application                                  
+  pid=2433169 unit: "drupal" application                                  
+  pid=2433170 unit: "drupal" application                                  
+  pid=2433171 unit: "drupal" application                                  
+  pid=2433172 unit: "drupal" application                                  
+  pid=2433173 unit: "drupal" application                                  
+  pid=2433174 unit: "drupal" application                                  
+  pid=2433175 unit: "drupal" application                                  
+  pid=2433176 unit: "drupal" application                                  
+  pid=2433177 unit: "drupal" application                                  
+  pid=2433178 unit: "drupal" application                                  
+  pid=2433179 unit: "drupal" application                                  
+  pid=2433180 unit: "drupal" application                                  
+  pid=2433181 unit: "drupal" application                                  
+  pid=2433182 unit: "drupal" application                                  
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2434059 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2434124 unit: controller                                            
+  pid=2434126 unit: router                                                
+  pid=2434130 unit: "drupal" prototype                                    
+  pid=2434132 unit: "drupal" application                                  
+  pid=2434133 unit: "drupal" application                                  
+  pid=2434134 unit: "drupal" application                                  
+  pid=2434135 unit: "drupal" application                                  
+  pid=2434136 unit: "drupal" application                                  
+  pid=2434137 unit: "drupal" application                                  
+  pid=2434138 unit: "drupal" application                                  
+  pid=2434139 unit: "drupal" application                                  
+  pid=2434140 unit: "drupal" application                                  
+  pid=2434141 unit: "drupal" application                                  
+  pid=2434142 unit: "drupal" application                                  
+  pid=2434143 unit: "drupal" application                                  
+  pid=2434144 unit: "drupal" application                                  
+  pid=2434145 unit: "drupal" application                                  
+  pid=2434146 unit: "drupal" application                                  
+  pid=2434147 unit: "drupal" application                                  
+  pid=2434148 unit: "drupal" application                                  
+  pid=2434149 unit: "drupal" application                                  
+  pid=2434150 unit: "drupal" application                                  
+  pid=2434151 unit: "drupal" application                                  
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2435056 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2435125 unit: controller                                            
+  pid=2435126 unit: router                                                
+  pid=2435128 unit: "drupal" prototype                                    
+  pid=2435129 unit: "drupal" application                                  
+  pid=2435130 unit: "drupal" application                                  
+  pid=2435131 unit: "drupal" application                                  
+  pid=2435132 unit: "drupal" application                                  
+  pid=2435133 unit: "drupal" application                                  
+  pid=2435134 unit: "drupal" application                                  
+  pid=2435135 unit: "drupal" application                                  
+  pid=2435136 unit: "drupal" application                                  
+  pid=2435137 unit: "drupal" application                                  
+  pid=2435138 unit: "drupal" application                                  
+  pid=2435139 unit: "drupal" application                                  
+  pid=2435140 unit: "drupal" application                                  
+  pid=2435141 unit: "drupal" application                                  
+  pid=2435142 unit: "drupal" application                                  
+  pid=2435143 unit: "drupal" application                                  
+  pid=2435144 unit: "drupal" application                                  
+  pid=2435145 unit: "drupal" application                                  
+  pid=2435146 unit: "drupal" application                                  
+  pid=2435147 unit: "drupal" application                                  
+  pid=2435148 unit: "drupal" application                                  
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2436006 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2436074 unit: controller                                            
+  pid=2436075 unit: router                                                
+  pid=2436076 unit: "drupal" prototype                                    
+  pid=2436077 unit: "drupal" application                                  
+  pid=2436078 unit: "drupal" application                                  
+  pid=2436079 unit: "drupal" application                                  
+  pid=2436080 unit: "drupal" application                                  
+  pid=2436081 unit: "drupal" application                                  
+  pid=2436082 unit: "drupal" application                                  
+  pid=2436083 unit: "drupal" application                                  
+  pid=2436084 unit: "drupal" application                                  
+  pid=2436085 unit: "drupal" application                                  
+  pid=2436086 unit: "drupal" application                                  
+  pid=2436087 unit: "drupal" application                                  
+  pid=2436088 unit: "drupal" application                                  
+  pid=2436089 unit: "drupal" application                                  
+  pid=2436090 unit: "drupal" application                                  
+  pid=2436091 unit: "drupal" application                                  
+  pid=2436092 unit: "drupal" application                                  
+  pid=2436093 unit: "drupal" application                                  
+  pid=2436094 unit: "drupal" application                                  
+  pid=2436095 unit: "drupal" application                                  
+  pid=2436096 unit: "drupal" application                                  
+runtime=rt-2427637-nginx-fpm url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2436988 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=2437051 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=2437052 nginx: master process nginx -g daemon off; 
+  pid=2437053 nginx: worker process 
+  pid=2437054 nginx: worker process 
+  pid=2437055 nginx: worker process 
+  pid=2437056 nginx: worker process 
+  pid=2437057 nginx: worker process 
+  pid=2437058 nginx: worker process 
+  pid=2437059 nginx: worker process 
+  pid=2437061 nginx: worker process 
+  pid=2437066 php-fpm: pool www                                              
+  pid=2437067 php-fpm: pool www                                              
+  pid=2437068 php-fpm: pool www                                              
+  pid=2437069 php-fpm: pool www                                              
+  pid=2437070 php-fpm: pool www                                              
+  pid=2437071 php-fpm: pool www                                              
+  pid=2437072 php-fpm: pool www                                              
+  pid=2437073 php-fpm: pool www                                              
+  pid=2437074 php-fpm: pool www                                              
+  pid=2437075 php-fpm: pool www                                              
+  pid=2437076 php-fpm: pool www                                              
+  pid=2437077 php-fpm: pool www                                              
+  pid=2437078 php-fpm: pool www                                              
+  pid=2437079 php-fpm: pool www                                              
+  pid=2437080 php-fpm: pool www                                              
+  pid=2437081 php-fpm: pool www                                              
+  pid=2437082 php-fpm: pool www                                              
+  pid=2437083 php-fpm: pool www                                              
+  pid=2437084 php-fpm: pool www                                              
+  pid=2437085 php-fpm: pool www                                              
+runtime=rt-2427637-nginx-fpm url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2438000 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=2438065 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=2438066 nginx: master process nginx -g daemon off; 
+  pid=2438067 nginx: worker process 
+  pid=2438068 nginx: worker process 
+  pid=2438069 nginx: worker process 
+  pid=2438070 nginx: worker process 
+  pid=2438071 nginx: worker process 
+  pid=2438072 nginx: worker process 
+  pid=2438073 nginx: worker process 
+  pid=2438074 nginx: worker process 
+  pid=2438080 php-fpm: pool www                                              
+  pid=2438081 php-fpm: pool www                                              
+  pid=2438082 php-fpm: pool www                                              
+  pid=2438083 php-fpm: pool www                                              
+  pid=2438084 php-fpm: pool www                                              
+  pid=2438085 php-fpm: pool www                                              
+  pid=2438086 php-fpm: pool www                                              
+  pid=2438087 php-fpm: pool www                                              
+  pid=2438088 php-fpm: pool www                                              
+  pid=2438089 php-fpm: pool www                                              
+  pid=2438090 php-fpm: pool www                                              
+  pid=2438091 php-fpm: pool www                                              
+  pid=2438092 php-fpm: pool www                                              
+  pid=2438093 php-fpm: pool www                                              
+  pid=2438094 php-fpm: pool www                                              
+  pid=2438095 php-fpm: pool www                                              
+  pid=2438096 php-fpm: pool www                                              
+  pid=2438097 php-fpm: pool www                                              
+  pid=2438098 php-fpm: pool www                                              
+  pid=2438099 php-fpm: pool www                                              
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2439002 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2439070 unit: controller                                            
+  pid=2439071 unit: router                                                
+  pid=2439074 unit: "drupal" prototype                                    
+  pid=2439075 unit: "drupal" application                                  
+  pid=2439076 unit: "drupal" application                                  
+  pid=2439077 unit: "drupal" application                                  
+  pid=2439078 unit: "drupal" application                                  
+  pid=2439079 unit: "drupal" application                                  
+  pid=2439080 unit: "drupal" application                                  
+  pid=2439081 unit: "drupal" application                                  
+  pid=2439082 unit: "drupal" application                                  
+  pid=2439083 unit: "drupal" application                                  
+  pid=2439084 unit: "drupal" application                                  
+  pid=2439085 unit: "drupal" application                                  
+  pid=2439086 unit: "drupal" application                                  
+  pid=2439087 unit: "drupal" application                                  
+  pid=2439088 unit: "drupal" application                                  
+  pid=2439089 unit: "drupal" application                                  
+  pid=2439090 unit: "drupal" application                                  
+  pid=2439091 unit: "drupal" application                                  
+  pid=2439092 unit: "drupal" application                                  
+  pid=2439093 unit: "drupal" application                                  
+  pid=2439094 unit: "drupal" application                                  
+runtime=rt-2427637-nginx-fpm url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2439968 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=2440053 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=2440054 nginx: master process nginx -g daemon off; 
+  pid=2440056 nginx: worker process 
+  pid=2440057 nginx: worker process 
+  pid=2440058 nginx: worker process 
+  pid=2440059 nginx: worker process 
+  pid=2440061 nginx: worker process 
+  pid=2440062 nginx: worker process 
+  pid=2440063 nginx: worker process 
+  pid=2440064 nginx: worker process 
+  pid=2440068 php-fpm: pool www                                              
+  pid=2440069 php-fpm: pool www                                              
+  pid=2440070 php-fpm: pool www                                              
+  pid=2440071 php-fpm: pool www                                              
+  pid=2440072 php-fpm: pool www                                              
+  pid=2440073 php-fpm: pool www                                              
+  pid=2440074 php-fpm: pool www                                              
+  pid=2440075 php-fpm: pool www                                              
+  pid=2440076 php-fpm: pool www                                              
+  pid=2440077 php-fpm: pool www                                              
+  pid=2440078 php-fpm: pool www                                              
+  pid=2440079 php-fpm: pool www                                              
+  pid=2440080 php-fpm: pool www                                              
+  pid=2440081 php-fpm: pool www                                              
+  pid=2440082 php-fpm: pool www                                              
+  pid=2440083 php-fpm: pool www                                              
+  pid=2440084 php-fpm: pool www                                              
+  pid=2440085 php-fpm: pool www                                              
+  pid=2440086 php-fpm: pool www                                              
+  pid=2440087 php-fpm: pool www                                              
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2440962 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2441030 unit: controller                                            
+  pid=2441031 unit: router                                                
+  pid=2441033 unit: "drupal" prototype                                    
+  pid=2441034 unit: "drupal" application                                  
+  pid=2441035 unit: "drupal" application                                  
+  pid=2441036 unit: "drupal" application                                  
+  pid=2441037 unit: "drupal" application                                  
+  pid=2441038 unit: "drupal" application                                  
+  pid=2441039 unit: "drupal" application                                  
+  pid=2441040 unit: "drupal" application                                  
+  pid=2441041 unit: "drupal" application                                  
+  pid=2441042 unit: "drupal" application                                  
+  pid=2441043 unit: "drupal" application                                  
+  pid=2441044 unit: "drupal" application                                  
+  pid=2441045 unit: "drupal" application                                  
+  pid=2441046 unit: "drupal" application                                  
+  pid=2441047 unit: "drupal" application                                  
+  pid=2441048 unit: "drupal" application                                  
+  pid=2441049 unit: "drupal" application                                  
+  pid=2441050 unit: "drupal" application                                  
+  pid=2441051 unit: "drupal" application                                  
+  pid=2441052 unit: "drupal" application                                  
+  pid=2441053 unit: "drupal" application                                  
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2441951 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2442018 unit: controller                                            
+  pid=2442019 unit: router                                                
+  pid=2442022 unit: "drupal" prototype                                    
+  pid=2442023 unit: "drupal" application                                  
+  pid=2442024 unit: "drupal" application                                  
+  pid=2442025 unit: "drupal" application                                  
+  pid=2442026 unit: "drupal" application                                  
+  pid=2442027 unit: "drupal" application                                  
+  pid=2442028 unit: "drupal" application                                  
+  pid=2442029 unit: "drupal" application                                  
+  pid=2442030 unit: "drupal" application                                  
+  pid=2442031 unit: "drupal" application                                  
+  pid=2442032 unit: "drupal" application                                  
+  pid=2442033 unit: "drupal" application                                  
+  pid=2442034 unit: "drupal" application                                  
+  pid=2442035 unit: "drupal" application                                  
+  pid=2442036 unit: "drupal" application                                  
+  pid=2442037 unit: "drupal" application                                  
+  pid=2442038 unit: "drupal" application                                  
+  pid=2442039 unit: "drupal" application                                  
+  pid=2442040 unit: "drupal" application                                  
+  pid=2442041 unit: "drupal" application                                  
+  pid=2442042 unit: "drupal" application                                  
+runtime=rt-2427637-nginx-fpm url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2442934 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=2443014 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=2443015 nginx: master process nginx -g daemon off; 
+  pid=2443022 nginx: worker process 
+  pid=2443023 nginx: worker process 
+  pid=2443024 nginx: worker process 
+  pid=2443025 nginx: worker process 
+  pid=2443026 nginx: worker process 
+  pid=2443027 nginx: worker process 
+  pid=2443032 nginx: worker process 
+  pid=2443033 nginx: worker process 
+  pid=2443039 php-fpm: pool www                                              
+  pid=2443040 php-fpm: pool www                                              
+  pid=2443041 php-fpm: pool www                                              
+  pid=2443042 php-fpm: pool www                                              
+  pid=2443043 php-fpm: pool www                                              
+  pid=2443044 php-fpm: pool www                                              
+  pid=2443045 php-fpm: pool www                                              
+  pid=2443046 php-fpm: pool www                                              
+  pid=2443047 php-fpm: pool www                                              
+  pid=2443048 php-fpm: pool www                                              
+  pid=2443049 php-fpm: pool www                                              
+  pid=2443050 php-fpm: pool www                                              
+  pid=2443051 php-fpm: pool www                                              
+  pid=2443052 php-fpm: pool www                                              
+  pid=2443053 php-fpm: pool www                                              
+  pid=2443054 php-fpm: pool www                                              
+  pid=2443055 php-fpm: pool www                                              
+  pid=2443056 php-fpm: pool www                                              
+  pid=2443057 php-fpm: pool www                                              
+  pid=2443058 php-fpm: pool www                                              
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2444024 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2444089 unit: controller                                            
+  pid=2444090 unit: router                                                
+  pid=2444091 unit: "drupal" prototype                                    
+  pid=2444096 unit: "drupal" application                                  
+  pid=2444097 unit: "drupal" application                                  
+  pid=2444098 unit: "drupal" application                                  
+  pid=2444099 unit: "drupal" application                                  
+  pid=2444100 unit: "drupal" application                                  
+  pid=2444101 unit: "drupal" application                                  
+  pid=2444102 unit: "drupal" application                                  
+  pid=2444103 unit: "drupal" application                                  
+  pid=2444104 unit: "drupal" application                                  
+  pid=2444105 unit: "drupal" application                                  
+  pid=2444106 unit: "drupal" application                                  
+  pid=2444107 unit: "drupal" application                                  
+  pid=2444108 unit: "drupal" application                                  
+  pid=2444109 unit: "drupal" application                                  
+  pid=2444110 unit: "drupal" application                                  
+  pid=2444111 unit: "drupal" application                                  
+  pid=2444112 unit: "drupal" application                                  
+  pid=2444113 unit: "drupal" application                                  
+  pid=2444114 unit: "drupal" application                                  
+  pid=2444115 unit: "drupal" application                                  
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2445013 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2445077 unit: controller                                            
+  pid=2445078 unit: router                                                
+  pid=2445079 unit: "drupal" prototype                                    
+  pid=2445080 unit: "drupal" application                                  
+  pid=2445081 unit: "drupal" application                                  
+  pid=2445083 unit: "drupal" application                                  
+  pid=2445086 unit: "drupal" application                                  
+  pid=2445088 unit: "drupal" application                                  
+  pid=2445089 unit: "drupal" application                                  
+  pid=2445090 unit: "drupal" application                                  
+  pid=2445091 unit: "drupal" application                                  
+  pid=2445092 unit: "drupal" application                                  
+  pid=2445093 unit: "drupal" application                                  
+  pid=2445094 unit: "drupal" application                                  
+  pid=2445095 unit: "drupal" application                                  
+  pid=2445096 unit: "drupal" application                                  
+  pid=2445097 unit: "drupal" application                                  
+  pid=2445098 unit: "drupal" application                                  
+  pid=2445099 unit: "drupal" application                                  
+  pid=2445100 unit: "drupal" application                                  
+  pid=2445101 unit: "drupal" application                                  
+  pid=2445102 unit: "drupal" application                                  
+  pid=2445103 unit: "drupal" application                                  
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2446043 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2446112 unit: controller                                            
+  pid=2446113 unit: router                                                
+  pid=2446115 unit: "drupal" prototype                                    
+  pid=2446116 unit: "drupal" application                                  
+  pid=2446117 unit: "drupal" application                                  
+  pid=2446118 unit: "drupal" application                                  
+  pid=2446119 unit: "drupal" application                                  
+  pid=2446120 unit: "drupal" application                                  
+  pid=2446121 unit: "drupal" application                                  
+  pid=2446123 unit: "drupal" application                                  
+  pid=2446124 unit: "drupal" application                                  
+  pid=2446125 unit: "drupal" application                                  
+  pid=2446126 unit: "drupal" application                                  
+  pid=2446127 unit: "drupal" application                                  
+  pid=2446128 unit: "drupal" application                                  
+  pid=2446130 unit: "drupal" application                                  
+  pid=2446131 unit: "drupal" application                                  
+  pid=2446132 unit: "drupal" application                                  
+  pid=2446133 unit: "drupal" application                                  
+  pid=2446134 unit: "drupal" application                                  
+  pid=2446135 unit: "drupal" application                                  
+  pid=2446136 unit: "drupal" application                                  
+  pid=2446137 unit: "drupal" application                                  
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2447056 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2447121 unit: controller                                            
+  pid=2447122 unit: router                                                
+  pid=2447124 unit: "drupal" prototype                                    
+  pid=2447128 unit: "drupal" application                                  
+  pid=2447129 unit: "drupal" application                                  
+  pid=2447130 unit: "drupal" application                                  
+  pid=2447131 unit: "drupal" application                                  
+  pid=2447132 unit: "drupal" application                                  
+  pid=2447133 unit: "drupal" application                                  
+  pid=2447134 unit: "drupal" application                                  
+  pid=2447135 unit: "drupal" application                                  
+  pid=2447136 unit: "drupal" application                                  
+  pid=2447137 unit: "drupal" application                                  
+  pid=2447138 unit: "drupal" application                                  
+  pid=2447139 unit: "drupal" application                                  
+  pid=2447140 unit: "drupal" application                                  
+  pid=2447141 unit: "drupal" application                                  
+  pid=2447142 unit: "drupal" application                                  
+  pid=2447143 unit: "drupal" application                                  
+  pid=2447144 unit: "drupal" application                                  
+  pid=2447145 unit: "drupal" application                                  
+  pid=2447146 unit: "drupal" application                                  
+  pid=2447147 unit: "drupal" application                                  
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2448036 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2448101 unit: controller                                            
+  pid=2448102 unit: router                                                
+  pid=2448105 unit: "drupal" prototype                                    
+  pid=2448108 unit: "drupal" application                                  
+  pid=2448109 unit: "drupal" application                                  
+  pid=2448110 unit: "drupal" application                                  
+  pid=2448111 unit: "drupal" application                                  
+  pid=2448112 unit: "drupal" application                                  
+  pid=2448113 unit: "drupal" application                                  
+  pid=2448114 unit: "drupal" application                                  
+  pid=2448115 unit: "drupal" application                                  
+  pid=2448116 unit: "drupal" application                                  
+  pid=2448117 unit: "drupal" application                                  
+  pid=2448118 unit: "drupal" application                                  
+  pid=2448119 unit: "drupal" application                                  
+  pid=2448120 unit: "drupal" application                                  
+  pid=2448121 unit: "drupal" application                                  
+  pid=2448122 unit: "drupal" application                                  
+  pid=2448123 unit: "drupal" application                                  
+  pid=2448124 unit: "drupal" application                                  
+  pid=2448125 unit: "drupal" application                                  
+  pid=2448126 unit: "drupal" application                                  
+  pid=2448127 unit: "drupal" application                                  
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2449003 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2449093 unit: controller                                            
+  pid=2449094 unit: router                                                
+  pid=2449095 unit: "drupal" prototype                                    
+  pid=2449099 unit: "drupal" application                                  
+  pid=2449100 unit: "drupal" application                                  
+  pid=2449101 unit: "drupal" application                                  
+  pid=2449102 unit: "drupal" application                                  
+  pid=2449103 unit: "drupal" application                                  
+  pid=2449104 unit: "drupal" application                                  
+  pid=2449105 unit: "drupal" application                                  
+  pid=2449106 unit: "drupal" application                                  
+  pid=2449107 unit: "drupal" application                                  
+  pid=2449108 unit: "drupal" application                                  
+  pid=2449109 unit: "drupal" application                                  
+  pid=2449110 unit: "drupal" application                                  
+  pid=2449111 unit: "drupal" application                                  
+  pid=2449112 unit: "drupal" application                                  
+  pid=2449113 unit: "drupal" application                                  
+  pid=2449114 unit: "drupal" application                                  
+  pid=2449115 unit: "drupal" application                                  
+  pid=2449116 unit: "drupal" application                                  
+  pid=2449117 unit: "drupal" application                                  
+  pid=2449118 unit: "drupal" application                                  
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2449990 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2450060 unit: controller                                            
+  pid=2450061 unit: router                                                
+  pid=2450062 unit: "drupal" prototype                                    
+  pid=2450063 unit: "drupal" application                                  
+  pid=2450064 unit: "drupal" application                                  
+  pid=2450065 unit: "drupal" application                                  
+  pid=2450066 unit: "drupal" application                                  
+  pid=2450067 unit: "drupal" application                                  
+  pid=2450068 unit: "drupal" application                                  
+  pid=2450069 unit: "drupal" application                                  
+  pid=2450070 unit: "drupal" application                                  
+  pid=2450071 unit: "drupal" application                                  
+  pid=2450072 unit: "drupal" application                                  
+  pid=2450073 unit: "drupal" application                                  
+  pid=2450074 unit: "drupal" application                                  
+  pid=2450075 unit: "drupal" application                                  
+  pid=2450076 unit: "drupal" application                                  
+  pid=2450077 unit: "drupal" application                                  
+  pid=2450078 unit: "drupal" application                                  
+  pid=2450079 unit: "drupal" application                                  
+  pid=2450080 unit: "drupal" application                                  
+  pid=2450081 unit: "drupal" application                                  
+  pid=2450082 unit: "drupal" application                                  
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2450999 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2451069 unit: controller                                            
+  pid=2451070 unit: router                                                
+  pid=2451072 unit: "drupal" prototype                                    
+  pid=2451073 unit: "drupal" application                                  
+  pid=2451074 unit: "drupal" application                                  
+  pid=2451075 unit: "drupal" application                                  
+  pid=2451076 unit: "drupal" application                                  
+  pid=2451077 unit: "drupal" application                                  
+  pid=2451078 unit: "drupal" application                                  
+  pid=2451079 unit: "drupal" application                                  
+  pid=2451080 unit: "drupal" application                                  
+  pid=2451081 unit: "drupal" application                                  
+  pid=2451082 unit: "drupal" application                                  
+  pid=2451083 unit: "drupal" application                                  
+  pid=2451084 unit: "drupal" application                                  
+  pid=2451085 unit: "drupal" application                                  
+  pid=2451086 unit: "drupal" application                                  
+  pid=2451087 unit: "drupal" application                                  
+  pid=2451088 unit: "drupal" application                                  
+  pid=2451089 unit: "drupal" application                                  
+  pid=2451090 unit: "drupal" application                                  
+  pid=2451091 unit: "drupal" application                                  
+  pid=2451092 unit: "drupal" application                                  
+runtime=rt-2427637-nginx-fpm url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2451984 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=2452049 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=2452050 nginx: master process nginx -g daemon off; 
+  pid=2452051 nginx: worker process 
+  pid=2452052 nginx: worker process 
+  pid=2452053 nginx: worker process 
+  pid=2452054 nginx: worker process 
+  pid=2452055 nginx: worker process 
+  pid=2452056 nginx: worker process 
+  pid=2452057 nginx: worker process 
+  pid=2452058 nginx: worker process 
+  pid=2452064 php-fpm: pool www                                              
+  pid=2452065 php-fpm: pool www                                              
+  pid=2452066 php-fpm: pool www                                              
+  pid=2452067 php-fpm: pool www                                              
+  pid=2452068 php-fpm: pool www                                              
+  pid=2452069 php-fpm: pool www                                              
+  pid=2452070 php-fpm: pool www                                              
+  pid=2452071 php-fpm: pool www                                              
+  pid=2452072 php-fpm: pool www                                              
+  pid=2452073 php-fpm: pool www                                              
+  pid=2452074 php-fpm: pool www                                              
+  pid=2452075 php-fpm: pool www                                              
+  pid=2452076 php-fpm: pool www                                              
+  pid=2452077 php-fpm: pool www                                              
+  pid=2452078 php-fpm: pool www                                              
+  pid=2452079 php-fpm: pool www                                              
+  pid=2452080 php-fpm: pool www                                              
+  pid=2452081 php-fpm: pool www                                              
+  pid=2452082 php-fpm: pool www                                              
+  pid=2452083 php-fpm: pool www                                              
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2453016 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2453081 unit: controller                                            
+  pid=2453082 unit: router                                                
+  pid=2453085 unit: "drupal" prototype                                    
+  pid=2453088 unit: "drupal" application                                  
+  pid=2453089 unit: "drupal" application                                  
+  pid=2453090 unit: "drupal" application                                  
+  pid=2453091 unit: "drupal" application                                  
+  pid=2453092 unit: "drupal" application                                  
+  pid=2453093 unit: "drupal" application                                  
+  pid=2453094 unit: "drupal" application                                  
+  pid=2453095 unit: "drupal" application                                  
+  pid=2453096 unit: "drupal" application                                  
+  pid=2453097 unit: "drupal" application                                  
+  pid=2453098 unit: "drupal" application                                  
+  pid=2453099 unit: "drupal" application                                  
+  pid=2453100 unit: "drupal" application                                  
+  pid=2453101 unit: "drupal" application                                  
+  pid=2453102 unit: "drupal" application                                  
+  pid=2453103 unit: "drupal" application                                  
+  pid=2453104 unit: "drupal" application                                  
+  pid=2453105 unit: "drupal" application                                  
+  pid=2453106 unit: "drupal" application                                  
+  pid=2453107 unit: "drupal" application                                  
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2454572 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2454642 unit: controller                                            
+  pid=2454643 unit: router                                                
+  pid=2454646 unit: "drupal" prototype                                    
+  pid=2454665 unit: "drupal" application                                  
+  pid=2454667 unit: "drupal" application                                  
+  pid=2454668 unit: "drupal" application                                  
+  pid=2454669 unit: "drupal" application                                  
+  pid=2454671 unit: "drupal" application                                  
+  pid=2454672 unit: "drupal" application                                  
+  pid=2454673 unit: "drupal" application                                  
+  pid=2454674 unit: "drupal" application                                  
+  pid=2454675 unit: "drupal" application                                  
+  pid=2454676 unit: "drupal" application                                  
+  pid=2454677 unit: "drupal" application                                  
+  pid=2454678 unit: "drupal" application                                  
+  pid=2454679 unit: "drupal" application                                  
+  pid=2454680 unit: "drupal" application                                  
+  pid=2454681 unit: "drupal" application                                  
+  pid=2454682 unit: "drupal" application                                  
+  pid=2454683 unit: "drupal" application                                  
+  pid=2454684 unit: "drupal" application                                  
+  pid=2454685 unit: "drupal" application                                  
+  pid=2454686 unit: "drupal" application                                  
+runtime=rt-2427637-nginx-fpm url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2456248 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=2456312 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=2456313 nginx: master process nginx -g daemon off; 
+  pid=2456314 nginx: worker process 
+  pid=2456315 nginx: worker process 
+  pid=2456316 nginx: worker process 
+  pid=2456317 nginx: worker process 
+  pid=2456318 nginx: worker process 
+  pid=2456319 nginx: worker process 
+  pid=2456320 nginx: worker process 
+  pid=2456321 nginx: worker process 
+  pid=2456329 php-fpm: pool www                                              
+  pid=2456330 php-fpm: pool www                                              
+  pid=2456331 php-fpm: pool www                                              
+  pid=2456332 php-fpm: pool www                                              
+  pid=2456333 php-fpm: pool www                                              
+  pid=2456334 php-fpm: pool www                                              
+  pid=2456335 php-fpm: pool www                                              
+  pid=2456336 php-fpm: pool www                                              
+  pid=2456337 php-fpm: pool www                                              
+  pid=2456338 php-fpm: pool www                                              
+  pid=2456339 php-fpm: pool www                                              
+  pid=2456340 php-fpm: pool www                                              
+  pid=2456341 php-fpm: pool www                                              
+  pid=2456342 php-fpm: pool www                                              
+  pid=2456343 php-fpm: pool www                                              
+  pid=2456344 php-fpm: pool www                                              
+  pid=2456345 php-fpm: pool www                                              
+  pid=2456346 php-fpm: pool www                                              
+  pid=2456347 php-fpm: pool www                                              
+  pid=2456348 php-fpm: pool www                                              
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2458000 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2458067 unit: controller                                            
+  pid=2458068 unit: router                                                
+  pid=2458069 unit: "drupal" prototype                                    
+  pid=2458074 unit: "drupal" application                                  
+  pid=2458075 unit: "drupal" application                                  
+  pid=2458076 unit: "drupal" application                                  
+  pid=2458077 unit: "drupal" application                                  
+  pid=2458078 unit: "drupal" application                                  
+  pid=2458079 unit: "drupal" application                                  
+  pid=2458080 unit: "drupal" application                                  
+  pid=2458081 unit: "drupal" application                                  
+  pid=2458082 unit: "drupal" application                                  
+  pid=2458083 unit: "drupal" application                                  
+  pid=2458084 unit: "drupal" application                                  
+  pid=2458085 unit: "drupal" application                                  
+  pid=2458086 unit: "drupal" application                                  
+  pid=2458087 unit: "drupal" application                                  
+  pid=2458088 unit: "drupal" application                                  
+  pid=2458089 unit: "drupal" application                                  
+  pid=2458090 unit: "drupal" application                                  
+  pid=2458091 unit: "drupal" application                                  
+  pid=2458092 unit: "drupal" application                                  
+  pid=2458093 unit: "drupal" application                                  
+runtime=rt-2427637-nginx-fpm url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2459646 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=2459712 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=2459713 nginx: master process nginx -g daemon off; 
+  pid=2459714 nginx: worker process 
+  pid=2459715 nginx: worker process 
+  pid=2459716 nginx: worker process 
+  pid=2459717 nginx: worker process 
+  pid=2459718 nginx: worker process 
+  pid=2459719 nginx: worker process 
+  pid=2459720 nginx: worker process 
+  pid=2459721 nginx: worker process 
+  pid=2459747 php-fpm: pool www                                              
+  pid=2459748 php-fpm: pool www                                              
+  pid=2459749 php-fpm: pool www                                              
+  pid=2459750 php-fpm: pool www                                              
+  pid=2459751 php-fpm: pool www                                              
+  pid=2459752 php-fpm: pool www                                              
+  pid=2459753 php-fpm: pool www                                              
+  pid=2459754 php-fpm: pool www                                              
+  pid=2459755 php-fpm: pool www                                              
+  pid=2459756 php-fpm: pool www                                              
+  pid=2459757 php-fpm: pool www                                              
+  pid=2459758 php-fpm: pool www                                              
+  pid=2459759 php-fpm: pool www                                              
+  pid=2459760 php-fpm: pool www                                              
+  pid=2459761 php-fpm: pool www                                              
+  pid=2459762 php-fpm: pool www                                              
+  pid=2459763 php-fpm: pool www                                              
+  pid=2459764 php-fpm: pool www                                              
+  pid=2459765 php-fpm: pool www                                              
+  pid=2459766 php-fpm: pool www                                              
+runtime=rt-2427637-nginx-fpm url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2461337 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=2461403 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=2461404 nginx: master process nginx -g daemon off; 
+  pid=2461409 nginx: worker process 
+  pid=2461410 nginx: worker process 
+  pid=2461411 nginx: worker process 
+  pid=2461412 nginx: worker process 
+  pid=2461413 nginx: worker process 
+  pid=2461414 nginx: worker process 
+  pid=2461415 nginx: worker process 
+  pid=2461416 nginx: worker process 
+  pid=2461438 php-fpm: pool www                                              
+  pid=2461439 php-fpm: pool www                                              
+  pid=2461440 php-fpm: pool www                                              
+  pid=2461441 php-fpm: pool www                                              
+  pid=2461442 php-fpm: pool www                                              
+  pid=2461443 php-fpm: pool www                                              
+  pid=2461444 php-fpm: pool www                                              
+  pid=2461445 php-fpm: pool www                                              
+  pid=2461446 php-fpm: pool www                                              
+  pid=2461447 php-fpm: pool www                                              
+  pid=2461448 php-fpm: pool www                                              
+  pid=2461449 php-fpm: pool www                                              
+  pid=2461450 php-fpm: pool www                                              
+  pid=2461451 php-fpm: pool www                                              
+  pid=2461452 php-fpm: pool www                                              
+  pid=2461453 php-fpm: pool www                                              
+  pid=2461454 php-fpm: pool www                                              
+  pid=2461455 php-fpm: pool www                                              
+  pid=2461456 php-fpm: pool www                                              
+  pid=2461457 php-fpm: pool www                                              
+runtime=rt-2427637-freeunit url=http://127.0.0.1:8081/ workload=drupal-auth http=200 bytes=35152
+X-Drupal-Dynamic-Cache: HIT
+X-Drupal-Cache: UNCACHEABLE (request policy)
+  pid=2463117 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=2463210 unit: controller                                            
+  pid=2463211 unit: router                                                
+  pid=2463213 unit: "drupal" prototype                                    
+  pid=2463215 unit: "drupal" application                                  
+  pid=2463216 unit: "drupal" application                                  
+  pid=2463217 unit: "drupal" application                                  
+  pid=2463218 unit: "drupal" application                                  
+  pid=2463219 unit: "drupal" application                                  
+  pid=2463220 unit: "drupal" application                                  
+  pid=2463221 unit: "drupal" application                                  
+  pid=2463222 unit: "drupal" application                                  
+  pid=2463223 unit: "drupal" application                                  
+  pid=2463224 unit: "drupal" application                                  
+  pid=2463225 unit: "drupal" application                                  
+  pid=2463227 unit: "drupal" application                                  
+  pid=2463228 unit: "drupal" application                                  
+  pid=2463229 unit: "drupal" application                                  
+  pid=2463230 unit: "drupal" application                                  
+  pid=2463231 unit: "drupal" application                                  
+  pid=2463233 unit: "drupal" application                                  
+  pid=2463234 unit: "drupal" application                                  
+  pid=2463235 unit: "drupal" application                                  
+  pid=2463236 unit: "drupal" application                                  
