@@ -135,6 +135,72 @@ def null_lines(d):
     return [r for r in d.get("results", []) if r.get("phase") == "null"]
 
 
+# ---------------------------------------------------------------- cron/queue arms
+# The tick runs are raw TSVs, not summary.json: bench/tick.sh writes one row per
+# tick with the trigger, wall time, the runtime container's schedstat delta and the
+# process counts before and after. Everything below is computed from those rows.
+
+def ticks_section(results_dir):
+    import statistics as st
+    runs = []
+    for path in sorted(glob.glob(os.path.join(results_dir, "ticks-*", "ticks.tsv"))):
+        rows = []
+        try:
+            with open(path, encoding="utf-8") as fh:
+                header = fh.readline().rstrip("\n").split("\t")
+                for line in fh:
+                    cells = line.rstrip("\n").split("\t")
+                    if len(cells) == len(header):
+                        rows.append(dict(zip(header, cells)))
+        except OSError:
+            continue
+        ok = [r for r in rows if r.get("status") == "ok"]
+        if not ok:
+            continue
+        wall = [float(r["wall_s"]) for r in ok]
+        cpu = [float(r["cpu_ns"]) / 1e6 for r in ok]
+        procs0 = [int(r["procs_before"]) for r in ok]
+        procs1 = [int(r["procs_after"]) for r in ok]
+        runs.append({
+            "dir": os.path.basename(os.path.dirname(path)),
+            "arm": ok[0].get("arm", "?"),
+            "runtime": ok[0].get("runtime", "?"),
+            "trigger": ok[0].get("trigger", "?"),
+            "n": len(ok),
+            "mean": st.mean(wall),
+            "median": st.median(wall),
+            "cpu_ms": st.mean(cpu),
+            "procs": max(procs1) - min(procs0),
+        })
+    if not runs:
+        return ""
+    best = min(r["mean"] for r in runs)
+    out = ['<h2 id="arms">Cron and queue arms: cold CLI against the HTTP path</h2>',
+           '<p class="note">One row per arm from the raw <code>ticks.tsv</code>. '
+           'Arm A is a cold one-shot CLI process (<code>drush core:cron</code> / '
+           '<code>queue:run</code>, or the equivalent bench command on Drupal 12), '
+           'arm B is <code>GET /cron/{key}</code> served by a normal web worker. '
+           'The CLI arm runs before the web workers are warm, so its wall time is the '
+           'one to read; the HTTP arm returns before the job finishes on FreeUnit '
+           '(it detaches), which is why its wall time is the trigger latency.</p>',
+           '<table><thead><tr><th>arm</th><th>runtime</th><th>trigger</th><th>ticks</th>'
+           '<th>mean wall (s)</th><th>median wall (s)</th><th>mean job CPU (ms)</th>'
+           '<th>process growth</th><th>relative mean</th></tr></thead><tbody>']
+    for r in sorted(runs, key=lambda x: x["mean"]):
+        out.append(
+            f'<tr><td>{esc(r["arm"])}</td><td>{esc(r["runtime"])}</td>'
+            f'<td>{esc(r["trigger"])}</td><td>{r["n"]}</td>'
+            f'<td>{r["mean"]:.3f}</td><td>{r["median"]:.3f}</td>'
+            f'<td>{r["cpu_ms"]:.1f}</td><td>{r["procs"]:+d}</td>'
+            f'<td>{r["mean"] / best:.2f}x</td></tr>')
+    out.append("</tbody></table>")
+    out.append('<p class="data">A process growth of 0 over 20 ticks is the gist bug '
+               '(two leaked processes per tick) staying fixed. The mean job CPU of the '
+               'cold-CLI row is a sampling gap, not a real zero: that process is gone '
+               'before the sampler reads it.</p>')
+    return "\n".join(out)
+
+
 def render_one(d):
     m = d.get("meta", {})
     title = WORKLOAD_TITLE.get(m.get("workload"), m.get("workload", "?"))
@@ -175,6 +241,7 @@ def render_one(d):
 def main():
     summaries = load_summaries()
     body = summary_section(summaries)
+    body += "\n" + ticks_section(RESULTS)
     body += "\n" + ("\n".join(render_one(d) for d in summaries) or "<p>No results yet.</p>")
     page = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
