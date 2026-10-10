@@ -1,0 +1,31 @@
+job=23-drupal-front-freeunit-vs-fpm-12.0
+run_id=23-drupal-front-freeunit-vs-fpm-12.0-sd-91675-20261010T202747Z
+host=sd-91675
+date=2026-10-10T20:40:44Z
+workload=drupal-front
+runtime_a=freeunit
+runtime_b=nginx-fpm
+site=12.0
+db=mysql
+phases=null ab conns=32 dur=8 warm=2 reps=3 rate=
+server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=4,5
+governor=powersave
+epp=balance_power
+kernel=6.8.0-136-generic
+oha=oha 1.16.0
+perf_image=1ec7891af56e
+freeunit_image=cdb570e32cf7
+freeunit_master_sha=868ccc29214b979510cee37b2084d2cf3b34e382
+freeunit_master_image=ccb2142d9a8f
+fpm_image=79154a0bd5ac
+apache_image=10483ebcd0b5
+mariadb_image=7db29378d4fd
+issue=https://github.com/freeunitorg/benchmarks-drupal
+expect=the same order as on the other Drupal line and profile
+falsify=NO CLAIM, or FreeUnit losing where it won on umami/11.4
+tag=drupal/recommended-project:12.0.0-beta1 drupal=12.0.0-beta1 php=8.5.11 profile=demo_umami drush=0
+site-build: auth cookie verified (session cookie plus dynamic cache header)
+site=12.0
+runroot=/data/projects/benchmarks-drupal/run
+installed=2026-10-10T18:17:26Z
+user=bench-user
