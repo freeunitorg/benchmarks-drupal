@@ -40,7 +40,7 @@ COPY --from=freeunit-build /usr/sbin/unitd /usr/sbin/unitd
 COPY --from=freeunit-build /usr/lib/unit/modules /usr/lib/unit/modules
 RUN set -eux; \
     printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' > /etc/apt/apt.conf.d/80-retries; \
-    install-php-extensions intl mbstring pdo_mysql mysqli pdo_pgsql pdo_sqlite gd zip opcache exif; \
+    install-php-extensions intl mbstring pdo_mysql mysqli pdo_pgsql pdo_sqlite gd zip opcache exif apcu; \
     apt-get update; \
     apt-get install -y --no-install-recommends curl ca-certificates default-mysql-client \
         libssl3t64 libpcre2-8-0 zlib1g libzstd1 libbrotli1; \
