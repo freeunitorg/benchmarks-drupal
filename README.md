@@ -105,7 +105,7 @@ installed site:
 | `sqlite` | `sqlite` | a file under `sites/default/files/` |
 
 The images carry `pdo_mysql`, `mysqli`, `pdo_pgsql` and `pdo_sqlite`, so one PHP
-build serves every backend. `docs/db-drivers.md` has the namespaces and why the
+build serves every backend. [docker/db-drivers.md](docker/db-drivers.md) has the namespaces and why the
 `mysqli` pair is interesting for a future PHP worker target (issue 596): a
 connection that survives between requests is where a persistent in-process worker
 can win.
