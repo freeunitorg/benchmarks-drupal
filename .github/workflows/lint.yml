@@ -18,6 +18,23 @@ jobs:
           # errors gate; the glue scripts keep intentional word splitting and
           # empty-default assignments that shellcheck reports at warning level
           shellcheck -S error bench/*.sh scripts/*.sh
+      - name: PHP syntax
+        run: |
+          set -eux
+          if command -v php >/dev/null 2>&1; then
+            for f in apps/*.php bin/drupal-bench modules/fu_queue_test/src/Command/*.php; do php -l "$f"; done
+          else
+            echo "php not on this runner; skipping"
+          fi
+      - name: Composer manifests
+        run: |
+          set -eux
+          if command -v composer >/dev/null 2>&1; then
+            composer validate --strict --no-check-publish composer.json
+            composer validate --strict --no-check-publish modules/fu_queue_test/composer.json
+          else
+            for f in composer.json modules/fu_queue_test/composer.json; do python3 -c 'import json,sys; json.load(open(sys.argv[1]))' "$f"; done
+          fi
       - name: Python syntax
         run: |
           set -eux
