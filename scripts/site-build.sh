@@ -71,8 +71,40 @@ fi
 mkdir -p "$SITEDIR" "$RUNROOT/cache/composer"
 
 docker network create "$NET" >/dev/null
-case "$DB" in
-mysql|mysqli)
+if [ "${DB}" = sqlite ]; then
+    # no server: the database is a file under the site files directory
+    DB_URL="sqlite://localhost/sites/default/files/.sqlite"
+elif [ -n "${DBC_IMAGE:-}" ]; then
+    # one image that can be any server; the entrypoint reads DB
+    case "$DB" in
+    pgsql) DB_URL="pgsql://postgres@db/drupal" ;;
+    mysql|mysqli) DB_URL="mysql://root@db/drupal" ;;
+    *) echo "site-build: unknown DB $DB (mysql, mysqli, pgsql, sqlite)" >&2; exit 2 ;;
+    esac
+    docker run -d --name "$DBC" --network "$NET" --network-alias db \
+        -v "$DBCVOL:/var/lib/bench-db" -e DB="$DB" "$DBC_IMAGE" >/dev/null
+    for _ in $(seq 90); do
+        if [ "$DB" = pgsql ]; then
+            docker exec "$DBC" pg_isready -h 127.0.0.1 -U postgres >/dev/null 2>&1 && break
+        else
+            docker exec "$DBC" mariadb-admin --protocol=tcp -h127.0.0.1 -uroot ping >/dev/null 2>&1 && break
+        fi
+        sleep 1
+    done
+    if [ "$DB" != pgsql ]; then
+        docker exec "$DBC" mariadb --protocol=tcp -h127.0.0.1 -uroot -e "DROP DATABASE IF EXISTS drupal; CREATE DATABASE drupal;" 2>/dev/null || true
+    fi
+elif [ "${DB}" = pgsql ]; then
+    DB_URL="pgsql://postgres@db/drupal"
+    docker run -d --name "$DBC" --network "$NET" --network-alias db \
+        -v "$DBCVOL:/var/lib/postgresql/data" \
+        -e POSTGRES_DB=drupal -e POSTGRES_HOST_AUTH_METHOD=trust \
+        "${PG_IMAGE:-postgres:17}" >/dev/null
+    for _ in $(seq 60); do
+        docker exec "$DBC" pg_isready -U postgres -d drupal >/dev/null 2>&1 && break
+        sleep 1
+    done
+elif [ "${DB}" = mysql ] || [ "${DB}" = mysqli ]; then
     DB_URL="mysql://root@db/drupal"
     docker run -d --name "$DBC" --network "$NET" --network-alias db \
         -v "$DBCVOL:/var/lib/mysql" \
@@ -84,24 +116,10 @@ mysql|mysqli)
     done
     # a rebuild starts from an empty database
     docker exec "$DBC" mariadb -uroot -e "DROP DATABASE IF EXISTS drupal; CREATE DATABASE drupal;" 2>/dev/null || true
-    ;;
-pgsql)
-    DB_URL="pgsql://postgres@db/drupal"
-    docker run -d --name "$DBC" --network "$NET" --network-alias db \
-        -v "$DBCVOL:/var/lib/postgresql/data" \
-        -e POSTGRES_DB=drupal -e POSTGRES_HOST_AUTH_METHOD=trust \
-        "${PG_IMAGE:-postgres:17}" >/dev/null
-    for _ in $(seq 60); do
-        docker exec "$DBC" pg_isready -U postgres -d drupal >/dev/null 2>&1 && break
-        sleep 1
-    done
-    ;;
-sqlite)
-    # no server: the database is a file under the site files directory
-    DB_URL="sqlite://localhost/sites/default/files/.sqlite"
-    ;;
-*) echo "site-build: unknown DB $DB (mysql, mysqli, pgsql, sqlite)" >&2; exit 2 ;;
-esac
+else
+    echo "site-build: unknown DB $DB (mysql, mysqli, pgsql, sqlite)" >&2
+    exit 2
+fi
 
 echo "site-build: $SITE [$DB] -> $DRUPAL_TAG ($PROFILE)"
 docker run --rm --network "$NET" \

@@ -1,0 +1,36 @@
+# One image that can be any of the three benchmark database servers.
+#
+# OPT-IN. The default in the harness stays one official image per server
+# (mariadb:10.11, postgres:17, and nothing for sqlite), because a single image
+# cannot hold both exact versions: mariadb:10.11 is Ubuntu 22.04-based, whose
+# archive has PostgreSQL 14, and Debian trixie pairs PostgreSQL 17 with MariaDB
+# 11.8. This image takes the trixie pair, which is current and self-consistent;
+# use it for the PostgreSQL and SQLite backends freely, and for the mysql/mysqli
+# backends only when a run's meta.txt records db_image=drupal-bench-db and the
+# reader knows the server is MariaDB 11.8 rather than the pinned 10.11.
+#
+#   docker build -f docker/Dockerfile.db -t drupal-bench-db:1 .
+#   docker run -e DB=pgsql   drupal-bench-db:1     # PostgreSQL 17 on :5432
+#   docker run -e DB=mysql   drupal-bench-db:1     # MariaDB 11.8 on :3306
+#   docker run -e DB=sqlite  drupal-bench-db:1     # nothing to serve; stays up
+#
+FROM debian:trixie-slim
+
+RUN set -eux; \
+    printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' > /etc/apt/apt.conf.d/80-retries; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        mariadb-server mariadb-client \
+        postgresql postgresql-client \
+        sqlite3 \
+        ca-certificates procps; \
+    rm -rf /var/lib/apt/lists/*; \
+    mkdir -p /var/lib/bench-db /docker-entrypoint.d
+
+COPY docker/db-entrypoint.sh /usr/local/bin/db-entrypoint.sh
+RUN chmod +x /usr/local/bin/db-entrypoint.sh
+
+# The two servers share the data volume; each keeps its own subdirectory.
+VOLUME ["/var/lib/bench-db"]
+EXPOSE 3306 5432
+ENTRYPOINT ["/usr/local/bin/db-entrypoint.sh"]

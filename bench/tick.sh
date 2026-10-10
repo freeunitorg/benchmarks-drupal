@@ -50,21 +50,31 @@ docker network create "$NET" >/dev/null
 DBVOLKEY="${SITE:-default}"
 [ "${DB:-mysql}" != mysql ] && DBVOLKEY="$DBVOLKEY-${DB}"
 DBCVOL=${DBCVOL:-drupal-bench-db-$DBVOLKEY}
-case "${DB:-mysql}" in
-sqlite) NO_DB=1 ;;
-pgsql)
+if [ "${DB:-mysql}" = sqlite ]; then
+    # no server: the database is a file inside the site
+    NO_DB=1
+elif [ -n "${DBC_IMAGE:-}" ]; then
+    # one image that can be any server; the entrypoint reads DB
+    docker run -d --name "$DBC" --network "$NET" --cpuset-cpus "${DB_CPUS:-4,5}" --label bench-run=tick \
+        -v "$DBCVOL:/var/lib/bench-db" --network-alias db -e DB="$DB" "$DBC_IMAGE" >/dev/null
+    for _ in $(seq 90); do
+        case "${DB:-mysql}" in
+        pgsql) docker exec "$DBC" pg_isready -h 127.0.0.1 -U postgres >/dev/null 2>&1 && break ;;
+        *)     docker exec "$DBC" mariadb-admin --protocol=tcp -h127.0.0.1 -uroot ping >/dev/null 2>&1 && break ;;
+        esac
+        sleep 1
+    done
+elif [ "${DB:-mysql}" = pgsql ]; then
     docker run -d --name "$DBC" --network "$NET" --cpuset-cpus "${DB_CPUS:-4,5}" --label bench-run=tick \
         -v "$DBCVOL:/var/lib/postgresql/data" \
         --network-alias db -e POSTGRES_DB=drupal -e POSTGRES_HOST_AUTH_METHOD=trust "${PG_IMAGE:-postgres:17}" >/dev/null
     for _ in $(seq 60); do docker exec "$DBC" pg_isready -U postgres -d drupal >/dev/null 2>&1 && break; sleep 1; done
-    ;;
-*)
+else
     docker run -d --name "$DBC" --network "$NET" --cpuset-cpus "${DB_CPUS:-4,5}" --label bench-run=tick \
         -v "$DBCVOL:/var/lib/mysql" \
         --network-alias db -e MARIADB_ROOT_HOST=% -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=drupal "$DB_IMAGE" >/dev/null
     for _ in $(seq 60); do docker exec "$DBC" mariadb -uroot -e 'SELECT 1' >/dev/null 2>&1 && break; sleep 1; done
-    ;;
-esac
+fi
 for c in $(docker ps -q -f "publish=$PORT"); do docker rm -f "$c" >/dev/null 2>&1 || true; done
 docker run -d --name "$RTC" --network "$NET" --cpuset-cpus "${SERVER_CPUS:-0,1}" --label bench-run=tick \
     -p "127.0.0.1:$PORT:80" -v "$SITE_DIR:/app" \

@@ -131,6 +131,21 @@ start_db() {
     [ "${DB:-mysql}" != mysql ] && DBVOLKEY="$DBVOLKEY-${DB}"
     DBCVOL=${DBCVOL:-drupal-bench-db-$DBVOLKEY}
     local i
+    if [ -n "${DBC_IMAGE:-}" ] && [ "${DB:-mysql}" != sqlite ]; then
+        # one image that can be any server; the entrypoint reads DB
+        docker run -d --name "$CNAME" --network "$NET" --cpuset-cpus "${DB_CPUS:-$SERVER_CPUS}" \
+            --label "bench-run=${RUN_ID:-manual}" --label bench-role=db \
+            -v "$DBCVOL:/var/lib/bench-db" --network-alias db -e DB="$DB" \
+            "$DBC_IMAGE" >/dev/null || die "cannot start $DBC_IMAGE"
+        for i in $(seq 90); do
+            case "${DB:-mysql}" in
+            pgsql) docker exec "$CNAME" pg_isready -h 127.0.0.1 -U postgres >/dev/null 2>&1 && return 0 ;;
+            *)     docker exec "$CNAME" mariadb-admin --protocol=tcp -h127.0.0.1 -uroot ping >/dev/null 2>&1 && return 0 ;;
+            esac
+            sleep 1
+        done
+        die "$DBC_IMAGE did not become ready for DB=$DB"
+    fi
     case "${DB:-mysql}" in
     sqlite)
         # no server: the site's settings.php points at a file
