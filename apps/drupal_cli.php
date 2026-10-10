@@ -193,6 +193,15 @@ switch ($cmd) {
         echo json_encode(['enabled' => $mods]) . "\n";
         break;
 
+    case 'module-enabled':
+        $name = $args[0] ?? '';
+        if ($name === '') {
+            fail('module-enabled needs a module name');
+        }
+        $on = \Drupal::moduleHandler()->moduleExists($name);
+        echo json_encode(['module' => $name, 'enabled' => $on ? 1 : 0]) . "\n";
+        exit($on ? 0 : 1);
+
     case 'disable':
         $mods = $args;
         \Drupal::service('module_installer')->uninstall($mods, TRUE);
@@ -225,7 +234,9 @@ switch ($cmd) {
                 'mail' => $name . '@example.com',
             ]);
         }
-        $user->addRole('authenticated');
+        // Drupal 12 refuses to assign the built-in roles by hand; a user with a
+        // password and status 1 is authenticated implicitly, so only named roles
+        // would need addRole() here.
         $user->save();
         echo json_encode(['user' => $name, 'uid' => (int) $user->id()]) . "\n";
         break;

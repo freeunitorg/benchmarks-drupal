@@ -202,10 +202,17 @@ start_db() {  # side
             -v "$DBCVOL:/var/lib/mysql" \
             --network-alias db -e MARIADB_ROOT_HOST=% -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=drupal \
             mariadb:${MARIADB_TAG:-10.11} >/dev/null || die "cannot start mariadb"
-        for i in $(seq 60); do
-            docker exec "$cname" mariadb -uroot -e 'SELECT 1' >/dev/null 2>&1 && return 0
+        # Wait for the image's temporary initialization server to finish: touching
+        # the users during it makes the entrypoint's CREATE USER fail and the
+        # container exit (see site-build.sh).
+        for i in $(seq 120); do
+            if docker exec "$cname" mariadb -uroot -e 'SELECT 1' >/dev/null 2>&1; then
+                docker logs "$cname" 2>&1 | grep -q 'Temporary server started' || return 0
+                docker logs "$cname" 2>&1 | grep -qE 'Temporary server stopped|init process done' && return 0
+            fi
             sleep 1
         done
+        die "mariadb did not finish initializing"
         die "mariadb did not become ready"
         ;;
     esac

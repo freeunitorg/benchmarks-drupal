@@ -48,6 +48,7 @@ case "$SITE" in
 esac
 
 cleanup() {
+    [ "${SKIP_CLEANUP:-0}" = 1 ] && { echo "cleanup: kept $DBC/$RTC and $NET (SKIP_CLEANUP=1)"; return 0; }
     docker rm -f "$DBC" "$RTC" >/dev/null 2>&1 || true
     docker network rm "$NET" >/dev/null 2>&1 || true
 }
@@ -69,6 +70,13 @@ if { [ "$FORCE" = "--force" ] || [ -d "$SITEDIR" ]; } && ! site_installed; then
     docker run --rm -v "$RUNROOT:/run" alpine:3 sh -c "rm -rf /run/site/$SITEKEY"
 fi
 mkdir -p "$SITEDIR" "$RUNROOT/cache/composer"
+
+# A container left behind by a killed earlier build keeps the data directory open
+# (MariaDB init can then stall) or holds the runtime port; clear our own stale ones
+# and anything still publishing the port this build will use.
+docker rm -f $(docker ps -aq --filter "name=db-sitebuild-") >/dev/null 2>&1 || true
+docker rm -f $(docker ps -aq --filter "name=rt-sitebuild-") >/dev/null 2>&1 || true
+for _c in $(docker ps -q -f "publish=$PORT"); do docker rm -f "$_c" >/dev/null 2>&1 || true; done
 
 docker network create "$NET" >/dev/null
 if [ "${DB}" = sqlite ]; then
@@ -110,10 +118,44 @@ elif [ "${DB}" = mysql ] || [ "${DB}" = mysqli ]; then
         -v "$DBCVOL:/var/lib/mysql" \
         -e MARIADB_ROOT_HOST=% -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=drupal \
         "$DB_IMAGE" >/dev/null
-    for _ in $(seq 60); do
-        docker exec "$DBC" mariadb -uroot -e 'SELECT 1' >/dev/null 2>&1 && break
-        sleep 1
+    # The image runs a TEMPORARY server while it initializes (and creates root@'%'
+    # itself). A client can already answer during that phase, and touching the
+    # users then makes the entrypoint's own CREATE USER fail with 1396 and the
+    # container exit 1 -- which then looks like a DNS failure in the next step.
+    # Wait for initialization to finish, then check the real server.
+    wait_maria() {
+        docker exec "$DBC" mariadb -uroot -e 'SELECT 1' >/dev/null 2>&1 || return 1
+        docker logs "$DBC" 2>&1 | grep -q 'Temporary server started' || return 0
+        docker logs "$DBC" 2>&1 | grep -qE 'Temporary server stopped|init process done'
+    }
+    # The image's first-run initialization occasionally stalls at "Temporary server
+    # started" on a fresh volume. A second start finds the data directory already
+    # initialized and goes straight to the real server, so retry before failing.
+    started=0
+    for attempt in 1 2 3; do
+        for _ in $(seq 90); do
+            wait_maria && { started=1; break; }
+            sleep 1
+        done
+        [ "$started" = 1 ] && break
+        echo "site-build: database attempt $attempt did not finish initializing; retrying" >&2
+        docker logs "$DBC" 2>&1 | tail -n 5 >&2
+        docker rm -f "$DBC" >/dev/null 2>&1 || true
+        docker run -d --name "$DBC" --network "$NET" --network-alias db \
+            -v "$DBCVOL:/var/lib/mysql" \
+            -e MARIADB_ROOT_HOST=% -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=drupal \
+            "$DB_IMAGE" >/dev/null
     done
+    if [ "$started" != 1 ]; then
+        echo "site-build: mariadb container $DBC never became ready; log follows" >&2
+        docker logs "$DBC" 2>&1 | tail -n 20 >&2
+        exit 1
+    fi
+    # Do NOT touch users here: the image creates root@'%' itself from
+    # MARIADB_ROOT_HOST, and a CREATE USER that wins the race against its own
+    # temporary server makes the entrypoint fail with 1396 and the container exit,
+    # which then shows up as a DNS failure a step later. A volume with the wrong
+    # users has to be removed, not patched (see docs/progress.md).
     # a rebuild starts from an empty database
     docker exec "$DBC" mariadb -uroot -e "DROP DATABASE IF EXISTS drupal; CREATE DATABASE drupal;" 2>/dev/null || true
 else
@@ -122,6 +164,12 @@ else
 fi
 
 echo "site-build: $SITE [$DB] -> $DRUPAL_TAG ($PROFILE)"
+[ "${DEBUG_BUILD:-0}" = 1 ] && {
+    echo "debug: before tool container $(date -u +%T)"
+    docker ps --format '  {{.Names}} {{.Status}}' | sed 's/^/  /'
+    docker network inspect "$NET" --format '  net members: {{range .Containers}}{{.Name}} {{end}}' 2>&1
+    docker exec "$DBC" mariadb -uroot -e 'SELECT 1' >/dev/null 2>&1 && echo "  db answers: yes" || echo "  db answers: NO"
+}
 docker run --rm --network "$NET" \
     -v "$RUNROOT:/run" -v "$REPO/modules:/run/modules-src:ro" -v "$REPO/apps:/run/apps-src:ro" \
     -v "$RUNROOT/cache/composer:/cache" -w /run -e HOME=/root -e COMPOSER_HOME=/cache \
@@ -134,16 +182,29 @@ docker run --rm --network "$NET" \
         mkdir -p web/modules/custom
         cp -r /run/modules-src/fu_queue_test web/modules/custom/
         chmod u+w web/sites/default
+
         HAS_DRUSH=1
         composer require --no-interaction --no-progress drush/drush:^13 >/dev/null 2>&1 || HAS_DRUSH=0
-        # drush cannot install the mysqli driver and its db-url handling differs per
-        # backend, so anything but mysql goes through settings-init + dr/install_drupal.
-        [ "$DB" != mysql ] && HAS_DRUSH=0
+        [ \"$DB\" != mysql ] && HAS_DRUSH=0
+
         if [ \"\$HAS_DRUSH\" = 1 ]; then
             ./vendor/bin/drush site:install $PROFILE \
                 --db-url=mysql://root@db/drupal \
                 --account-name=admin --account-pass=admin \
                 --site-name='FreeUnit benchmark' --yes
+        else
+            # No drush. The dr install command cannot be used here: it returns early
+            # reporting an installed site as soon as settings.php carries a database
+            # array, and with no settings.php it installs into SQLite because the
+            # command has no db-url option. install_drupal with the driver spec in
+            # the settings form is what drush site:install does.
+            DRUPAL_ROOT=\$PWD/web
+            export DRUPAL_ROOT
+            CLI=\"php /run/apps-src/drupal_cli.php\"
+            \$CLI install $PROFILE
+        fi
+
+        if [ \"\$HAS_DRUSH\" = 1 ]; then
             ./vendor/bin/drush pm:enable fu_queue_test page_cache dynamic_page_cache --yes
             ./vendor/bin/drush pm:uninstall big_pipe --yes || true
             ./vendor/bin/drush sset fu_queue_test.key benchmark
@@ -151,36 +212,30 @@ docker run --rm --network "$NET" \
             ./vendor/bin/drush role:assign authenticated $BENCH_USER || true
             ./vendor/bin/drush cr
             drupal=\$(./vendor/bin/drush status --field=drupal-version)
-            # Drupal 12 ships vendor/bin/dr (drupal/core "bin": scripts/dr). Its
-            # install command hardcodes SQLite, so settings-init writes a valid
-            # connection and hash salt first; the installer then skips its settings
-            # form and installs into MariaDB.
-            CLI="DRUPAL_ROOT=$PWD/web php /run/apps-src/drupal_cli.php"
-            $CLI settings-init
+        else
+            \$CLI enable fu_queue_test page_cache dynamic_page_cache
+            \$CLI disable big_pipe || true
+            \$CLI state-set fu_queue_test.key benchmark
+            \$CLI user-create $BENCH_USER $BENCH_PASS
             if [ -x vendor/bin/dr ]; then
-                php vendor/bin/dr install $PROFILE --site-name='FreeUnit benchmark' --password=$SITE_PASS
                 php vendor/bin/dr cache:rebuild
             else
-                $CLI install $PROFILE
-                $CLI cache-rebuild
+                \$CLI cache-rebuild
             fi
-            # The module must be enabled before dr can see its bench command.
-            $CLI enable fu_queue_test page_cache dynamic_page_cache
-            $CLI disable big_pipe || true
-            # dr sees the module's bench command because enabling it rebuilt the
-            # container; each call falls back to the standalone CLI.
-            if [ -x vendor/bin/dr ]; then
-                php vendor/bin/dr bench state-set fu_queue_test.key benchmark || $CLI state-set fu_queue_test.key benchmark
-                php vendor/bin/dr bench user-create $BENCH_USER $BENCH_PASS || $CLI user-create $BENCH_USER $BENCH_PASS
-            else
-                $CLI state-set fu_queue_test.key benchmark
-                $CLI user-create $BENCH_USER $BENCH_PASS
-            fi
-            drupal=\$(php -r 'require "core/lib/Drupal.php"; echo \\Drupal::VERSION;' 2>/dev/null || echo unknown)
+            # The dr bench command only exists once the module is enabled; fail here
+            # rather than at the login step if it did not stick.
+            \$CLI module-enabled fu_queue_test >/dev/null || { echo \"fu_queue_test did not enable\"; exit 1; }
+            drupal=\$(php -r 'require \"web/core/lib/Drupal.php\"; echo \\Drupal::VERSION;' 2>/dev/null || echo unknown)
+        fi
+
         printf '\n\$settings[\"trusted_host_patterns\"] = [\".*\"];\n' >> web/sites/default/settings.php
         phpv=\$(php -r 'echo PHP_VERSION;')
         echo \"tag=$DRUPAL_TAG drupal=\$drupal php=\$phpv profile=$PROFILE drush=\$HAS_DRUSH\" > /run/site/$SITEKEY/meta.txt
     "
+
+# the build above wrote as root; hand the tree back so the host can write the
+# cookie and the meta lines. chown needs root, so do it in a container.
+docker run --rm -v "$RUNROOT:/run" alpine:3 sh -c "chown -R $(id -u):$(id -g) /run/site/$SITEKEY" >/dev/null 2>&1 || true
 
 echo "site-build: login cookie for the drupal-auth workload"
 docker run -d --name "$RTC" --network "$NET" -p "127.0.0.1:$PORT:80" \
@@ -196,23 +251,26 @@ LOGIN_URL=$(docker run --rm --network "$NET" \
         if [ -x ./vendor/bin/drush ]; then
             ./vendor/bin/drush --no-ansi user:login --name='"$BENCH_USER"' --uri=http://127.0.0.1:'"$PORT"' 2>/dev/null
         elif [ -x ./vendor/bin/dr ]; then
-            php ./vendor/bin/dr bench login-url '"$BENCH_USER"' 2>/dev/null
+            php ./vendor/bin/dr --url=http://127.0.0.1:'"$PORT"' bench login-url '"$BENCH_USER"' 2>/dev/null
         else
             DRUPAL_ROOT=/app/web php /run/apps-src/drupal_cli.php login-url '"$BENCH_USER"'
         fi' | tr -d '\r' | grep -o 'http://[^" ]*' | head -1)
 if [ -n "$LOGIN_URL" ]; then
-    curl -s -c "$SITEDIR/cookie.txt" -o /dev/null -L "$LOGIN_URL"
+    # No -L: the one-time link answers 302 with the session cookie, and following
+    # the redirect lands on the reset form, which deletes that cookie again.
+    curl -s -c "$SITEDIR/cookie.txt" -o /dev/null "$LOGIN_URL" || true
     COOKIE=$(awk '($1 ~ /^#HttpOnly_/ || $1 !~ /^#/) && NF >= 7 { printf "%s=%s; ", $6, $7 }' "$SITEDIR/cookie.txt")
     hdrs=$(curl -s -D - -o /dev/null -H "Cookie: $COOKIE" "http://127.0.0.1:$PORT/")
-    if printf '%s' "$hdrs" | grep -qi '^x-drupal-dynamic-cache:'; then
-        echo "site-build: auth cookie verified (dynamic cache header present)" | tee -a "$SITEDIR/meta.txt"
+    if [ -z "$COOKIE" ]; then
+        echo "site-build: WARNING the login link set no cookie; drupal-auth will not authenticate" | tee -a "$SITEDIR/meta.txt"
+    elif printf '%s' "$hdrs" | grep -qi '^x-drupal-dynamic-cache:'; then
+        echo "site-build: auth cookie verified (session cookie plus dynamic cache header)" | tee -a "$SITEDIR/meta.txt"
     else
-        echo "site-build: WARNING auth cookie did not reach the render path" | tee -a "$SITEDIR/meta.txt"
+        echo "site-build: WARNING a cookie was stored but the render path did not show it" | tee -a "$SITEDIR/meta.txt"
     fi
 else
     echo "site-build: WARNING no login link; drupal-auth cannot run" | tee -a "$SITEDIR/meta.txt"
 fi
-chown -R "$(id -u):$(id -g)" "$SITEDIR" 2>/dev/null || true
 cat >> "$SITEDIR/meta.txt" <<EOF
 site=$SITE
 runroot=$RUNROOT
