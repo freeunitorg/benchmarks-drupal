@@ -25,12 +25,11 @@ state (`cached_scripts`, `hits`, `rss_kb`), the shape the gist's
 Why it exists rather than `dr install` doing everything: `dr install` has no `--db-url`
 and hardcodes SQLite. `install.core.inc` skips its settings form when `settings.php`
 verifies (a valid connection *and* a non-empty `hash_salt`), so
-`apps/drupal_cli.php settings-init` writes both and `dr install` follows into MariaDB.
+
 Module enable has no core CLI, so the first enable uses the same standalone CLI; after
 that `dr bench` is the path. drush stays the 11.x arm where it is installed, because
 those cron-arm numbers are already published.
 
 Files: `modules/fu_queue_test/src/Command/BenchCommand.php` (the command),
-`apps/drupal_cli.php` (settings-init, install fallback, and the operations `dr` does not
-have), `scripts/site-build.sh` and `bench/tick.sh` (the fallback order drush → dr →
+`apps/drupal_cli.php` (the install_drupal path and the operations `dr` does not have), `scripts/site-build.sh` and `bench/tick.sh` (the fallback order drush → dr →
 standalone).
