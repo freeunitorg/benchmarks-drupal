@@ -27,9 +27,19 @@ Cron/queue arms: cold CLI 5.90 s mean vs HTTP 0.70-0.73 s on all three runtimes,
 process growth over 20 ticks. The authenticated-page gap is cycles and context switches,
 not instructions or the database: `strace-20261010-auth-page-cycles-not-instructions.md`.
 
-## Running right now (self-starting, both waiting)
+## Running right now
 
-Two hosts, each with a waiter that starts a campaign when the CPUs a measurement uses are
+Both waiters ran their queues on 2026-10-10 ~18:42-18:51 and **every job failed**, on three
+bugs that are now fixed (see below). The images were also stale: `bin/drupal-bench` is a PHP
+script and the boxes have no PHP, so `bin/drupal-bench build` had been dying with
+`/usr/bin/env: 'php': No such file or directory` and the waiter only warned. The image list now
+lives in `scripts/build-images.sh` (no host PHP, builds master too, verifies the extensions) and
+the waiter retries once then refuses to start. `run.sh` read `PORT` before anything set it
+(`PORT: unbound variable`) and Drupal's mysqli driver needs the `mysqli` extension, which the
+stale image did not have. Image rebuilds were restarted on both boxes; the queues then need
+another run to pick up the new images.
+
+The two hosts' waiters start a campaign when the CPUs a measurement uses are
 quiet (≤5% over `SERVER_CPUS,DB_CPUS,LOAD_CPUS`) and the cell port is free:
 
 * **pro4s-2**: `scripts/wait-idle.sh scripts/campaign.steps.all` (32 steps: Drupal 12 +
