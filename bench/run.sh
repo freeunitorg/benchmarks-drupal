@@ -93,7 +93,6 @@ port_busy() { ss -ltn 2>/dev/null | awk -v p=":$PORT" '$4 ~ p "$" {found=1} END{
 
 if [ "$NOGATE" != "--no-gate" ]; then
     # a 2 s busy sample from /proc/stat, like the lab
-    local try
     for try in 1 2 3; do
         busy=$(cpu_busy "$SERVER_CPUS,$DB_CPUS,$LOAD_CPUS")
         if port_busy; then
