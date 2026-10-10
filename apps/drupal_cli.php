@@ -33,6 +33,56 @@ if (!is_file($root . '/autoload.php')) {
     fail("no autoload.php under $root");
 }
 
+// settings-init writes the database connection and a hash salt into settings.php.
+// The Drupal 12 installer (vendor/bin/dr install) has no --db-url and hardcodes
+// SQLite, but install.core.inc skips its settings form when settings.php verifies:
+// a valid database connection AND a non-empty hash_salt. This runs before any
+// kernel exists, so it only edits files.
+if ($cmd === 'settings-init') {
+    $settings_file = $root . '/web/sites/default/settings.php';
+    if (!is_file($settings_file)) {
+        $settings_file = $root . '/sites/default/settings.php';
+    }
+    $dir = dirname($settings_file);
+    if (!is_dir($dir)) {
+        fail("no settings directory under $root");
+    }
+    if (!is_file($settings_file)) {
+        $template = $dir . '/default.settings.php';
+        if (!is_file($template)) {
+            fail("no default.settings.php in $dir");
+        }
+        copy($template, $settings_file);
+    }
+    @chmod($dir, 0775);
+    @chmod($settings_file, 0664);
+    $existing = (string) file_get_contents($settings_file);
+    if (str_contains($existing, 'benchmarks-drupal')) {
+        echo json_encode(['settings' => 'already initialised']) . "\n";
+        exit(0);
+    }
+    $p = parse_url(getenv('DB_URL') ?: 'mysql://root@db/drupal') ?: [];
+    $salt = bin2hex(random_bytes(16));
+    $block = sprintf(
+        "\n/* benchmarks-drupal: written by apps/drupal_cli.php settings-init */\n" .
+        "\$databases['default']['default'] = [\n" .
+        "  'database' => %s,\n  'username' => %s,\n  'password' => %s,\n  'prefix' => '',\n" .
+        "  'host' => %s,\n  'port' => %d,\n  'isolation_level' => 'READ COMMITTED',\n" .
+        "  'driver' => 'mysql',\n  'namespace' => 'Drupal\\\\mysql\\\\Driver\\\\Database\\\\mysql',\n" .
+        "  'autoload' => 'core/modules/mysql/src/Driver/Database/mysql/',\n];\n" .
+        "\$settings['hash_salt'] = '%s';\n",
+        var_export(ltrim($p['path'] ?? '/drupal', '/'), TRUE),
+        var_export($p['user'] ?? 'root', TRUE),
+        var_export($p['pass'] ?? '', TRUE),
+        var_export($p['host'] ?? 'db', TRUE),
+        (int) ($p['port'] ?? 3306),
+        $salt
+    );
+    file_put_contents($settings_file, $block, FILE_APPEND);
+    echo json_encode(['settings' => $settings_file, 'database' => ltrim($p['path'] ?? '/drupal', '/')]) . "\n";
+    exit(0);
+}
+
 // Install runs before a kernel exists. Drupal 12's core/scripts/drupal installer is
 // hardcoded to SQLite (it has no --db-url), so this calls install_drupal() with the
 // database spec in the settings form -- exactly what drush's site:install does.

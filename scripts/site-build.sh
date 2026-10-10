@@ -103,15 +103,24 @@ docker run --rm --network "$NET" \
             ./vendor/bin/drush role:assign authenticated $BENCH_USER || true
             ./vendor/bin/drush cr
             drupal=\$(./vendor/bin/drush status --field=drupal-version)
-        else
-            php /run/apps-src/drupal_cli.php install $PROFILE
-            php /run/apps-src/drupal_cli.php enable fu_queue_test page_cache dynamic_page_cache
-            php /run/apps-src/drupal_cli.php disable big_pipe || true
-            php /run/apps-src/drupal_cli.php state-set fu_queue_test.key benchmark
-            php /run/apps-src/drupal_cli.php user-create $BENCH_USER $BENCH_PASS
-            php /run/apps-src/drupal_cli.php cache-rebuild
-            drupal=\$(php -r 'require \"core/lib/Drupal.php\"; echo \\\\Drupal::VERSION;' 2>/dev/null || echo unknown)
-        fi
+            # Drupal 12 ships vendor/bin/dr (drupal/core "bin": scripts/dr). Its
+            # install command hardcodes SQLite, so settings-init writes a valid
+            # connection and hash salt first; the installer then skips its settings
+            # form and installs into MariaDB.
+            CLI="DRUPAL_ROOT=$PWD/web php /run/apps-src/drupal_cli.php"
+            $CLI settings-init
+            if [ -x vendor/bin/dr ]; then
+                php vendor/bin/dr install $PROFILE --site-name='FreeUnit benchmark' --password=$SITE_PASS
+                php vendor/bin/dr cache:rebuild
+            else
+                $CLI install $PROFILE
+                $CLI cache-rebuild
+            fi
+            $CLI enable fu_queue_test page_cache dynamic_page_cache
+            $CLI disable big_pipe || true
+            $CLI state-set fu_queue_test.key benchmark
+            $CLI user-create $BENCH_USER $BENCH_PASS
+            drupal=\$(php -r 'require "core/lib/Drupal.php"; echo \\Drupal::VERSION;' 2>/dev/null || echo unknown)
         printf '\n\$settings[\"trusted_host_patterns\"] = [\".*\"];\n' >> web/sites/default/settings.php
         phpv=\$(php -r 'echo PHP_VERSION;')
         echo \"tag=$DRUPAL_TAG drupal=\$drupal php=\$phpv profile=$PROFILE drush=\$HAS_DRUSH\" > /run/site/$SITE/meta.txt
