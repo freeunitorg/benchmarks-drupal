@@ -116,10 +116,18 @@ docker run --rm --network "$NET" \
                 $CLI install $PROFILE
                 $CLI cache-rebuild
             fi
+            # The module must be enabled before dr can see its bench command.
             $CLI enable fu_queue_test page_cache dynamic_page_cache
             $CLI disable big_pipe || true
-            $CLI state-set fu_queue_test.key benchmark
-            $CLI user-create $BENCH_USER $BENCH_PASS
+            # dr sees the module's bench command because enabling it rebuilt the
+            # container; each call falls back to the standalone CLI.
+            if [ -x vendor/bin/dr ]; then
+                php vendor/bin/dr bench state-set fu_queue_test.key benchmark || $CLI state-set fu_queue_test.key benchmark
+                php vendor/bin/dr bench user-create $BENCH_USER $BENCH_PASS || $CLI user-create $BENCH_USER $BENCH_PASS
+            else
+                $CLI state-set fu_queue_test.key benchmark
+                $CLI user-create $BENCH_USER $BENCH_PASS
+            fi
             drupal=\$(php -r 'require "core/lib/Drupal.php"; echo \\Drupal::VERSION;' 2>/dev/null || echo unknown)
         printf '\n\$settings[\"trusted_host_patterns\"] = [\".*\"];\n' >> web/sites/default/settings.php
         phpv=\$(php -r 'echo PHP_VERSION;')
@@ -139,8 +147,10 @@ LOGIN_URL=$(docker run --rm --network "$NET" \
     -v "$SITEDIR:/app" -v "$REPO/apps:/run/apps-src:ro" -w /app "$TOOL_IMAGE" sh -c '
         if [ -x ./vendor/bin/drush ]; then
             ./vendor/bin/drush --no-ansi user:login --name='"$BENCH_USER"' --uri=http://127.0.0.1:'"$PORT"' 2>/dev/null
+        elif [ -x ./vendor/bin/dr ]; then
+            php ./vendor/bin/dr bench login-url '"$BENCH_USER"' 2>/dev/null
         else
-            php /run/apps-src/drupal_cli.php login-url '"$BENCH_USER"'
+            DRUPAL_ROOT=/app/web php /run/apps-src/drupal_cli.php login-url '"$BENCH_USER"'
         fi' | tr -d '\r' | grep -o 'http://[^" ]*' | head -1)
 if [ -n "$LOGIN_URL" ]; then
     curl -s -c "$SITEDIR/cookie.txt" -o /dev/null -L "$LOGIN_URL"

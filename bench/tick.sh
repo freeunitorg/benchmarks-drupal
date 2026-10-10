@@ -79,24 +79,26 @@ oncpu_ns() {
     echo "$s"
 }
 
-# Drupal 12 has no drush (guzzle advisories), so the same operations go through
-# apps/drupal_cli.php there; the site is the same either way.
-drush_run() {  # drush args | cli args
-    local drush_args=$1 cli_args=$2
-    docker exec "$RTC" sh -c "cd /app && if [ -x ./vendor/bin/drush ]; then ./vendor/bin/drush $drush_args; else php /app/apps/drupal_cli.php $cli_args; fi" >/dev/null 2>&1
+# The cold-CLI arm uses whichever CLI the site has: drush on 11.x (the arm as
+# published), vendor/bin/dr on 12 (drush 13 needs the advisory-blocked guzzle 7),
+# and the standalone bootstrap if neither is installed. The module's own
+# `dr bench` command is what the 12.x path runs.
+cli_run() {  # drush args | dr args | cli args
+    local drush_args=$1 dr_args=$2 cli_args=$3
+    docker exec "$RTC" sh -c "cd /app && if [ -x ./vendor/bin/drush ]; then ./vendor/bin/drush $drush_args; elif [ -x ./vendor/bin/dr ]; then php ./vendor/bin/dr $dr_args; else DRUPAL_ROOT=/app/web php /app/apps/drupal_cli.php $cli_args; fi" >/dev/null 2>&1
 }
 fill_queue() {
-    docker exec "$RTC" sh -c "cd /app && if [ -x ./vendor/bin/drush ]; then ./vendor/bin/drush php:eval '\$q=\Drupal::queue(\"fu_queue_test\"); for(\$i=0;\$i<$DRAIN_N*3;\$i++){\$q->createItem([\"us\"=>1000]);} echo \$q->numberOfItems();'; else php /app/apps/drupal_cli.php queue-fill fu_queue_test $((DRAIN_N*3)); fi" >/dev/null 2>&1 || true
+    docker exec "$RTC" sh -c "cd /app && if [ -x ./vendor/bin/drush ]; then ./vendor/bin/drush php:eval '\$q=\Drupal::queue(\"fu_queue_test\"); for(\$i=0;\$i<$DRAIN_N*3;\$i++){\$q->createItem([\"us\"=>1000]);} echo \$q->numberOfItems();'; elif [ -x ./vendor/bin/dr ]; then php ./vendor/bin/dr bench queue-fill fu_queue_test $((DRAIN_N*3)); else DRUPAL_ROOT=/app/web php /app/apps/drupal_cli.php queue-fill fu_queue_test $((DRAIN_N*3)); fi" >/dev/null 2>&1 || true
 }
 
 for t in $(seq 1 "$TICKS"); do
     before=$(cg_pids "$RTC" | wc -l)
     case "$ARM" in
     A)
-        if [ $((t % 2)) = 1 ]; then trigger="cold CLI core:cron"; cmd1="core:cron -y"; cmd2="cron"
-        else trigger="cold CLI queue:run fu_queue_test"; fill_queue; cmd1="queue:run fu_queue_test --time-limit=55"; cmd2="queue-run fu_queue_test $DRAIN_N"; fi
+        if [ $((t % 2)) = 1 ]; then trigger="cold CLI core:cron"; cmd1="core:cron -y"; cmd2="bench cron"; cmd3="cron"
+        else trigger="cold CLI queue:run fu_queue_test"; fill_queue; cmd1="queue:run fu_queue_test --time-limit=55"; cmd2="bench queue-run fu_queue_test $DRAIN_N"; cmd3="queue-run fu_queue_test $DRAIN_N"; fi
         start=$(date +%s.%N); cpu0=$(oncpu_ns $(cg_pids "$RTC"))
-        status=ok; drush_run "$cmd1" "$cmd2" || status=fail
+        status=ok; cli_run "$cmd1" "$cmd2" "$cmd3" || status=fail
         cpu1=$(oncpu_ns $(cg_pids "$RTC")); end=$(date +%s.%N)
         ;;
     B)
