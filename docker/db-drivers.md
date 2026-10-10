@@ -20,3 +20,17 @@ Why this axis matters for FreeUnit: `mysqli` keeps a native connection that the
 experimental driver reuses, and a PHP worker target (issue 596) would let a
 connection survive between requests -- the case where a persistent, in-process
 worker can beat a per-request connection setup on both SAPI stacks.
+
+## Two backends in one job
+
+`cells.sh` accepts a second site and backend (`SITE_DIR_B`/`DB_B`, set by a job's
+`SITE_B`/`DB_B`): each side then gets its own network, database container (the
+alias `db` on each network), site directory and session cookie. With the runtime
+held equal on both sides (`RUNTIME_A=RUNTIME_B=freeunit`) the job's A/B delta *is*
+the backend delta, measured inside one window against the job's own null phase.
+Jobs 39-41 use that for `mysqli` vs `mysql` under FreeUnit and under FPM
+(`scripts/campaign.steps.mysqli`); the default single-backend path is untouched.
+
+`mysqli` is worth a pedantic pass because it is the core driver a future PHP
+worker target (issue 596) would keep a live connection in: classic mode measures
+the per-request driver cost, worker mode would measure the connection reuse.
