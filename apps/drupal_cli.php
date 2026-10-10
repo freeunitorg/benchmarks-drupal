@@ -131,6 +131,19 @@ switch ($cmd) {
         echo json_encode(['cron' => is_scalar($result) ? $result : gettype($result)]) . "\n";
         break;
 
+    case 'queue-fill':
+        $queue_name = $args[0] ?? '';
+        $n = (int) ($args[1] ?? 50);
+        if ($queue_name === '') {
+            fail('queue-fill needs a queue name');
+        }
+        $queue = \Drupal::queue($queue_name);
+        for ($i = $queue->numberOfItems(); $i < $n; $i++) {
+            $queue->createItem(['us' => 1000]);
+        }
+        echo json_encode(['queue' => $queue_name, 'items' => $queue->numberOfItems()]) . "\n";
+        break;
+
     case 'queue-run':
         $queue_name = $args[0] ?? '';
         $n = (int) ($args[1] ?? 50);

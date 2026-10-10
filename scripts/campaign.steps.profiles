@@ -11,3 +11,6 @@ job:bench/jobs/25-drupal-front-freeunit-vs-fpm-12.0-standard.job
 job:bench/jobs/26-drupal-auth-freeunit-vs-fpm-12.0-standard.job
 job:bench/jobs/27-auth-decompose-freeunit.job
 job:bench/jobs/28-auth-decompose-freeunit-master.job
+ticks:freeunit:A:20:12.0
+ticks:freeunit:B:20:12.0
+ticks:nginx-fpm:B:20:12.0

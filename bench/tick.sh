@@ -79,22 +79,24 @@ oncpu_ns() {
     echo "$s"
 }
 
-drush_run() {  # command string -> wall seconds on stdout
-    local cmd=$1
-    docker exec "$RTC" sh -c "cd /app && ./vendor/bin/drush $cmd" >/dev/null 2>&1
+# Drupal 12 has no drush (guzzle advisories), so the same operations go through
+# apps/drupal_cli.php there; the site is the same either way.
+drush_run() {  # drush args | cli args
+    local drush_args=$1 cli_args=$2
+    docker exec "$RTC" sh -c "cd /app && if [ -x ./vendor/bin/drush ]; then ./vendor/bin/drush $drush_args; else php /app/apps/drupal_cli.php $cli_args; fi" >/dev/null 2>&1
 }
 fill_queue() {
-    docker exec "$RTC" sh -c "cd /app && ./vendor/bin/drush php:eval '\$q=\Drupal::queue(\"fu_queue_test\"); for(\$i=0;\$i<$DRAIN_N*3;\$i++){\$q->createItem([\"us\"=>1000]);} echo \$q->numberOfItems();'" >/dev/null 2>&1 || true
+    docker exec "$RTC" sh -c "cd /app && if [ -x ./vendor/bin/drush ]; then ./vendor/bin/drush php:eval '\$q=\Drupal::queue(\"fu_queue_test\"); for(\$i=0;\$i<$DRAIN_N*3;\$i++){\$q->createItem([\"us\"=>1000]);} echo \$q->numberOfItems();'; else php /app/apps/drupal_cli.php queue-fill fu_queue_test $((DRAIN_N*3)); fi" >/dev/null 2>&1 || true
 }
 
 for t in $(seq 1 "$TICKS"); do
     before=$(cg_pids "$RTC" | wc -l)
     case "$ARM" in
     A)
-        if [ $((t % 2)) = 1 ]; then trigger="drush core:cron"; cmd="core:cron -y"
-        else trigger="drush queue:run fu_queue_test"; fill_queue; cmd="queue:run fu_queue_test --time-limit=55"; fi
+        if [ $((t % 2)) = 1 ]; then trigger="cold CLI core:cron"; cmd1="core:cron -y"; cmd2="cron"
+        else trigger="cold CLI queue:run fu_queue_test"; fill_queue; cmd1="queue:run fu_queue_test --time-limit=55"; cmd2="queue-run fu_queue_test $DRAIN_N"; fi
         start=$(date +%s.%N); cpu0=$(oncpu_ns $(cg_pids "$RTC"))
-        status=ok; drush_run "$cmd" || status=fail
+        status=ok; drush_run "$cmd1" "$cmd2" || status=fail
         cpu1=$(oncpu_ns $(cg_pids "$RTC")); end=$(date +%s.%N)
         ;;
     B)
