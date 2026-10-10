@@ -1,0 +1,26 @@
+job=05-share-probe-freeunit-11.4
+run_id=05-share-probe-freeunit-11.4-20261010T074309Z
+date=2026-10-10T07:55:34Z
+workload=drupal-front runtime_a=freeunit runtime_b=freeunit-direct site=11.4
+phases=null ab conns=32 dur=8 warm=2 reps=3 rate=
+server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=4,5
+governor=powersave
+epp=balance_power
+kernel=6.8.0-136-generic
+oha=oha 1.16.0
+perf_image=1ec7891af56e
+freeunit_image=27a33a0cdf54
+freeunit_master_sha=868ccc29214b979510cee37b2084d2cf3b34e382
+freeunit_master_image=50440a00cef1
+fpm_image=20a9a0d4d26e
+apache_image=79e41fd5382a
+mariadb_image=7db29378d4fd
+issue=https://github.com/freeunitorg/benchmarks-drupal
+expect=the failed open() on the share step costs a measurable share of a cached page
+falsify=NO CLAIM at a 2.5 percent band: then the probe is free enough to keep the simple config
+tag=drupal/recommended-project:11.4.8 drupal=11.4.8 php=8.5.11
+auth cookie code=200
+site=11.4
+runroot=/data/projects/benchmarks-drupal/run
+installed=2026-10-10T05:22:51Z
+user=bench-user

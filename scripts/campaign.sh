@@ -39,7 +39,8 @@ mkdir -p "$RUNROOT/runtimes"
 cp -f "$REPO"/docker/runtimes/*.json "$RUNROOT/runtimes/"
 cp -f "$REPO"/apps/* "$RUNROOT/apps/" 2>/dev/null || { mkdir -p "$RUNROOT/apps"; cp -f "$REPO"/apps/* "$RUNROOT/apps/"; }
 
-done_already() { grep -qF " $1 " "$DONE" 2>/dev/null; }
+# only a successful step counts as done, so a failure is retried on the next run
+done_already() { grep -qF " $1 exit=0 " "$DONE" 2>/dev/null; }
 mark() { printf '%s %s exit=%s %s\n' "$(date -u +%FT%TZ)" "$1" "$2" "${3:-}" >> "$DONE"; }
 
 n=0

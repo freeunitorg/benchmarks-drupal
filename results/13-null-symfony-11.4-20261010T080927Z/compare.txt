@@ -1,0 +1,16 @@
+PASS symfony-front-c32: null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-0.0, 0.2], null band 0.2, limit 5.0: PASS
+job 13-null-symfony-11.4  run 13-null-symfony-11.4-20261010T080927Z  A None ()  B None ()  governor powersave/balance_power  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  symfony-front-c32 s_instructions          4610560.839  4613756.375    +0.07     [-0.03, +0.17]   0.17  11/16  PASS
+null  symfony-front-c32 db_cs                         6.021        6.019    -0.04     [-0.13, +0.05]   0.13   8/16  PASS
+null  symfony-front-c32 db_cycles               1598428.890  1598290.038    -0.01     [-0.30, +0.28]   0.30   7/16  PASS
+null  symfony-front-c32 db_instructions          759497.537   759665.440    +0.02     [-0.05, +0.09]   0.09  10/16  PASS
+null  symfony-front-c32 db_migrations                 1.084        1.074    -0.93     [-2.03, +0.17]   2.03  11/16  PASS
+null  symfony-front-c32 db_us                       649.622      648.622    -0.15     [-0.82, +0.51]   0.82   8/16  PASS
+null  symfony-front-c32 p50_ms                       45.280       45.314    +0.08     [-0.78, +0.94]   0.94   8/16  PASS
+null  symfony-front-c32 p99_ms                       67.334       67.674    +0.53     [-4.08, +5.13]   5.13   7/16  NOISY
+null  symfony-front-c32 rps                         697.006      696.077    -0.13     [-1.04, +0.78]   1.04   7/16  PASS
+null  symfony-front-c32 s_cs                          8.087        8.298    +2.81     [-2.18, +7.79]   7.79  12/16  NOISY
+null  symfony-front-c32 s_cycles                7285298.171  7305406.745    +0.28     [-0.39, +0.95]   0.95  10/16  PASS
+null  symfony-front-c32 s_migrations                  0.242        0.268   +11.57   [-18.17, +41.31]  41.31  12/16  NOISY
+null  symfony-front-c32 server_us                  2865.609     2869.591    +0.14     [-0.77, +1.05]   1.05   7/16  PASS

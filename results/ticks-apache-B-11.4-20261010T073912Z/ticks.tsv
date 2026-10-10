@@ -1,0 +1,21 @@
+tick	arm	runtime	trigger	wall_s	cpu_ns	procs_before	procs_after	status
+1	B	apache	GET /cron/benchmark	0.5620	371476915	21	21	ok
+2	B	apache	GET /fu-queue-drain/benchmark/50	1.0069	94149494	21	21	ok
+3	B	apache	GET /cron/benchmark	0.4012	115475572	21	21	ok
+4	B	apache	GET /fu-queue-drain/benchmark/50	1.0814	111981689	21	21	ok
+5	B	apache	GET /cron/benchmark	0.3452	107447731	21	21	ok
+6	B	apache	GET /fu-queue-drain/benchmark/50	1.0868	111117701	21	21	ok
+7	B	apache	GET /cron/benchmark	0.3688	118421868	21	21	ok
+8	B	apache	GET /fu-queue-drain/benchmark/50	1.0745	105517730	21	21	ok
+9	B	apache	GET /cron/benchmark	0.3972	118057157	21	21	ok
+10	B	apache	GET /fu-queue-drain/benchmark/50	1.0683	103619693	21	21	ok
+11	B	apache	GET /cron/benchmark	0.3084	106522937	21	21	ok
+12	B	apache	GET /fu-queue-drain/benchmark/50	1.0270	93733639	21	21	ok
+13	B	apache	GET /cron/benchmark	0.3734	108334214	21	21	ok
+14	B	apache	GET /fu-queue-drain/benchmark/50	1.0786	110895651	21	21	ok
+15	B	apache	GET /cron/benchmark	0.3772	117476890	21	21	ok
+16	B	apache	GET /fu-queue-drain/benchmark/50	1.0600	98553905	21	21	ok
+17	B	apache	GET /cron/benchmark	0.3250	107060792	21	21	ok
+18	B	apache	GET /fu-queue-drain/benchmark/50	1.0940	107889770	21	21	ok
+19	B	apache	GET /cron/benchmark	0.3886	118119887	21	21	ok
+20	B	apache	GET /fu-queue-drain/benchmark/50	1.0822	97180927	21	21	ok

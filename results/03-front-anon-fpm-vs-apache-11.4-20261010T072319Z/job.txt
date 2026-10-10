@@ -1,0 +1,20 @@
+# front-anon, nginx + PHP-FPM vs Apache prefork + mod_php, Drupal 11.4.8.
+JOB=03-front-anon-fpm-vs-apache-11.4
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=nginx-fpm
+RUNTIME_B=apache
+SITE=11.4
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="both classic runtimes within the null band on a cached page (the Yii3 finding)"
+FALSIFY="a CLAIM either way: then the difference is the SAPI, not the app"

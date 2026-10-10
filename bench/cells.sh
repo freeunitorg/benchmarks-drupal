@@ -27,6 +27,8 @@ PERF_IMAGE=${PERF_IMAGE:-freeunit-perf-lab:1}
 PERF_EVENTS=${PERF_EVENTS:-cycles,instructions,context-switches,cpu-migrations}
 TAG=${IMAGE_TAG:-8.5}
 PORT=${BASE_PORT:-8081}
+COOKIE_HDR=""
+[ -f "${COOKIE_FILE:-}" ] && COOKIE_HDR=$(awk '($1 ~ /^#HttpOnly_/ || $1 !~ /^#/) && NF >= 7 { printf "%s=%s; ", $6, $7 }' "$COOKIE_FILE")
 CNAME="db-bench-$$"
 NET="dbnet-$$"
 ORDER=(X Y Y X Y X X Y)
@@ -171,9 +173,8 @@ url_for() { echo "http://127.0.0.1:$PORT/"; }
 oha_args() {  # conns -> OHA_A
     OHA_A=(-c "$1" --no-tui)
     [ -n "${RATE:-}" ] && [ "$RATE" != 0 ] && OHA_A+=(-q "$RATE")
-    if [ "$WORKLOAD" = drupal-auth ]; then
-        # the cookie jar is netscape format; Drupal must receive name=value pairs
-        OHA_A+=(-H "Cookie: $(awk '($1 ~ /^#HttpOnly_/ || $1 !~ /^#/) && NF >= 7 { printf "%s=%s; ", $6, $7 }' "${COOKIE_FILE:-/dev/null}")")
+    if [ "$WORKLOAD" = drupal-auth ] && [ -n "$COOKIE_HDR" ]; then
+        OHA_A+=(-H "Cookie: $COOKIE_HDR")
     fi
     [ -n "${AE:-}" ] && OHA_A+=(-H "Accept-Encoding: $AE")
     return 0
@@ -186,7 +187,11 @@ preflight() {  # runtime name -> 0 ok
     local name=$1 hdr code bytes
     code=$(curl -s -o /dev/null -w '%{http_code}' "$(url_for)") || return 1
     [ "$code" = 200 ] || { log "preflight $name: HTTP $code"; return 1; }
-    hdr=$(curl -sI "$(url_for)" ${COOKIE_FILE:+-H "Cookie: $(grep -v '^#' "$COOKIE_FILE" | tr -d '\n')"} | tr -d '\r')
+    if [ -n "$COOKIE_HDR" ]; then
+        hdr=$(curl -sI -H "Cookie: $COOKIE_HDR" "$(url_for)" | tr -d '\r')
+    else
+        hdr=$(curl -sI "$(url_for)" | tr -d '\r')
+    fi
     bytes=$(printf '%s' "$hdr" | awk 'tolower($1) == "content-length:" {print $2}')
     case "$WORKLOAD" in
     drupal-front)

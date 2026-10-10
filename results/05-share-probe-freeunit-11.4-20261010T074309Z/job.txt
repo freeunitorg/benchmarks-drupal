@@ -1,0 +1,22 @@
+# The share probe: default config (share + fallback) vs freeunit-direct.json
+# (dynamic prefixes straight to the app), same FreeUnit build, Drupal 11.4.8.
+# Plan section 5.4 row 2. Read s_instructions, not rps.
+JOB=05-share-probe-freeunit-11.4
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-direct
+SITE=11.4
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the failed open() on the share step costs a measurable share of a cached page"
+FALSIFY="NO CLAIM at a 2.5 percent band: then the probe is free enough to keep the simple config"

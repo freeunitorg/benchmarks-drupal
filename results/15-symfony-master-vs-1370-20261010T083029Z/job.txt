@@ -1,0 +1,20 @@
+# Symfony front page, FreeUnit master vs the pinned 1.37.0 tarball.
+JOB=15-symfony-master-vs-1370
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=symfony-front
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-master
+SITE=symfony
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the 39700f29 message-queue cost shows here too, diluted by Twig and one SELECT"
+FALSIFY="NO CLAIM"

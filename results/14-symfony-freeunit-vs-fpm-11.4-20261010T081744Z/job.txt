@@ -1,0 +1,22 @@
+# Symfony front page, FreeUnit 1.37.0 vs nginx + PHP-FPM.
+# DB-bound but with a small Twig render, so the SAPI share should be larger than
+# on Drupal's cached page and smaller than on a hello world.
+JOB=14-symfony-freeunit-vs-fpm-11.4
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=symfony-front
+RUNTIME_A=freeunit
+RUNTIME_B=nginx-fpm
+SITE=symfony
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="FreeUnit lower server CPU per request"
+FALSIFY="NO CLAIM or FreeUnit higher"

@@ -1,0 +1,24 @@
+job=01-null-front-anon-11.4
+run_id=01-null-front-anon-11.4-20261010T052707Z
+date=2026-10-10T05:35:27Z
+workload=drupal-front runtime_a=freeunit runtime_b=freeunit site=11.4
+phases=null conns=32 dur=8 warm=2 reps=4 rate=
+server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=4,5
+governor=powersave
+epp=balance_power
+kernel=6.8.0-136-generic
+oha=oha 1.16.0
+perf_image=1ec7891af56e
+freeunit_image=27a33a0cdf54
+fpm_image=9fb555cc3dcb
+apache_image=359c8aafa730
+mariadb_image=7db29378d4fd
+issue=https://github.com/freeunitorg/benchmarks-drupal
+expect=null band under 5 percent on s_instructions; rps and latency bands recorded as they come
+falsify=a null band over 5 percent on s_instructions: the box is too noisy for an instructions claim at this cell
+tag=drupal/recommended-project:11.4.8 drupal=11.4.8 php=8.5.11
+auth cookie code=200
+site=11.4
+runroot=/data/projects/benchmarks-drupal/run
+installed=2026-10-10T05:22:51Z
+user=bench-user

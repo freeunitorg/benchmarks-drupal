@@ -18,12 +18,12 @@ TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 
 echo "collect: listing runs on $HOST"
-ssh "$HOST" "cd $REMOTE_ROOT/run && ls -d [0-9]* 2>/dev/null" > "$TMP/runs" || true
+ssh "$HOST" "find $REMOTE_ROOT/run -maxdepth 1 -mindepth 1 -type d -printf '%f\n'" 2>/dev/null | grep -E '^[0-9]' > "$TMP/runs" || true
 n=0
 while read -r run; do
     [ -n "$run" ] || continue
     case "$run" in 00-*) continue ;; esac
-    [ -f "$REMOTE_ROOT/run/$run/summary.json" ] || continue
+    ssh -n "$HOST" "test -f $REMOTE_ROOT/run/$run/summary.json" || continue
     mkdir -p "$DEST/$run"
     for f in summary.json meta.txt compare.txt job.txt results.tsv preflight.txt cells.log site-meta.txt; do
         rsync -a "$HOST:$REMOTE_ROOT/run/$run/$f" "$DEST/$run/" 2>/dev/null || true
@@ -32,4 +32,5 @@ while read -r run; do
     echo "collected $run"
 done < "$TMP/runs"
 echo "collect: $n runs -> $DEST"
+mkdir -p "$HERE/public"
 python3 "$HERE/report/render.py" "$DEST" "$HERE/public/index.html"

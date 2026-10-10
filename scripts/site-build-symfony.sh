@@ -25,11 +25,17 @@ REPO=$(cd "$(dirname "$0")/.." && pwd)
 cleanup() { docker rm -f "$DBC" >/dev/null 2>&1 || true; docker network rm "$NET" >/dev/null 2>&1 || true; }
 trap cleanup EXIT
 
-if [ -f "$SITEDIR/public/index.php" ] && [ "$FORCE" != "--force" ]; then
+site_installed() {
+    [ -f "$SITEDIR/meta.txt" ] && grep -q '^site=symfony' "$SITEDIR/meta.txt" 2>/dev/null \
+        && [ -f "$SITEDIR/public/index.php" ]
+}
+if site_installed && [ "$FORCE" != "--force" ]; then
     echo "site-build-symfony: $SITEDIR already installed (use --force to rebuild)"
     exit 0
 fi
-if [ "$FORCE" = "--force" ] && [ -d "$SITEDIR" ]; then
+# create-project leaves public/index.php before the app is configured; an
+# incomplete tree is rebuilt rather than reused.
+if { [ "$FORCE" = "--force" ] || [ -d "$SITEDIR" ]; } && ! site_installed; then
     docker run --rm -v "$RUNROOT:/run" alpine:3 sh -c "rm -rf /run/site/symfony"
 fi
 mkdir -p "$SITEDIR" "$RUNROOT/cache/composer"
@@ -75,10 +81,11 @@ EOF
         php bin/console cache:clear --env=prod --no-warmup
         php bin/console cache:warmup --env=prod
         ln -sfn public web
-        fw=$(php -r "require \"vendor/autoload.php\"; require \"vendor/symfony/framework-bundle/Kernel/Kernel.php\"; echo \Symfony\Component\HttpKernel\Kernel::VERSION;")
+        fw=$(php -r "require \"vendor/autoload.php\"; echo \Symfony\Component\HttpKernel\Kernel::VERSION;")
         phpv=$(php -r "echo PHP_VERSION;")
         { echo "site=symfony"; echo "framework=$fw"; echo "php=$phpv"; echo "tag=symfony/skeleton:7.4.*"; } > /run/site/symfony/meta.txt
     '
+chown -R "$(id -u):$(id -g)" "$SITEDIR" 2>/dev/null || true
 chown -R "$(id -u):$(id -g)" "$SITEDIR" 2>/dev/null || true
 cat >> "$SITEDIR/meta.txt" <<EOF
 runroot=$RUNROOT

@@ -106,3 +106,37 @@ The 12.0 jobs stay in `bench/jobs/` and are commented out in `scripts/campaign.s
 this reason. Follow-up: use Drupal core's own `core/scripts/drupal install` plus a
 bootstrapped PHP script for `module_installer()->install()`, or wait for a drush release on
 guzzle 8. The 11.4 matrix and the Symfony app are unaffected.
+
+## 2026-10-10 10:42 CEST — phase-0 campaign finished (Drupal 11.4 + Symfony 7.4)
+
+Ten measured runs on the perf host, all with a null phase in the same window. Primary
+metric `s_instructions` per request (the governor is `powersave`); every null band printed
+below came from the same job.
+
+| job | workload | comparison | verdict | null band |
+|---|---|---|---|---|
+| 02 | drupal-front | FreeUnit 1.37.0 vs nginx+PHP-FPM | **CLAIM: FreeUnit 7.7% fewer** server instructions/req, 12/12 cells | 0.1% |
+| 03 | drupal-front | nginx+PHP-FPM vs Apache+mod_php | **CLAIM: Apache 54.7% more** server instructions/req, 12/12 cells | 0.1% |
+| 04 | drupal-auth | FreeUnit 1.37.0 vs nginx+PHP-FPM | **CLAIM: FPM 0.6% fewer** server instructions/req, 12/12 cells | 0.3% |
+| 06 | drupal-front | FreeUnit master vs 1.37.0 | NO CLAIM (0.0%, band 0.2) | 0.2% |
+| 07 | drupal-auth | FreeUnit master vs 1.37.0 | NO CLAIM (0.2%, band 0.3) | 0.3% |
+| 05 | drupal-front | FreeUnit share+fallback vs direct pass | NO CLAIM (0.0%, band 0.2) | 0.2% |
+| 01 | drupal-front | null | PASS | 0.1% |
+| 14 | symfony-front | FreeUnit 1.37.0 vs nginx+PHP-FPM | **CLAIM: FreeUnit 5.8% fewer** server instructions/req, 12/12 cells | 0.2% |
+| 15 | symfony-front | FreeUnit master vs 1.37.0 | NO CLAIM (0.0%, band 0.1) | 0.1% |
+| 13 | symfony-front | null | PASS | 0.2% |
+
+Cron/queue arms (20 ticks each, `results/ticks-*/ticks.tsv`): the cold CLI arm
+(`freeunit-A`: `drush core:cron` / `queue:run` in a fresh process) returns in a mean 5.90 s
+(median 2.73 s), while the HTTP arm (`freeunit-B`, `GET /cron/{key}` and the queue drain
+route) returns in 0.73 s, nginx+FPM B in 0.70 s and Apache B in 0.73 s. Process counts are
+stable across the 20 ticks (24→24 FreeUnit), so no fork child leaked; the per-tick CPU of
+the CLI arm read as 0 because `docker exec`'s process was not sampled — a follow-up, the
+wall times are unaffected.
+
+Reading the two Drupal rows together: on the page-cache hit FreeUnit does 7.7% less work
+than nginx+FPM, and on the authenticated render it is 0.6% more (FPM wins by a hair). The
+54.7% gap between FPM and mod_php is the largest single number in the set. The FreeUnit
+master column shows the `39700f29` message-queue cost does not surface on either Drupal
+workload at these cells, and the share-probe row says the simple `share`+`fallback` config
+costs nothing measurable, so it stays.

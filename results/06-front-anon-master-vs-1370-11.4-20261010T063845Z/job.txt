@@ -1,0 +1,21 @@
+# front-anon, FreeUnit master vs the pinned 1.37.0 tarball, Drupal 11.4.
+# The 1.37.0-vs-master delta is the post-release fixes (39700f29 and later).
+JOB=06-front-anon-master-vs-1370-11.4
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-master
+SITE=11.4
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="master differs from 1.37.0 by the measured 39700f29 cost (+12.9% at c32 on hello)"
+FALSIFY="NO CLAIM: then the regression does not show on a page-cache-hit Drupal cell"

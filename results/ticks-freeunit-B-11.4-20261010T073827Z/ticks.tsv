@@ -1,0 +1,21 @@
+tick	arm	runtime	trigger	wall_s	cpu_ns	procs_before	procs_after	status
+1	B	freeunit	GET /cron/benchmark	1.0436	588186879	24	24	ok
+2	B	freeunit	GET /fu-queue-drain/benchmark/50	1.0095	77249994	24	24	ok
+3	B	freeunit	GET /cron/benchmark	0.3039	93716929	24	24	ok
+4	B	freeunit	GET /fu-queue-drain/benchmark/50	1.0872	85611768	24	24	ok
+5	B	freeunit	GET /cron/benchmark	0.4038	120338347	24	24	ok
+6	B	freeunit	GET /fu-queue-drain/benchmark/50	1.0761	90067626	24	24	ok
+7	B	freeunit	GET /cron/benchmark	0.3116	84965116	24	24	ok
+8	B	freeunit	GET /fu-queue-drain/benchmark/50	1.0701	90835930	24	24	ok
+9	B	freeunit	GET /cron/benchmark	0.3215	84758894	24	24	ok
+10	B	freeunit	GET /fu-queue-drain/benchmark/50	1.0906	89315107	24	24	ok
+11	B	freeunit	GET /cron/benchmark	0.1820	44276444	24	24	ok
+12	B	freeunit	GET /fu-queue-drain/benchmark/50	1.0956	90364285	24	24	ok
+13	B	freeunit	GET /cron/benchmark	0.4052	120180224	24	24	ok
+14	B	freeunit	GET /fu-queue-drain/benchmark/50	1.1181	94646029	24	24	ok
+15	B	freeunit	GET /cron/benchmark	0.2904	75123193	24	24	ok
+16	B	freeunit	GET /fu-queue-drain/benchmark/50	1.0740	95697704	24	24	ok
+17	B	freeunit	GET /cron/benchmark	0.3764	109581720	24	24	ok
+18	B	freeunit	GET /fu-queue-drain/benchmark/50	1.0378	91128929	24	24	ok
+19	B	freeunit	GET /cron/benchmark	0.3111	84417835	24	24	ok
+20	B	freeunit	GET /fu-queue-drain/benchmark/50	0.9207	68347829	24	24	ok

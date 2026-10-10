@@ -1,0 +1,21 @@
+tick	arm	runtime	trigger	wall_s	cpu_ns	procs_before	procs_after	status
+1	A	freeunit	drush core:cron	68.2741	0	24	24	ok
+2	A	freeunit	drush queue:run fu_queue_test	3.4465	0	24	24	ok
+3	A	freeunit	drush core:cron	8.0444	0	24	24	ok
+4	A	freeunit	drush queue:run fu_queue_test	2.7421	0	24	24	ok
+5	A	freeunit	drush core:cron	3.8421	0	24	24	ok
+6	A	freeunit	drush queue:run fu_queue_test	2.7456	0	24	24	ok
+7	A	freeunit	drush core:cron	2.7174	0	24	24	ok
+8	A	freeunit	drush queue:run fu_queue_test	2.9204	0	24	24	ok
+9	A	freeunit	drush core:cron	1.5874	0	24	24	ok
+10	A	freeunit	drush queue:run fu_queue_test	2.8331	0	24	24	ok
+11	A	freeunit	drush core:cron	1.1938	0	24	24	ok
+12	A	freeunit	drush queue:run fu_queue_test	2.2977	0	24	24	ok
+13	A	freeunit	drush core:cron	1.0115	0	24	24	ok
+14	A	freeunit	drush queue:run fu_queue_test	2.6264	0	24	24	ok
+15	A	freeunit	drush core:cron	1.2132	0	24	24	ok
+16	A	freeunit	drush queue:run fu_queue_test	2.8111	0	24	24	ok
+17	A	freeunit	drush core:cron	1.2197	0	24	24	ok
+18	A	freeunit	drush queue:run fu_queue_test	2.8470	0	24	24	ok
+19	A	freeunit	drush core:cron	1.2093	0	24	24	ok
+20	A	freeunit	drush queue:run fu_queue_test	2.4868	0	24	24	ok

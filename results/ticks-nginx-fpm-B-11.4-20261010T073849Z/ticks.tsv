@@ -1,0 +1,21 @@
+tick	arm	runtime	trigger	wall_s	cpu_ns	procs_before	procs_after	status
+1	B	nginx-fpm	GET /cron/benchmark	0.6026	375018921	31	31	ok
+2	B	nginx-fpm	GET /fu-queue-drain/benchmark/50	1.0371	104352623	31	31	ok
+3	B	nginx-fpm	GET /cron/benchmark	0.3795	115205131	31	31	ok
+4	B	nginx-fpm	GET /fu-queue-drain/benchmark/50	0.9457	77890297	31	31	ok
+5	B	nginx-fpm	GET /cron/benchmark	0.2270	80564945	31	31	ok
+6	B	nginx-fpm	GET /fu-queue-drain/benchmark/50	1.1174	109641512	31	31	ok
+7	B	nginx-fpm	GET /cron/benchmark	0.3660	114903672	31	31	ok
+8	B	nginx-fpm	GET /fu-queue-drain/benchmark/50	1.0770	103943841	31	31	ok
+9	B	nginx-fpm	GET /cron/benchmark	0.3855	105491202	31	31	ok
+10	B	nginx-fpm	GET /fu-queue-drain/benchmark/50	1.0638	98729402	31	31	ok
+11	B	nginx-fpm	GET /cron/benchmark	0.3189	102449242	31	31	ok
+12	B	nginx-fpm	GET /fu-queue-drain/benchmark/50	1.0964	108260881	31	31	ok
+13	B	nginx-fpm	GET /cron/benchmark	0.3194	66378662	31	31	ok
+14	B	nginx-fpm	GET /fu-queue-drain/benchmark/50	1.0768	77494678	31	31	ok
+15	B	nginx-fpm	GET /cron/benchmark	0.3152	103177640	31	31	ok
+16	B	nginx-fpm	GET /fu-queue-drain/benchmark/50	1.0139	84245536	31	31	ok
+17	B	nginx-fpm	GET /cron/benchmark	0.3120	102472592	31	31	ok
+18	B	nginx-fpm	GET /fu-queue-drain/benchmark/50	1.0294	101945329	31	31	ok
+19	B	nginx-fpm	GET /cron/benchmark	0.3090	102349471	31	31	ok
+20	B	nginx-fpm	GET /fu-queue-drain/benchmark/50	1.0687	92237083	31	31	ok

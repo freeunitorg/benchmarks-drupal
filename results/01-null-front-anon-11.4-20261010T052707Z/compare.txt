@@ -1,0 +1,16 @@
+PASS drupal-front-c32: null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-0.0, 0.1], null band 0.1, limit 5.0: PASS
+job 01-null-front-anon-11.4  run 01-null-front-anon-11.4-20261010T052707Z  A None ()  B None ()  governor powersave/balance_power  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  drupal-front-c32 s_instructions          4822208.482  4824708.466    +0.05     [-0.03, +0.14]   0.14  11/16  PASS
+null  drupal-front-c32 db_cs                        11.358       11.366    +0.07     [-0.06, +0.20]   0.20  10/16  PASS
+null  drupal-front-c32 db_cycles               4667289.919  4649029.862    -0.39     [-0.66, -0.12]   0.66  13/16  PASS
+null  drupal-front-c32 db_instructions         2214525.638  2213372.416    -0.05     [-0.17, +0.07]   0.17   8/16  PASS
+null  drupal-front-c32 db_migrations                 1.725        1.699    -1.42     [-5.12, +2.28]   5.12   9/16  NOISY
+null  drupal-front-c32 db_us                      1987.403     1989.360    +0.10     [-0.48, +0.67]   0.67   9/16  PASS
+null  drupal-front-c32 p50_ms                       60.388       60.567    +0.30     [-0.23, +0.82]   0.82  10/16  PASS
+null  drupal-front-c32 p99_ms                       86.395       82.165    -4.89     [-8.60, -1.19]   8.60  13/16  NOISY
+null  drupal-front-c32 rps                         525.763      525.711    -0.01     [-0.62, +0.60]   0.62   6/16  PASS
+null  drupal-front-c32 s_cs                         14.365       14.476    +0.78     [-1.18, +2.73]   2.73   8/16  PASS
+null  drupal-front-c32 s_cycles                8990756.646  8944658.418    -0.51     [-0.97, -0.05]   0.97  12/16  PASS
+null  drupal-front-c32 s_migrations                  0.355        0.378    +9.36   [-23.90, +42.62]  42.62   9/16  NOISY
+null  drupal-front-c32 server_us                  3797.735     3797.864    +0.00     [-0.60, +0.61]   0.61   7/16  PASS
