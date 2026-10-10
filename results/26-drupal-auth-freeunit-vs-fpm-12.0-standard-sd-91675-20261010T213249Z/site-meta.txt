@@ -1,0 +1,6 @@
+tag=drupal/recommended-project:12.0.0-beta1 drupal=12.0.0-beta1 php=8.5.11 profile=standard drush=0
+site-build: auth cookie verified (session cookie plus dynamic cache header)
+site=12.0-standard
+runroot=/data/projects/benchmarks-drupal/run
+installed=2026-10-10T18:42:23Z
+user=bench-user
