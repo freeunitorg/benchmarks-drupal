@@ -68,6 +68,19 @@ also unmeasured: decomposition and cookie cells, DB backends, mysqli pair, WP.
   initialization finishes; wait for the init markers, not just a successful `SELECT 1`.
 * `LC_ALL=C` in measurement scripts (awk printed `37,6`).
 
+## Other live threads
+
+* **freeunit-exp** (bot workbench fork): issue #6 is the agent's task list. T1 (Unit
+  config is string-only, unknown keys abort) and T2 (Drupal core install owns SQLite)
+  are verified and merged as PRs #7/#8; T3 (one test case for the string rule) has a
+  go-ahead. My comment on #6 corrects the Drupal 12 recipe (never `dr install`). Open:
+  PR #9 (bot README) and #5 (review of PR 645). The App still needs this fork in its
+  repository access list.
+* **freeunit4drupal**: issue #1 carries the three findings that bear on its plan
+  (D6 PHP provisioning, D7 support matrix, D8 databases, D11 config generation).
+* The harness perf-suite patch (DB_CPUS + `db_*` descriptions) is still uncommitted in
+  the harness working tree; the finding has the mutation evidence.
+
 ## Next steps
 
 1. Let the queues run, then `bin/drupal-bench collect pro4s-2` (and `pro4s-4`) and push;
