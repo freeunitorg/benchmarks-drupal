@@ -27,9 +27,13 @@ docker pull postgres:17
 # Prove the modules the database axis and WordPress need actually landed. A
 # stale image is otherwise invisible until a site install fails halfway.
 echo "checking the extensions the images must carry"
+# Read the module list once per image: `docker run | grep -q` under `set -o
+# pipefail` fails the pipeline with 141 when grep closes the pipe early, which
+# reported modules that are present as missing.
 for img in drupal-bench-freeunit:1.37.0 drupal-bench-freeunit:master drupal-bench-fpm:8.5 drupal-bench-apache:8.5; do
+    mods=$(docker run --rm --entrypoint php "$img" -m 2>/dev/null || true)
     for ext in mysqli pdo_pgsql pdo_sqlite pdo_mysql intl mbstring; do
-        if ! docker run --rm --entrypoint php "$img" -m 2>/dev/null | grep -qix "$ext"; then
+        if ! grep -qix "$ext" <<<"$mods"; then
             echo "build-images: $img is missing $ext" >&2
             exit 1
         fi
