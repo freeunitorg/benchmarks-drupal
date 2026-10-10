@@ -32,6 +32,8 @@ RUN set -eux; \
     make install
 
 FROM php:8.5.11-cli-trixie AS freeunit
+ARG FREEUNIT_REF=1.37.0
+LABEL org.freeunit.ref=$FREEUNIT_REF
 COPY --from=php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/install-php-extensions
 COPY --from=composer/composer:2-bin /composer /usr/bin/composer
 COPY --from=freeunit-build /usr/sbin/unitd /usr/sbin/unitd
@@ -46,7 +48,8 @@ RUN set -eux; \
     mkdir -p /var/lib/unit /docker-entrypoint.d; \
     ln -sf /dev/stderr /var/log/unit.log
 COPY docker/php-production.ini /usr/local/etc/php/conf.d/zz-production.ini
-RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
+    && printf '%s\n' "$FREEUNIT_REF" > /etc/freeunit-ref
 ENV COMPOSER_HOME=/opt/composer
 RUN composer global require --no-interaction --no-progress drush/drush:^13 \
     && ln -s /opt/composer/vendor/bin/drush /usr/local/bin/drush

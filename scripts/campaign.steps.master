@@ -1,0 +1,7 @@
+# Master column: FreeUnit at the current master head (run/freeunit-master-sha)
+# as the primary runtime, against the classic stacks, on both apps.
+job:bench/jobs/16-front-anon-master-vs-fpm-11.4.job
+job:bench/jobs/17-front-auth-master-vs-fpm-11.4.job
+job:bench/jobs/18-front-anon-master-vs-apache-11.4.job
+job:bench/jobs/19-symfony-master-vs-fpm.job
+job:bench/jobs/20-symfony-master-vs-apache.job

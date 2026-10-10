@@ -185,13 +185,28 @@ oha_args() {  # conns -> OHA_A
 # is recorded on the first and last request (section 3.2).
 preflight() {  # runtime name -> 0 ok
     local name=$1 hdr code bytes
-    code=$(curl -s -o /dev/null -w '%{http_code}' "$(url_for)") || return 1
+    # Use GET headers, not HEAD: the guard must see what the measured requests
+    # see. One retry, because the first request on a cold page cache legitimately
+    # misses and the cache is then warm for the measured window.
+    local try
+    code=000
+    for try in 1 2; do
+        if [ -n "$COOKIE_HDR" ]; then
+            hdr=$(curl -s -D - -o /dev/null -H "Cookie: $COOKIE_HDR" -w '\nHTTP %{http_code}' "$(url_for)" | tr -d '\r')
+        else
+            hdr=$(curl -s -D - -o /dev/null -w '\nHTTP %{http_code}' "$(url_for)" | tr -d '\r')
+        fi
+        code=$(printf '%s' "$hdr" | awk '/^HTTP /{c=$2} END{print c}')
+        [ "$code" = 200 ] || continue
+        case "$WORKLOAD" in
+        drupal-front)
+            printf '%s' "$hdr" | grep -qi '^x-drupal-cache: HIT' && break ;;
+        drupal-auth)
+            printf '%s' "$hdr" | grep -qi '^x-drupal-dynamic-cache: ' && break ;;
+        *) break ;;
+        esac
+    done
     [ "$code" = 200 ] || { log "preflight $name: HTTP $code"; return 1; }
-    if [ -n "$COOKIE_HDR" ]; then
-        hdr=$(curl -sI -H "Cookie: $COOKIE_HDR" "$(url_for)" | tr -d '\r')
-    else
-        hdr=$(curl -sI "$(url_for)" | tr -d '\r')
-    fi
     bytes=$(printf '%s' "$hdr" | awk 'tolower($1) == "content-length:" {print $2}')
     case "$WORKLOAD" in
     drupal-front)

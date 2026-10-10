@@ -1,7 +1,10 @@
 job=14-symfony-freeunit-vs-fpm-11.4
 run_id=14-symfony-freeunit-vs-fpm-11.4-20261010T081744Z
 date=2026-10-10T08:30:28Z
-workload=symfony-front runtime_a=freeunit runtime_b=nginx-fpm site=symfony
+workload=symfony-front
+runtime_a=freeunit
+runtime_b=nginx-fpm
+site=symfony
 phases=null ab conns=32 dur=8 warm=2 reps=3 rate=
 server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=4,5
 governor=powersave

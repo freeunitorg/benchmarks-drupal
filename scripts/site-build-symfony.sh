@@ -90,7 +90,7 @@ chown -R "$(id -u):$(id -g)" "$SITEDIR" 2>/dev/null || true
 cat >> "$SITEDIR/meta.txt" <<EOF
 runroot=$RUNROOT
 installed=$(date -u +%FT%TZ)
-workload=front page, 50 of 200 rows from MariaDB via PDO, Twig render
+page_note=50 of 200 rows from MariaDB via PDO, Twig render
 EOF
 chown -R "$(id -u):$(id -g)" "$SITEDIR" 2>/dev/null || true
 echo "site-build-symfony: done -> $SITEDIR"

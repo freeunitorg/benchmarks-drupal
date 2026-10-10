@@ -19,7 +19,81 @@ OUT = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, "..", "index.html
 WORKLOAD_TITLE = {
     "drupal-front": "Front page, anonymous (page-cache hit)",
     "drupal-auth": "Front page, authenticated (page cache bypassed)",
+    "symfony-front": "Symfony front page (Twig + one SELECT)",
 }
+
+RUNTIME_TITLE = {
+    "freeunit": "FreeUnit 1.37.0",
+    "freeunit-master": "FreeUnit master",
+    "freeunit-direct": "FreeUnit 1.37.0, direct routes",
+    "nginx-fpm": "nginx + PHP-FPM",
+    "apache": "Apache + mod_php",
+}
+
+LOWER_IS_BETTER = {"s_instructions", "s_cycles", "server_us", "db_us", "p50_ms", "p99_ms"}
+
+
+def runtime_title(name):
+    return RUNTIME_TITLE.get(name, name or "?")
+
+
+def fmt(value):
+    """A compact number for the summary: 4823512.8 -> 4,823,513."""
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return esc(value)
+    if v >= 1000:
+        return f"{v:,.0f}"
+    if v >= 1:
+        return f"{v:,.2f}"
+    return f"{v:.4f}"
+
+
+def summary_section(summaries):
+    """One ranking table per workload: absolute primary metric per runtime and its
+    ratio to the best, so the reader sees the order before any delta table."""
+    groups = {}
+    for d in summaries:
+        meta = d.get("meta", {})
+        primary = d.get("primary")
+        workload = meta.get("workload")
+        if not primary or not workload:
+            continue
+        for r in d.get("results", []):
+            if r.get("phase") != "ab" or r.get("metric") != primary:
+                continue
+            cell = r.get("cell", "")
+            for rt, mean in ((meta.get("runtime_a"), r.get("a_mean")),
+                             (meta.get("runtime_b"), r.get("b_mean"))):
+                if rt is None or mean is None:
+                    continue
+                groups.setdefault((workload, primary, cell), {}).setdefault(rt, []).append(float(mean))
+
+    if not groups:
+        return ""
+    out = ['<h2 id="summary">Summary</h2>',
+           '<p class="note">Primary metric: server instructions per request '
+           '(lower is better), measured c32 on one host in one window. The ratio is against the '
+           'best runtime in that row. Each comparison has its null band printed in the run '
+           'sections below; a ratio smaller than the band is not a difference.</p>']
+    for (workload, primary, cell), runtimes in sorted(groups.items()):
+        means = {rt: sum(v) / len(v) for rt, v in runtimes.items()}
+        best = min(means.values()) if primary in LOWER_IS_BETTER else max(means.values())
+        order = sorted(means, key=means.get)
+        if primary not in LOWER_IS_BETTER:
+            order = list(reversed(order))
+        out.append(f'<h3>{esc(WORKLOAD_TITLE.get(workload, workload))} '
+                   f'<span class="meta">({esc(cell)}, {esc(primary.replace("_", " "))})</span></h3>')
+        out.append('<table><thead><tr><th>runtime</th><th>' + esc(primary.replace("_", " "))
+                   + '</th><th>relative</th></tr></thead><tbody>')
+        for rt in order:
+            ratio = means[rt] / best if primary in LOWER_IS_BETTER else best / means[rt]
+            cls = ' class="best"' if abs(means[rt] - best) < 1e-9 else ""
+            out.append(f'<tr{cls}><td>{esc(runtime_title(rt))}</td><td>{fmt(means[rt])}</td>'
+                       f'<td>{ratio:.2f}x</td></tr>')
+        out.append("</tbody></table>")
+    return "\n".join(out)
 
 
 def esc(v):
@@ -91,7 +165,8 @@ def render_one(d):
 
 def main():
     summaries = load_summaries()
-    body = "\n".join(render_one(d) for d in summaries) or "<p>No results yet.</p>"
+    body = summary_section(summaries)
+    body += "\n" + ("\n".join(render_one(d) for d in summaries) or "<p>No results yet.</p>")
     page = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -105,6 +180,7 @@ def main():
  .meta, .data {{ color: #666; font-size: 13px; }}
  .headline {{ font-weight: 600; }}
  .note {{ background: #f6f8fa; border-left: 3px solid #888; padding: .6rem .9rem; }}
+ tr.best td {{ font-weight: 600; background: #f0fbf4; }}
  code {{ background: #f6f8fa; padding: .1rem .3rem; }}
 </style></head><body>
 <h1>Drupal on Apache, nginx + PHP-FPM and FreeUnit</h1>

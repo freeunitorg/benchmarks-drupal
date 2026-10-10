@@ -1,7 +1,10 @@
 job=05-share-probe-freeunit-11.4
 run_id=05-share-probe-freeunit-11.4-20261010T074309Z
 date=2026-10-10T07:55:34Z
-workload=drupal-front runtime_a=freeunit runtime_b=freeunit-direct site=11.4
+workload=drupal-front
+runtime_a=freeunit
+runtime_b=freeunit-direct
+site=11.4
 phases=null ab conns=32 dur=8 warm=2 reps=3 rate=
 server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=4,5
 governor=powersave

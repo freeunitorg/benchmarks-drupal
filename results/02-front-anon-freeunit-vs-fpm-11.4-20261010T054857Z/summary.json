@@ -8,7 +8,7 @@
   "job": "02-front-anon-freeunit-vs-fpm-11.4",
   "run_id": "02-front-anon-freeunit-vs-fpm-11.4-20261010T054857Z",
   "date": "2026-10-10T06:01:32Z",
-  "workload": "drupal-front runtime_a=freeunit runtime_b=nginx-fpm site=11.4",
+  "workload": "drupal-front",
   "phases": "null ab conns=32 dur=8 warm=2 reps=3 rate=",
   "server_cpus": "0,1 load_cpus=2,3,6,7 db_cpus=4,5",
   "governor": "powersave",
@@ -28,7 +28,9 @@
   "site": "11.4",
   "runroot": "/data/projects/benchmarks-drupal/run",
   "installed": "2026-10-10T05:22:51Z",
-  "user": "bench-user"
+  "user": "bench-user",
+  "runtime_a": "freeunit",
+  "runtime_b": "nginx-fpm"
  },
  "results": [
   {

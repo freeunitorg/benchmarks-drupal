@@ -1,0 +1,20 @@
+# symfony-front, FreeUnit master (A) vs nginx-fpm (B), Symfony 7.4.
+JOB=19-symfony-master-vs-fpm
+ISSUE=https://github.com/freeunitorg/benchmarks-drupal
+PHASES="null ab"
+WORKLOAD=symfony-front
+RUNTIME_A=freeunit-master
+RUNTIME_B=nginx-fpm
+SITE=symfony
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="master keeps the FreeUnit advantage measured on 1.37.0"
+FALSIFY="NO CLAIM, or master loses to nginx-fpm"
