@@ -190,8 +190,13 @@ preflight() {  # runtime name -> 0 ok
     # misses and the cache is then warm for the measured window.
     local try
     code=000
+    # The cookie belongs to the authenticated workload only: sending it on the
+    # anonymous page turns the request into an authenticated render and the
+    # page-cache guard can never pass.
+    local with_cookie=""
+    [ "$WORKLOAD" = drupal-auth ] && [ -n "$COOKIE_HDR" ] && with_cookie="yes"
     for try in 1 2; do
-        if [ -n "$COOKIE_HDR" ]; then
+        if [ -n "$with_cookie" ]; then
             hdr=$(curl -s -D - -o /dev/null -H "Cookie: $COOKIE_HDR" -w '\nHTTP %{http_code}' "$(url_for)" | tr -d '\r')
         else
             hdr=$(curl -s -D - -o /dev/null -w '\nHTTP %{http_code}' "$(url_for)" | tr -d '\r')
