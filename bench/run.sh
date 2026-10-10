@@ -181,4 +181,5 @@ echo "run.sh: done -> $OUTDIR"
 sed -n '1,40p' "$OUTDIR/compare.txt"
 case "$verdict" in
 INVALID*) echo "run.sh: INVALID result, exiting nonzero so the campaign retries it" >&2; exit 1 ;;
+NO\ DATA*) echo "run.sh: NO DATA for the primary metric, exiting nonzero so the campaign retries it" >&2; exit 1 ;;
 esac

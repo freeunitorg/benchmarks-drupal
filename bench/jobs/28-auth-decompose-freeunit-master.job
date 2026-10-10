@@ -17,7 +17,9 @@ DECOMPOSE=1
 SERVER_CPUS=0,1
 LOAD_CPUS=2,3,6,7
 DB_CPUS=4,5
-PRIMARY=worker_instructions
+PRIMARY=worker_us
+# worker_instructions does not exist: with DECOMPOSE=1 cells.sh splits the tree CPU
+# time (front_us/worker_us), it does not count instructions per tree.
 NULL_LIMIT_PCT=5
 EXPECT="the extra cost sits in the PHP worker tree, not the front proxy"
 FALSIFY="the front tree carries the delta"
