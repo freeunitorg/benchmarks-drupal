@@ -1,10 +1,7 @@
 job=13-null-symfony-11.4
 run_id=13-null-symfony-11.4-20261010T080927Z
 date=2026-10-10T08:17:43Z
-workload=symfony-front
-runtime_a=freeunit
-runtime_b=freeunit
-site=symfony
+workload=symfony-front runtime_a=freeunit runtime_b=freeunit site=symfony
 phases=null conns=32 dur=8 warm=2 reps=4 rate=
 server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=4,5
 governor=powersave

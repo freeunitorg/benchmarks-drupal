@@ -1,10 +1,7 @@
 job=15-symfony-master-vs-1370
 run_id=15-symfony-master-vs-1370-20261010T083029Z
 date=2026-10-10T08:42:52Z
-workload=symfony-front
-runtime_a=freeunit
-runtime_b=freeunit-master
-site=symfony
+workload=symfony-front runtime_a=freeunit runtime_b=freeunit-master site=symfony
 phases=null ab conns=32 dur=8 warm=2 reps=3 rate=
 server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=4,5
 governor=powersave

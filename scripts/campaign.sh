@@ -65,6 +65,8 @@ while IFS= read -r line; do
     site:*)  SITE=${line#site:}
              if [ "$SITE" = symfony ]; then
                  bash "$REPO/scripts/site-build-symfony.sh" "$RUNROOT" >>"$log" 2>&1 || rc=$?
+             elif [ "$SITE" = hello ]; then
+                 bash "$REPO/scripts/site-build-hello.sh" "$RUNROOT" >>"$log" 2>&1 || rc=$?
              else
                  bash "$REPO/scripts/site-build.sh" "$SITE" "$RUNROOT" >>"$log" 2>&1 || rc=$?
              fi ;;

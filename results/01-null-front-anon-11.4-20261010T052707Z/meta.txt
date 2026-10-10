@@ -1,10 +1,7 @@
 job=01-null-front-anon-11.4
 run_id=01-null-front-anon-11.4-20261010T052707Z
 date=2026-10-10T05:35:27Z
-workload=drupal-front
-runtime_a=freeunit
-runtime_b=freeunit
-site=11.4
+workload=drupal-front runtime_a=freeunit runtime_b=freeunit site=11.4
 phases=null conns=32 dur=8 warm=2 reps=4 rate=
 server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=4,5
 governor=powersave

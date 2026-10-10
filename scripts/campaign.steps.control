@@ -1,0 +1,7 @@
+# Framework-free control: the same PHP served by both runtimes, so a delta here is
+# the server and only the server.
+site:hello
+job:bench/jobs/31-hello-freeunit-vs-fpm.job
+job:bench/jobs/32-headers-freeunit-vs-fpm.job
+job:bench/jobs/33-body-freeunit-vs-fpm.job
+job:bench/jobs/34-hello-master-vs-fpm.job

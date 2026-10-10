@@ -32,5 +32,43 @@ while read -r run; do
     echo "collected $run"
 done < "$TMP/runs"
 echo "collect: $n runs -> $DEST"
+# Normalize the meta keys the renderer needs. run.sh wrote them on one line until
+# 2026-10-10 and the Symfony builder's descriptive line shadowed them, so a
+# collected run is normalized from its own job name when the keys are missing.
+python3 - "$DEST" <<'PY'
+import glob, json, os, re, sys
+dest = sys.argv[1]
+for f in sorted(glob.glob(os.path.join(dest, "*", "summary.json"))):
+    run = os.path.basename(os.path.dirname(f))
+    try:
+        d = json.load(open(f))
+    except (OSError, ValueError):
+        continue
+    m = d.get("meta") or {}
+    wl = str(m.get("workload", ""))
+    if "=" in wl:
+        parts = dict(kv.split("=", 1) for kv in wl.split() if "=" in kv)
+        m["workload"] = wl.split()[0]
+        for k in ("runtime_a", "runtime_b", "site"):
+            if parts.get(k):
+                m[k] = parts[k]
+    if "symfony" in run and not str(m.get("workload", "")).startswith("symfony"):
+        m["workload"] = "symfony-front"
+        m["site"] = "symfony"
+        m.setdefault("runtime_a", "freeunit")
+        if run.startswith(("14-", "20-")):
+            m["runtime_b"] = "apache" if run.startswith("20-") else "nginx-fpm"
+        elif run.startswith("19-"):
+            m["runtime_a"], m["runtime_b"] = "freeunit-master", "nginx-fpm"
+        elif run.startswith("15-"):
+            m["runtime_b"] = "freeunit-master"
+        elif run.startswith("13-"):
+            m["runtime_b"] = "freeunit"
+    d["meta"] = m
+    json.dump(d, open(f, "w"), indent=1)
+    open(f, "a").write("\n")
+print("collect: normalized meta for", len(glob.glob(os.path.join(dest, "*", "summary.json"))), "runs")
+PY
+
 mkdir -p "$HERE/public"
 python3 "$HERE/report/render.py" "$DEST" "$HERE/public/index.html"

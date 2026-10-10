@@ -189,7 +189,13 @@ wait_http() {  # url tries
 }
 
 # ---------------------------------------------------------------- workload
-url_for() { echo "http://127.0.0.1:$PORT/"; }
+url_for() {
+    case "$WORKLOAD" in
+    php-headers) echo "http://127.0.0.1:$PORT/?mode=headers" ;;
+    php-body)    echo "http://127.0.0.1:$PORT/?mode=body" ;;
+    *)           echo "http://127.0.0.1:$PORT/" ;;
+    esac
+}
 oha_args() {  # conns -> OHA_A
     OHA_A=(-c "$1" --no-tui)
     [ -n "${RATE:-}" ] && [ "$RATE" != 0 ] && OHA_A+=(-q "$RATE")
@@ -242,6 +248,12 @@ preflight() {  # runtime name -> 0 ok
     {
         echo "runtime=$name url=$(url_for) workload=$WORKLOAD http=$code bytes=${bytes:-?}"
         printf '%s\n' "$hdr" | grep -i '^x-drupal' || true
+        # exactly which processes this runtime runs, so the reader can check that
+        # both sides of a comparison are counted the same way
+        local p
+        for p in $(cg_pids "$name"); do
+            printf '  pid=%s %s\n' "$p" "$(tr '\0' ' ' < "/proc/$p/cmdline" 2>/dev/null)"
+        done
     } >> "$OUTDIR/preflight.txt"
     return 0
 }

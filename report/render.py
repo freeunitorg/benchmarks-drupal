@@ -76,7 +76,10 @@ def summary_section(summaries):
            '<p class="note">Primary metric: server instructions per request '
            '(lower is better), measured c32 on one host in one window. The ratio is against the '
            'best runtime in that row. Each comparison has its null band printed in the run '
-           'sections below; a ratio smaller than the band is not a difference.</p>']
+           'sections below; a ratio smaller than the band is not a difference. Caveat: this '
+           'table pools absolute means from runs taken hours apart under a powersave governor, '
+           'so use it for the order, not for a percentage; the per-run tables are the '
+           'controlled measurement.</p>']
     for (workload, primary, cell), runtimes in sorted(groups.items()):
         means = {rt: sum(v) / len(v) for rt, v in runtimes.items()}
         best = min(means.values()) if primary in LOWER_IS_BETTER else max(means.values())
