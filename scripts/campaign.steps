@@ -24,14 +24,20 @@ ticks:freeunit:B:20:11.4
 ticks:nginx-fpm:B:20:11.4
 ticks:apache:B:20:11.4
 
-site:12.0
-job:bench/jobs/08-null-front-anon-12.0.job
-job:bench/jobs/09-front-anon-freeunit-vs-fpm-12.0.job
-job:bench/jobs/10-front-auth-freeunit-vs-fpm-12.0.job
-job:bench/jobs/06-front-anon-master-vs-1370-12.0.job
-job:bench/jobs/07-front-auth-master-vs-1370-12.0.job
-ticks:freeunit:A:20:12.0
-ticks:freeunit:B:20:12.0
+# Drupal 12.0.0-beta1 is blocked in phase 0: drush 13 (the only drush) requires
+# guzzlehttp/guzzle ^7, every 7.x release is blocked by packagist security
+# advisories, and the 12.0 lock pins guzzle 8. The site cannot be installed or
+# have fu_queue_test enabled without drush. Next: Drupal core's own CLI installer
+# (core/scripts/drupal install) plus a bootstrapped module-enable script, or a
+# drush release on guzzle 8. Details in docs/progress.md.
+# site:12.0
+# job:bench/jobs/08-null-front-anon-12.0.job
+# job:bench/jobs/09-front-anon-freeunit-vs-fpm-12.0.job
+# job:bench/jobs/10-front-auth-freeunit-vs-fpm-12.0.job
+# job:bench/jobs/06-front-anon-master-vs-1370-12.0.job
+# job:bench/jobs/07-front-auth-master-vs-1370-12.0.job
+# ticks:freeunit:A:20:12.0
+# ticks:freeunit:B:20:12.0
 
 # Symfony skeleton app (7.4): a DB-backed Twig page on the same three runtimes.
 site:symfony

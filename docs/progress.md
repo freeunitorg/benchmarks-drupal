@@ -94,3 +94,15 @@ whole config with `Unknown parameter "_comment"`, and the application never star
 `freeunit-direct.json` and `freeunit-worker.json` carried one; the share-probe job then
 produced an INVALID result (36 cells with `ok=0`, HTTP 000) before the key was removed.
 Notes about a config go in this file, not in the JSON.
+
+### Drupal 12.0.0-beta1 is blocked in phase 0 (drush vs the 12.0 lock)
+
+`composer create-project drupal/recommended-project:12.0.0-beta1` succeeds, then
+`composer require drush/drush:^13` (or `-W`) fails: drush 13 requires
+`guzzlehttp/guzzle ^7.0`, the 12.0 lock pins guzzle 8.2.0, and every guzzle 7.x release is
+refused by packagist's security-advisory policy (14 advisories), so composer will not
+downgrade. Without drush the site cannot be installed or have `fu_queue_test` enabled.
+The 12.0 jobs stay in `bench/jobs/` and are commented out in `scripts/campaign.steps` with
+this reason. Follow-up: use Drupal core's own `core/scripts/drupal install` plus a
+bootstrapped PHP script for `module_installer()->install()`, or wait for a drush release on
+guzzle 8. The 11.4 matrix and the Symfony app are unaffected.

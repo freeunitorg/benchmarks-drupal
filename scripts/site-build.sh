@@ -53,7 +53,12 @@ if site_installed && [ "$FORCE" != "--force" ]; then
     echo "site-build: $SITEDIR already installed (use --force to rebuild)"
     exit 0
 fi
+# An incomplete tree (create-project without a finished install) is rebuilt, not
+# reused: the host user cannot delete root-owned files, so wipe through a container.
 if [ "$FORCE" = "--force" ] && [ -d "$SITEDIR" ]; then
+    docker run --rm -v "$RUNROOT:/run" alpine:3 sh -c "rm -rf /run/site/$SITE"
+elif [ -d "$SITEDIR" ] && ! site_installed; then
+    echo "site-build: removing incomplete $SITEDIR"
     docker run --rm -v "$RUNROOT:/run" alpine:3 sh -c "rm -rf /run/site/$SITE"
 fi
 mkdir -p "$SITEDIR" "$RUNROOT/cache/composer"
@@ -68,6 +73,10 @@ for i in $(seq 60); do
     docker exec "$DBC" mariadb -uroot -e 'SELECT 1' >/dev/null 2>&1 && break
     sleep 1
 done
+
+# A rebuild starts from an empty database: a partial install leaves tables that
+# make drush site:install refuse.
+docker exec "$DBC" mariadb -uroot -e "DROP DATABASE IF EXISTS drupal; CREATE DATABASE drupal;" 2>/dev/null || true
 
 echo "site-build: composer create-project $DRUPAL_TAG -> $SITEDIR"
 docker run --rm --network "$NET" \
