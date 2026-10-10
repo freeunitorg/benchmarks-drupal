@@ -47,6 +47,11 @@ results/         one directory per run: results.tsv, summary.json, meta.txt,
 scripts/         site-build.sh
 ```
 
+## Current state
+
+What is published, what is queued on which box and what is still unmeasured:
+[docs/state.md](docs/state.md). Resume there.
+
 ## Using it from another project
 
 The repository is a Composer package with one entry point, so the FreeUnit
