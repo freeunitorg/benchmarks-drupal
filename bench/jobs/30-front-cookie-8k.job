@@ -1,0 +1,25 @@
+# The authenticated-page follow-up: does FreeUnit's per-request overhead grow with
+# the request's cookie bytes? Same cell as front-anon (a page-cache hit, so PHP and
+# the database do identical work) plus a synthetic cookie of 8192 bytes on
+# every request. If the FreeUnit delta tracks the cookie size, the cost is request
+# plumbing, not PHP execution.
+JOB=30-front-cookie-8k
+ISSUE=https://github.com/freeunitorg/benchmarks-drupal
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=nginx-fpm
+SITE=11.4
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+EXTRA_COOKIE_BYTES=8192
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the per-request delta grows with cookie size"
+FALSIFY="the delta stays within the null band at 8 KiB"

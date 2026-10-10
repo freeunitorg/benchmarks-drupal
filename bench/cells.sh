@@ -29,6 +29,12 @@ TAG=${IMAGE_TAG:-8.5}
 PORT=${BASE_PORT:-8081}
 COOKIE_HDR=""
 [ -f "${COOKIE_FILE:-}" ] && COOKIE_HDR=$(awk '($1 ~ /^#HttpOnly_/ || $1 !~ /^#/) && NF >= 7 { printf "%s=%s; ", $6, $7 }' "$COOKIE_FILE")
+# A synthetic cookie of a chosen size tests whether the per-request overhead tracks
+# request bytes rather than PHP execution (job 29/30, the auth-page follow-up).
+if [ "${EXTRA_COOKIE_BYTES:-0}" -gt 0 ]; then
+    pad=$(head -c "$EXTRA_COOKIE_BYTES" /dev/zero | tr '\0' 'x')
+    COOKIE_HDR="${COOKIE_HDR}bench=${pad}; "
+fi
 CNAME="db-bench-$$"
 NET="dbnet-$$"
 ORDER=(X Y Y X Y X X Y)
@@ -187,7 +193,7 @@ url_for() { echo "http://127.0.0.1:$PORT/"; }
 oha_args() {  # conns -> OHA_A
     OHA_A=(-c "$1" --no-tui)
     [ -n "${RATE:-}" ] && [ "$RATE" != 0 ] && OHA_A+=(-q "$RATE")
-    if [ "$WORKLOAD" = drupal-auth ] && [ -n "$COOKIE_HDR" ]; then
+    if [ -n "$COOKIE_HDR" ] && { [ "$WORKLOAD" = drupal-auth ] || [ "${EXTRA_COOKIE_BYTES:-0}" -gt 0 ]; }; then
         OHA_A+=(-H "Cookie: $COOKIE_HDR")
     fi
     [ -n "${AE:-}" ] && OHA_A+=(-H "Accept-Encoding: $AE")
@@ -208,7 +214,7 @@ preflight() {  # runtime name -> 0 ok
     # anonymous page turns the request into an authenticated render and the
     # page-cache guard can never pass.
     local with_cookie=""
-    [ "$WORKLOAD" = drupal-auth ] && [ -n "$COOKIE_HDR" ] && with_cookie="yes"
+    { [ "$WORKLOAD" = drupal-auth ] || [ "${EXTRA_COOKIE_BYTES:-0}" -gt 0 ]; } && [ -n "$COOKIE_HDR" ] && with_cookie="yes"
     for try in 1 2; do
         if [ -n "$with_cookie" ]; then
             hdr=$(curl -s -D - -o /dev/null -H "Cookie: $COOKIE_HDR" -w '\nHTTP %{http_code}' "$(url_for)" | tr -d '\r')
