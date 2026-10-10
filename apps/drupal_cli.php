@@ -33,25 +33,74 @@ if (!is_file($root . '/autoload.php')) {
     fail("no autoload.php under $root");
 }
 
-// Install runs before a kernel exists, so it is handled by core's own script.
+// Install runs before a kernel exists. Drupal 12's core/scripts/drupal installer is
+// hardcoded to SQLite (it has no --db-url), so this calls install_drupal() with the
+// database spec in the settings form -- exactly what drush's site:install does.
 if ($cmd === 'install') {
     $profile = $args[0] ?? 'demo_umami';
-    $db = getenv('DB_URL') ?: 'mysql://root@db/drupal';
     $pass = getenv('SITE_PASS') ?: 'admin';
-    $site = getenv('SITE_NAME') ?: 'FreeUnit benchmark';
-    $script = $root . '/core/scripts/drupal';
-    if (!is_file($script)) {
-        fail("no $script");
-    }
+    $site_name = getenv('SITE_NAME') ?: 'FreeUnit benchmark';
+    $db_url = getenv('DB_URL') ?: 'mysql://root@db/drupal';
+
     chdir($root);
-    $cmdline = sprintf(
-        'php %s install %s --db-url=%s --account-name=admin --account-pass=%s --site-name=%s 2>&1',
-        escapeshellarg($script), escapeshellarg($profile), escapeshellarg($db),
-        escapeshellarg($pass), escapeshellarg($site)
-    );
-    exec($cmdline, $out, $rc);
-    echo json_encode(['install' => $profile, 'rc' => $rc, 'tail' => array_slice($out, -8)]) . "\n";
-    exit($rc === 0 ? 0 : 1);
+    if (!is_file($root . '/core/includes/install.core.inc')) {
+        fail("no install.core.inc under $root");
+    }
+    define('MAINTENANCE_MODE', 'install');
+    require_once $root . '/core/includes/install.core.inc';
+    require_once $root . '/core/includes/install.inc';
+    $class_loader = require_once $root . '/autoload.php';
+
+    $p = parse_url($db_url) ?: [];
+    $namespace = 'Drupal\\mysql\\Driver\\Database\\mysql';
+    $db_spec = [
+        'database' => ltrim($p['path'] ?? '/drupal', '/'),
+        'username' => $p['user'] ?? 'root',
+        'password' => $p['pass'] ?? '',
+        'host' => $p['host'] ?? 'db',
+        'port' => $p['port'] ?? 3306,
+        'driver' => 'mysql',
+        'namespace' => $namespace,
+        'autoload' => 'core/modules/mysql/src/Driver/Database/mysql/',
+    ];
+    $settings = [
+        'parameters' => [
+            'profile' => $profile,
+            'langcode' => 'en',
+        ],
+        'forms' => [
+            'install_settings_form' => [
+                'driver' => $namespace,
+                $namespace => $db_spec,
+                'op' => 'Save and continue',
+            ],
+            'install_configure_form' => [
+                'site_name' => $site_name,
+                'site_mail' => 'admin@example.com',
+                'account' => [
+                    'name' => 'admin',
+                    'mail' => 'admin@example.com',
+                    'pass' => ['pass1' => $pass, 'pass2' => $pass],
+                ],
+                'enable_update_status_module' => TRUE,
+                'enable_update_status_emails' => NULL,
+                'clean_url' => TRUE,
+                'op' => 'Save and continue',
+            ],
+        ],
+    ];
+    try {
+        install_drupal($class_loader, $settings);
+    }
+    catch (\Throwable $e) {
+        fail('install failed: ' . get_class($e) . ': ' . $e->getMessage());
+    }
+    echo json_encode([
+        'install' => $profile,
+        'database' => $db_spec['database'],
+        'host' => $db_spec['host'],
+    ]) . "\n";
+    exit(0);
 }
 
 chdir($root);
