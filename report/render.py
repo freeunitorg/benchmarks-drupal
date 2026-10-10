@@ -115,6 +115,7 @@ Read the null phase before the delta. Host class, governor, PHP, Drupal tag and 
 <p class="data">Rendered {esc(__import__("datetime").datetime.now(__import__("datetime").timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))}.</p>
 </body></html>
 """
+    os.makedirs(os.path.dirname(os.path.abspath(OUT)), exist_ok=True)
     with open(OUT, "w", encoding="utf-8") as fh:
         fh.write(page)
     print(f"render.py: {len(summaries)} summaries -> {OUT}")
