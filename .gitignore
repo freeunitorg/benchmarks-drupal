@@ -4,3 +4,5 @@ site/*/vendor/
 site/*/cookie.txt
 public/
 *.log
+__pycache__/
+*.pyc
