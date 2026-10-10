@@ -1,21 +1,24 @@
 #!/bin/bash
 # site-build.sh -- build and install one application for the benchmark, on the perf host.
 #
-#   scripts/site-build.sh 11.4    [RUNROOT] [--force]
-#   scripts/site-build.sh 12.0    [RUNROOT] [--force]
+#   scripts/site-build.sh <site> [RUNROOT] [--force]
 #
-# 11.4 / 12.0: drupal/recommended-project at the pinned tag, demo_umami profile,
-# fu_queue_test enabled, big_pipe uninstalled, cron+queue keys set, project-local
-# drush (recommended-project does not ship one), authenticated benchmark user and
-# its session cookie for the drupal-auth workload.
+# Sites:
+#   11.4           Drupal 11.4.8, demo_umami
+#   11.4-standard  Drupal 11.4.8, standard
+#   12.0           Drupal 12.0.0-beta1, demo_umami
+#   12.0-standard  Drupal 12.0.0-beta1, standard
 #
-# Everything that writes into the site runs in a container as root, so host-side
-# rm is refused: --force wipes through a container instead.
+# drush is installed when the site's composer graph allows it (Drupal 11.4). Drupal
+# 12 pins guzzle 8 while drush 13 needs guzzle ^7, and the advisory policy blocks
+# every 7.x, so the 12.x sites are driven by apps/drupal_cli.php instead: core's own
+# installer plus the Drupal APIs for enable/state/user/login/cron/queue.
 #
-# Records $RUNROOT/site/<site>/meta.txt: tag, Drupal version, PHP, cookie check.
+# Everything that writes into the site runs in a container as root, so a rebuild
+# wipes through a container. Records $RUNROOT/site/<site>/meta.txt.
 set -euo pipefail
 
-SITE=${1:?usage: site-build.sh <11.4|12.0> [RUNROOT] [--force]}
+SITE=${1:?usage: site-build.sh <11.4|11.4-standard|12.0|12.0-standard> [RUNROOT] [--force]}
 RUNROOT=${2:-/data/projects/benchmarks-drupal/run}
 FORCE=${3:-}
 TOOL_IMAGE=${TOOL_IMAGE:-drupal-bench-freeunit:1.37.0}
@@ -28,10 +31,13 @@ SITEDIR="$RUNROOT/site/$SITE"
 REPO=$(cd "$(dirname "$0")/.." && pwd)
 BENCH_USER=bench-user
 BENCH_PASS=bench-pass
+DBCVOL=${DBCVOL:-drupal-bench-db-$SITE}
 
 case "$SITE" in
-11.4) DRUPAL_TAG=drupal/recommended-project:11.4.8 ;;
-12.0) DRUPAL_TAG=drupal/recommended-project:12.0.0-beta1 ;;
+11.4)          DRUPAL_TAG=drupal/recommended-project:11.4.8;        PROFILE=demo_umami ;;
+11.4-standard) DRUPAL_TAG=drupal/recommended-project:11.4.8;        PROFILE=standard ;;
+12.0)          DRUPAL_TAG=drupal/recommended-project:12.0.0-beta1; PROFILE=demo_umami ;;
+12.0-standard) DRUPAL_TAG=drupal/recommended-project:12.0.0-beta1; PROFILE=standard ;;
 *) echo "site-build: unknown site $SITE" >&2; exit 2 ;;
 esac
 
@@ -41,9 +47,8 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# composer create-project leaves web/index.php behind before the install runs, so
-# the marker for "installed" is the completed install (meta.txt with the tag plus
-# a database block in settings.php), never the presence of the webroot.
+# composer create-project leaves web/index.php before the install runs; installed
+# means the completed meta.txt and a database block in settings.php.
 site_installed() {
     [ -f "$SITEDIR/meta.txt" ] && grep -q '^tag=' "$SITEDIR/meta.txt" 2>/dev/null \
         && [ -f "$SITEDIR/web/sites/default/settings.php" ] \
@@ -53,18 +58,13 @@ if site_installed && [ "$FORCE" != "--force" ]; then
     echo "site-build: $SITEDIR already installed (use --force to rebuild)"
     exit 0
 fi
-# An incomplete tree (create-project without a finished install) is rebuilt, not
-# reused: the host user cannot delete root-owned files, so wipe through a container.
-if [ "$FORCE" = "--force" ] && [ -d "$SITEDIR" ]; then
-    docker run --rm -v "$RUNROOT:/run" alpine:3 sh -c "rm -rf /run/site/$SITE"
-elif [ -d "$SITEDIR" ] && ! site_installed; then
+if { [ "$FORCE" = "--force" ] || [ -d "$SITEDIR" ]; } && ! site_installed; then
     echo "site-build: removing incomplete $SITEDIR"
     docker run --rm -v "$RUNROOT:/run" alpine:3 sh -c "rm -rf /run/site/$SITE"
 fi
 mkdir -p "$SITEDIR" "$RUNROOT/cache/composer"
 
 docker network create "$NET" >/dev/null
-DBCVOL=${DBCVOL:-drupal-bench-db-$SITE}
 docker run -d --name "$DBC" --network "$NET" --network-alias db \
     -v "$DBCVOL:/var/lib/mysql" \
     -e MARIADB_ROOT_HOST=% -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_DATABASE=drupal \
@@ -73,62 +73,79 @@ for _ in $(seq 60); do
     docker exec "$DBC" mariadb -uroot -e 'SELECT 1' >/dev/null 2>&1 && break
     sleep 1
 done
-
-# A rebuild starts from an empty database: a partial install leaves tables that
-# make drush site:install refuse.
+# a rebuild starts from an empty database
 docker exec "$DBC" mariadb -uroot -e "DROP DATABASE IF EXISTS drupal; CREATE DATABASE drupal;" 2>/dev/null || true
 
-echo "site-build: composer create-project $DRUPAL_TAG -> $SITEDIR"
+echo "site-build: $SITE -> $DRUPAL_TAG ($PROFILE)"
 docker run --rm --network "$NET" \
-    -v "$RUNROOT:/run" -v "$REPO/modules:/run/modules-src:ro" -v "$RUNROOT/cache/composer:/cache" \
-    -w /run -e HOME=/root -e COMPOSER_HOME=/cache \
+    -v "$RUNROOT:/run" -v "$REPO/modules:/run/modules-src:ro" -v "$REPO/apps:/run/apps-src:ro" \
+    -v "$RUNROOT/cache/composer:/cache" -w /run -e HOME=/root -e COMPOSER_HOME=/cache \
+    -e DB_URL=mysql://root@db/drupal -e SITE_PASS=admin -e SITE_NAME="FreeUnit benchmark" \
     "$TOOL_IMAGE" sh -euc "
         if [ ! -f /run/site/$SITE/composer.json ]; then
             composer create-project $DRUPAL_TAG /run/site/$SITE --no-interaction --no-progress
         fi
         cd /run/site/$SITE
-        composer require --no-interaction --no-progress drush/drush:^13
         mkdir -p web/modules/custom
         cp -r /run/modules-src/fu_queue_test web/modules/custom/
         chmod u+w web/sites/default
-        ./vendor/bin/drush site:install demo_umami \
-            --db-url=mysql://root@db/drupal \
-            --account-name=admin --account-pass=admin \
-            --site-name='FreeUnit benchmark' --yes
-        ./vendor/bin/drush pm:enable fu_queue_test --yes
-        ./vendor/bin/drush pm:uninstall big_pipe --yes || true
-        ./vendor/bin/drush sset fu_queue_test.key benchmark
-        ./vendor/bin/drush user:create $BENCH_USER --password=$BENCH_PASS --mail=$BENCH_USER@example.com || true
-        ./vendor/bin/drush role:assign authenticated $BENCH_USER || true
+        HAS_DRUSH=1
+        composer require --no-interaction --no-progress drush/drush:^13 >/dev/null 2>&1 || HAS_DRUSH=0
+        if [ \"\$HAS_DRUSH\" = 1 ]; then
+            ./vendor/bin/drush site:install $PROFILE \
+                --db-url=mysql://root@db/drupal \
+                --account-name=admin --account-pass=admin \
+                --site-name='FreeUnit benchmark' --yes
+            ./vendor/bin/drush pm:enable fu_queue_test page_cache dynamic_page_cache --yes
+            ./vendor/bin/drush pm:uninstall big_pipe --yes || true
+            ./vendor/bin/drush sset fu_queue_test.key benchmark
+            ./vendor/bin/drush user:create $BENCH_USER --password=$BENCH_PASS --mail=$BENCH_USER@example.com || true
+            ./vendor/bin/drush role:assign authenticated $BENCH_USER || true
+            ./vendor/bin/drush cr
+            drupal=\$(./vendor/bin/drush status --field=drupal-version)
+        else
+            php /run/apps-src/drupal_cli.php install $PROFILE
+            php /run/apps-src/drupal_cli.php enable fu_queue_test page_cache dynamic_page_cache
+            php /run/apps-src/drupal_cli.php disable big_pipe || true
+            php /run/apps-src/drupal_cli.php state-set fu_queue_test.key benchmark
+            php /run/apps-src/drupal_cli.php user-create $BENCH_USER $BENCH_PASS
+            php /run/apps-src/drupal_cli.php cache-rebuild
+            drupal=\$(php -r 'require \"core/lib/Drupal.php\"; echo \\\\Drupal::VERSION;' 2>/dev/null || echo unknown)
+        fi
         printf '\n\$settings[\"trusted_host_patterns\"] = [\".*\"];\n' >> web/sites/default/settings.php
-        ./vendor/bin/drush cr
-        drupal=\$(./vendor/bin/drush status --field=drupal-version)
         phpv=\$(php -r 'echo PHP_VERSION;')
-        echo \"tag=$DRUPAL_TAG drupal=\$drupal php=\$phpv\" > /run/site/$SITE/meta.txt
+        echo \"tag=$DRUPAL_TAG drupal=\$drupal php=\$phpv profile=$PROFILE drush=\$HAS_DRUSH\" > /run/site/$SITE/meta.txt
     "
 
-chown -R "$(id -u):$(id -g)" "$SITEDIR" 2>/dev/null || true
 echo "site-build: login cookie for the drupal-auth workload"
 docker run -d --name "$RTC" --network "$NET" -p "127.0.0.1:$PORT:80" \
     -v "$SITEDIR:/app" -v "$RUNROOT/runtimes/freeunit.json:/docker-entrypoint.d/config.json:ro" \
     "$TOOL_IMAGE" >/dev/null
-for i in $(seq 60); do
+for _ in $(seq 60); do
     [ "$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$PORT/" 2>/dev/null)" = 200 ] && break
     sleep 1
 done
 LOGIN_URL=$(docker run --rm --network "$NET" \
     -e HOME=/root -e COMPOSER_HOME=/cache -v "$RUNROOT/cache/composer:/cache" \
-    -v "$SITEDIR:/app" -w /app "$TOOL_IMAGE" \
-    sh -c "./vendor/bin/drush --no-ansi user:login --name=$BENCH_USER --uri=http://127.0.0.1:$PORT 2>/dev/null" \
-    | tr -d '\r' | grep -o 'http://[^ ]*' | head -1)
+    -v "$SITEDIR:/app" -v "$REPO/apps:/run/apps-src:ro" -w /app "$TOOL_IMAGE" sh -c '
+        if [ -x ./vendor/bin/drush ]; then
+            ./vendor/bin/drush --no-ansi user:login --name='"$BENCH_USER"' --uri=http://127.0.0.1:'"$PORT"' 2>/dev/null
+        else
+            php /run/apps-src/drupal_cli.php login-url '"$BENCH_USER"'
+        fi' | tr -d '\r' | grep -o 'http://[^" ]*' | head -1)
 if [ -n "$LOGIN_URL" ]; then
-    curl -s -c "$SITEDIR/cookie.txt" -o /dev/null "$LOGIN_URL"
-    COOKIE=$(awk 'NF >= 7 && $6 != "" {print $6"="$7}' "$SITEDIR/cookie.txt" | paste -sd'; ')
-    code=$(curl -s -o /dev/null -w '%{http_code}' -H "Cookie: $COOKIE" "http://127.0.0.1:$PORT/")
-    echo "site-build: auth cookie code=$code" | tee -a "$SITEDIR/meta.txt"
+    curl -s -c "$SITEDIR/cookie.txt" -o /dev/null -L "$LOGIN_URL"
+    COOKIE=$(awk '($1 ~ /^#HttpOnly_/ || $1 !~ /^#/) && NF >= 7 { printf "%s=%s; ", $6, $7 }' "$SITEDIR/cookie.txt")
+    hdrs=$(curl -s -D - -o /dev/null -H "Cookie: $COOKIE" "http://127.0.0.1:$PORT/")
+    if printf '%s' "$hdrs" | grep -qi '^x-drupal-dynamic-cache:'; then
+        echo "site-build: auth cookie verified (dynamic cache header present)" | tee -a "$SITEDIR/meta.txt"
+    else
+        echo "site-build: WARNING auth cookie did not reach the render path" | tee -a "$SITEDIR/meta.txt"
+    fi
 else
     echo "site-build: WARNING no login link; drupal-auth cannot run" | tee -a "$SITEDIR/meta.txt"
 fi
+chown -R "$(id -u):$(id -g)" "$SITEDIR" 2>/dev/null || true
 cat >> "$SITEDIR/meta.txt" <<EOF
 site=$SITE
 runroot=$RUNROOT

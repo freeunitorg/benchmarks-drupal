@@ -85,6 +85,20 @@ oncpu_ns() {  # pids... -> summed on-CPU nanoseconds over all their threads
     echo "$s"
 }
 
+pids_role() {  # runtime role -> pids of the front proxy or the PHP workers
+    local rt=$1 role=$2 p c
+    for p in $(cg_pids "$rt"); do
+        c=$(tr '\0' ' ' < "/proc/$p/cmdline" 2>/dev/null)
+        case "$rt:$role" in
+        freeunit*:front)  case "$c" in *"unit: router"*) echo "$p" ;; esac ;;
+        freeunit*:worker) case "$c" in *application*) echo "$p" ;; esac ;;
+        nginx-fpm:front)  case "$c" in *"nginx:"*) echo "$p" ;; esac ;;
+        nginx-fpm:worker) case "$c" in *"php-fpm:"*) echo "$p" ;; esac ;;
+        apache:*)         echo "$p" ;;
+        esac
+    done
+}
+
 perf_start() {  # name pids
     [ "$PERF" = 1 ] || return 0
     [ -n "$2" ] || return 0
@@ -249,16 +263,27 @@ timed_cell() {  # phase side cell conns block slot runtime
     oha_args "$c"
     taskset -c "$LOAD_CPUS" "$OHA" -z "${WARM}s" "${OHA_A[@]}" "$(url_for)" >/dev/null 2>&1
     local pids rpids; pids=$(cg_pids "$name" | tr '\n' ' '); rpids=$(cg_pids "$CNAME" | tr '\n' ' ')
-    rm -f "$R/perf.s" "$R/perf.db"
+    rm -f "$R/perf.s" "$R/perf.db" "$R/perf.sf" "$R/perf.sw"
     perf_start s "$(echo $pids | tr ' ' ',')"
     perf_start db "$(echo $rpids | tr ' ' ',')"
+    local fpids wpids
+    if [ "${DECOMPOSE:-0}" = 1 ]; then
+        fpids=$(pids_role "$rt" front | tr '\n' ' ')
+        wpids=$(pids_role "$rt" worker | tr '\n' ' ')
+        perf_start sf "$(echo $fpids | tr ' ' ',')"
+        perf_start sw "$(echo $wpids | tr ' ' ',')"
+    fi
     sleep 0.2
-    local a0 a1 d0 d1
-    a0=$(oncpu_ns $pids); d0=$(oncpu_ns $rpids)
+    local a0 a1 d0 d1 f0 f1 w0 w1
+    a0=$(oncpu_ns $pids); d0=$(oncpu_ns $rpids); f0=0; w0=0
+    [ "${DECOMPOSE:-0}" = 1 ] && { f0=$(oncpu_ns $fpids); w0=$(oncpu_ns $wpids); }
     taskset -c "$LOAD_CPUS" "$OHA" -z "${DUR}s" -w "${OHA_A[@]}" --output-format json "$(url_for)" > "$R/oha.json" 2>/dev/null
-    a1=$(oncpu_ns $pids); d1=$(oncpu_ns $rpids)
+    a1=$(oncpu_ns $pids); d1=$(oncpu_ns $rpids); f1=0; w1=0
+    [ "${DECOMPOSE:-0}" = 1 ] && { f1=$(oncpu_ns $fpids); w1=$(oncpu_ns $wpids); }
     perf_stop s
     perf_stop db
+    perf_stop sf
+    perf_stop sw
     python3 - "$R/oha.json" > "$R/oha.txt" <<'PY' || die "cannot read oha json"
 import json, sys
 d = json.load(open(sys.argv[1]))
@@ -278,6 +303,15 @@ PY
     du=$(awk -v d=$((d1 - d0)) -v n="$ok" 'BEGIN{printf "%.3f", (n > 0 ? d / 1000 / n : 0)}')
     emit "$ph" "$side" "$cell" "$k" "$s" server_us "$su"
     emit "$ph" "$side" "$cell" "$k" "$s" db_us "$du"
+    if [ "${DECOMPOSE:-0}" = 1 ]; then
+        local fu wu
+        fu=$(awk -v d=$((f1 - f0)) -v n="$ok" 'BEGIN{printf "%.3f", (n > 0 ? d / 1000 / n : 0)}')
+        wu=$(awk -v d=$((w1 - w0)) -v n="$ok" 'BEGIN{printf "%.3f", (n > 0 ? d / 1000 / n : 0)}')
+        emit "$ph" "$side" "$cell" "$k" "$s" front_us "$fu"
+        emit "$ph" "$side" "$cell" "$k" "$s" worker_us "$wu"
+        [ -s "$R/perf.sf" ] && perf_parse "$R/perf.sf" front "$ok" | while read -r m v; do emit "$ph" "$side" "$cell" "$k" "$s" "$m" "$v"; done
+        [ -s "$R/perf.sw" ] && perf_parse "$R/perf.sw" worker "$ok" | while read -r m v; do emit "$ph" "$side" "$cell" "$k" "$s" "$m" "$v"; done
+    fi
     if [ "$PERF" = 1 ]; then
         perf_parse "$R/perf.s" s "$ok" | while read -r m v; do emit "$ph" "$side" "$cell" "$k" "$s" "$m" "$v"; done
         [ -s "$R/perf.db" ] && perf_parse "$R/perf.db" db "$ok" | while read -r m v; do emit "$ph" "$side" "$cell" "$k" "$s" "$m" "$v"; done

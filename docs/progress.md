@@ -140,3 +140,61 @@ than nginx+FPM, and on the authenticated render it is 0.6% more (FPM wins by a h
 master column shows the `39700f29` message-queue cost does not surface on either Drupal
 workload at these cells, and the share-probe row says the simple `share`+`fallback` config
 costs nothing measurable, so it stays.
+
+## Authenticated-page gap: what the data already says
+
+Job 04 (Drupal 11.4 umami, `drupal-auth`, c32, FreeUnit 1.37.0 = A, nginx+FPM = B):
+
+| metric | A (FreeUnit) | B (FPM) | delta | null band | verdict |
+|---|---|---|---|---|---|
+| s_instructions | 83,052,110 | 82,541,407 | **+0.61%** | 0.29% | CLAIM |
+| s_cycles | 101,106,130 | 95,467,897 | **+5.58%** | 1.43% | CLAIM |
+| s_cs (context switches) | 68.32 | 65.52 | **+4.10%** | 1.33% | CLAIM |
+| server_us | 32,524 | 31,486 | -3.19% | 3.63% | NO CLAIM |
+| db_instructions | 13,564,938 | 13,525,278 | +0.29% | 0.80% | NO CLAIM |
+| db_us | 9,844 | 10,024 | +1.83% | 4.54% | NO CLAIM |
+| p50_ms / p99_ms | 509 / 804 | 503 / 764 | -1.3% / -4.9% | ~5% / 10% | NOISY |
+
+Reading it: the database does the same work (db_instructions within 0.3%, db_us within
+noise), so the gap is not Drupal or MariaDB. The instruction delta is small but its
+*cycles* delta is nine times larger and context switches are 4.1% higher, i.e. FreeUnit's
+extra work is stall-heavy (more scheduling, more cache/TLB churn) rather than more
+instructions. Compared with the anonymous cache-hit page, where FreeUnit is 7.7% *cheaper*,
+the authenticated render shifts ~0.9M instructions per request against FreeUnit: a
+per-request cost that scales with the size of the request/response (session cookie,
+`X-Drupal-Dynamic-Cache` and friends, bigger response) rather than with PHP execution.
+
+Two experiments, both coded and waiting for the box:
+
+1. `DECOMPOSE=1` (`bench/cells.sh`, jobs `27-auth-decompose-freeunit` and
+   `28-auth-decompose-freeunit-master`) samples the front tree (`unit: router` /
+   `nginx:`) and the PHP worker tree (`unit: "drupal" application` / `php-fpm: pool`)
+   separately, for both schedstat and perf counters. That says whether the extra cycles
+   and context switches are in the router (Unit's port/message machinery) or in the
+   workers (the PHP module per request).
+2. A header/cookie-size cell: the hypothesis is per-request plumbing whose cost grows with
+   the header and cookie bytes (the auth request carries a session cookie both ways). Run
+   `drupal-front` with a synthetic cookie of increasing size and see whether the FreeUnit
+   delta tracks it; `front` at 7.7% in FreeUnit's favour and `auth` at 0.6% against is
+   consistent with that.
+
+Until then the honest statement is: on the render-bound page the stacks are within 0.6%,
+FPM ahead, and the difference is in per-request overhead, not in PHP or the database.
+
+## Session notes: the box was taken mid-matrix
+
+The master matrix (jobs 16 to 20) was interrupted at 2026-10-10T12:11Z: another session
+started its own work on the perf host (`/data/projects/pro450-run.sh`, tmux `pr450d`, an
+Ubuntu 26.04 container installing dwarves/git/build-essential for the PR 450 struct-layout
+check) and the campaign's tmux sessions were gone. Job 16 (`16-front-anon-master-vs-fpm-11.4`)
+reached 41 of 48 cells with valid numbers and no summary, so it is not published; jobs 17
+to 20 never started. The master build itself is done and pinned: image
+`drupal-bench-freeunit:master` carries `/etc/freeunit-ref` and the same value in the
+`org.freeunit.ref` label, `868ccc29214b979510cee37b2084d2cf3b34e382`.
+
+Ready to run once the box is free (`scripts/campaign.steps.master`, then
+`scripts/campaign.steps.profiles`): the master column, then Drupal 11.4 `standard`, Drupal
+12.0.0-beta1 (`demo_umami` and `standard`) and the two decomposition jobs. The 12.x sites
+avoid drush entirely through `apps/drupal_cli.php` (core's own installer plus the Drupal
+APIs for enable/state/user/login/cron/queue), which is what the drush/guzzle-advisory
+block needed.
