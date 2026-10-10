@@ -6,8 +6,15 @@
 # Sites:
 #   11.4           Drupal 11.4.8, demo_umami
 #   11.4-standard  Drupal 11.4.8, standard
+#   11.5           Drupal 11.5.x-dev, demo_umami
+#   11.5-standard  Drupal 11.5.x-dev, standard
 #   12.0           Drupal 12.0.0-beta1, demo_umami
 #   12.0-standard  Drupal 12.0.0-beta1, standard
+#
+# 11.5 is not released yet and its branch is not on Packagist, so the entry uses
+# 11.5.x-dev and composer needs --stability=dev; the build fails loudly until the
+# branch exists. Drupal 11.5 is expected to require PHP 8.5, which is what the
+# images already carry (8.5.11); older PHP lines stay a separate decision.
 #
 # drush is installed when the site's composer graph allows it (Drupal 11.4). Drupal
 # 12 pins guzzle 8 while drush 13 needs guzzle ^7, and the advisory policy blocks
@@ -18,7 +25,7 @@
 # wipes through a container. Records $RUNROOT/site/<site>/meta.txt.
 set -euo pipefail
 
-SITE=${1:?usage: site-build.sh <11.4|11.4-standard|12.0|12.0-standard> [RUNROOT] [--force]}
+SITE=${1:?usage: site-build.sh <11.4|11.4-standard|11.5|11.5-standard|12.0|12.0-standard> [RUNROOT] [--force]}
 RUNROOT=${2:-/data/projects/benchmarks-drupal/run}
 FORCE=${3:-}
 TOOL_IMAGE=${TOOL_IMAGE:-drupal-bench-freeunit:1.37.0}
@@ -39,9 +46,12 @@ BENCH_USER=bench-user
 BENCH_PASS=bench-pass
 DBCVOL=${DBCVOL:-drupal-bench-db-$SITEKEY}
 
+DRUPAL_STABILITY=""
 case "$SITE" in
 11.4)          DRUPAL_TAG=drupal/recommended-project:11.4.8;        PROFILE=demo_umami ;;
 11.4-standard) DRUPAL_TAG=drupal/recommended-project:11.4.8;        PROFILE=standard ;;
+11.5)          DRUPAL_TAG=drupal/recommended-project:11.5.x-dev;    PROFILE=demo_umami; DRUPAL_STABILITY="--stability=dev" ;;
+11.5-standard) DRUPAL_TAG=drupal/recommended-project:11.5.x-dev;    PROFILE=standard; DRUPAL_STABILITY="--stability=dev" ;;
 12.0)          DRUPAL_TAG=drupal/recommended-project:12.0.0-beta1; PROFILE=demo_umami ;;
 12.0-standard) DRUPAL_TAG=drupal/recommended-project:12.0.0-beta1; PROFILE=standard ;;
 *) echo "site-build: unknown site $SITE" >&2; exit 2 ;;
@@ -181,7 +191,7 @@ docker run --rm --network "$NET" \
     -e DB_URL="$DB_URL" -e DB_DRIVER="$DB" -e SITE_PASS=admin -e SITE_NAME="FreeUnit benchmark" \
     "$TOOL_IMAGE" sh -euc "
         if [ ! -f /run/site/$SITEKEY/composer.json ]; then
-            composer create-project $DRUPAL_TAG /run/site/$SITEKEY --no-interaction --no-progress
+            composer create-project $DRUPAL_TAG /run/site/$SITEKEY $DRUPAL_STABILITY --no-interaction --no-progress
         fi
         cd /run/site/$SITEKEY
         mkdir -p web/modules/custom
