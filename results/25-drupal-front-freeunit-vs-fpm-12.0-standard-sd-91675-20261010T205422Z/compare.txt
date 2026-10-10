@@ -1,0 +1,29 @@
+INVALID drupal-front-c32: INVALID: 72 cell(s) failed, first: A drupal-front-c32 block 0 slot 0 ok=0
+job 25-drupal-front-freeunit-vs-fpm-12.0-standard  run 25-drupal-front-freeunit-vs-fpm-12.0-standard-sd-91675-20261010T205422Z  A None ()  B None ()  governor powersave/balance_power  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  drupal-front-c32 s_instructions                0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+null  drupal-front-c32 db_cs                         0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+null  drupal-front-c32 db_cycles                     0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+null  drupal-front-c32 db_instructions               0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+null  drupal-front-c32 db_migrations                 0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+null  drupal-front-c32 db_us                         0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+null  drupal-front-c32 p50_ms                       55.467       57.351    +3.56    [-6.69, +13.81]  13.81   6/12  INVALID
+null  drupal-front-c32 p99_ms                       80.547       81.594    +1.46     [-5.94, +8.86]   8.86   5/12  INVALID
+null  drupal-front-c32 rps                         576.271      563.548    -2.08     [-9.62, +5.45]   9.62   6/12  INVALID
+null  drupal-front-c32 s_cs                          0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+null  drupal-front-c32 s_cycles                      0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+null  drupal-front-c32 s_migrations                  0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+null  drupal-front-c32 server_us                     0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+ab    drupal-front-c32 s_instructions                0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+ab    drupal-front-c32 db_cs                         0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+ab    drupal-front-c32 db_cycles                     0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+ab    drupal-front-c32 db_instructions               0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+ab    drupal-front-c32 db_migrations                 0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+ab    drupal-front-c32 db_us                         0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+ab    drupal-front-c32 p50_ms                       56.292       58.088    +3.18    [-5.01, +11.37]  13.81  10/12  INVALID
+ab    drupal-front-c32 p99_ms                       80.308       81.448    +1.40     [-5.52, +8.32]   8.86   5/12  INVALID
+ab    drupal-front-c32 rps                         567.462      563.172    -0.76     [-6.89, +5.37]   9.62  10/12  INVALID
+ab    drupal-front-c32 s_cs                          0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+ab    drupal-front-c32 s_cycles                      0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+ab    drupal-front-c32 s_migrations                  0.000        0.000      n/a                n/a    n/a   0/12  INVALID
+ab    drupal-front-c32 server_us                     0.000        0.000      n/a                n/a    n/a   0/12  INVALID

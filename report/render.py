@@ -217,14 +217,20 @@ def render_one(d):
              f'{esc(m.get("runtime_a"))}</th><th>{esc(m.get("runtime_b"))}</th>'
              '<th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th>'
              '</tr></thead><tbody>')
+    # An INVALID run has no delta/CI: failed cells leave those fields null, so a
+    # bare round() crashes the renderer and the run never reaches the page. Show a
+    # dash instead and keep the headline (which says INVALID) as the record.
+    def trim(x, nd, suffix=""):
+        return "-" + suffix if x is None else f"{round(x, nd)}{suffix}"
+
     for r in metric_rows(d):
         h.append("<tr>"
                  f'<td>{esc(r.get("description") or r.get("metric"))}</td>'
-                 f'<td>{esc(round(r.get("a_mean", 0), 4))}</td>'
-                 f'<td>{esc(round(r.get("b_mean", 0), 4))}</td>'
-                 f'<td>{esc(round(r.get("delta_pct", 0), 2))}%</td>'
-                 f'<td>[{esc(round(r.get("ci_low", 0), 2))}, {esc(round(r.get("ci_high", 0), 2))}]</td>'
-                 f'<td>{esc(round(r.get("null_band_pct", 0), 2))}</td>'
+                 f'<td>{esc(trim(r.get("a_mean"), 4))}</td>'
+                 f'<td>{esc(trim(r.get("b_mean"), 4))}</td>'
+                 f'<td>{esc(trim(r.get("delta_pct"), 2, "%"))}</td>'
+                 f'<td>[{esc(trim(r.get("ci_low"), 2))}, {esc(trim(r.get("ci_high"), 2))}]</td>'
+                 f'<td>{esc(trim(r.get("null_band_pct"), 2))}</td>'
                  f'<td>{esc(r.get("cells_agree"))}/{esc(r.get("cells_total"))}</td>'
                  f'<td>{esc(r.get("verdict"))}</td></tr>')
     h.append("</tbody></table>")
