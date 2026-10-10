@@ -1,0 +1,28 @@
+name: pages
+
+# Renders report/index.html from committed results/*/summary.json and publishes
+# it to gh-pages. No benchmark runs here: shared runners cannot pin cores or read
+# hardware counters (plan section 7).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install and render
+        run: python3 report/render.py results public/index.html
+      - name: Publish gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+          force_orphan: true

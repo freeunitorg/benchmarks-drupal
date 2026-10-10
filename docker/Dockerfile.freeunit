@@ -1,0 +1,59 @@
+# FreeUnit runtime. Default: the pinned 1.37.0 release tarball (decision 3a).
+# Master column: --build-arg FREEUNIT_REF=master --build-context none (sha check skipped).
+#   docker build -f docker/Dockerfile.freeunit --build-arg FREEUNIT_REF=master -t drupal-bench-freeunit:master .
+# Never mix tarball and master inside one chart.
+ARG FREEUNIT_REF=1.37.0
+ARG FREEUNIT_SHA256=8ae237d5a32d77bb8a7426d844ce75aeb18583a4e47318f55e17839d865fad8c
+
+FROM ghcr.io/mlocati/php-extension-installer:2 AS php-extension-installer
+FROM php:8.5.11-cli-trixie AS freeunit-build
+ARG FREEUNIT_REF
+ARG FREEUNIT_SHA256
+RUN set -eux; \
+    sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends build-essential curl ca-certificates \
+        libssl-dev libpcre2-dev zlib1g-dev libzstd-dev libbrotli-dev; \
+    if [ "$FREEUNIT_REF" = "1.37.0" ]; then \
+        curl -fsSL "https://github.com/freeunitorg/freeunit/archive/refs/tags/${FREEUNIT_REF}.tar.gz" -o /tmp/freeunit.tar.gz; \
+        echo "${FREEUNIT_SHA256}  /tmp/freeunit.tar.gz" | sha256sum -c -; \
+    else \
+        curl -fsSL "https://github.com/freeunitorg/freeunit/archive/${FREEUNIT_REF}.tar.gz" -o /tmp/freeunit.tar.gz; \
+    fi; \
+    mkdir /usr/src/freeunit; \
+    tar -xzf /tmp/freeunit.tar.gz -C /usr/src/freeunit --strip-components=1; \
+    cd /usr/src/freeunit; \
+    ./configure --prefix=/usr --statedir=/var/lib/unit --control=unix:/var/run/control.unit.sock \
+        --runstatedir=/var/run --pid=/var/run/unit.pid --logdir=/var/log --log=/var/log/unit.log \
+        --tmpdir=/var/tmp --user=www-data --group=www-data --modulesdir=/usr/lib/unit/modules \
+        --openssl --zlib --zstd --brotli; \
+    ./configure php; \
+    make -j"$(nproc)"; \
+    make install
+
+FROM php:8.5.11-cli-trixie AS freeunit
+COPY --from=php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/install-php-extensions
+COPY --from=composer/composer:2-bin /composer /usr/bin/composer
+COPY --from=freeunit-build /usr/sbin/unitd /usr/sbin/unitd
+COPY --from=freeunit-build /usr/lib/unit/modules /usr/lib/unit/modules
+RUN set -eux; \
+    printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' > /etc/apt/apt.conf.d/80-retries; \
+    install-php-extensions intl mbstring pdo_mysql gd zip opcache exif; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends curl ca-certificates default-mysql-client \
+        libssl3t64 libpcre2-8-0 zlib1g libzstd1 libbrotli1; \
+    rm -rf /var/lib/apt/lists/*; \
+    mkdir -p /var/lib/unit /docker-entrypoint.d; \
+    ln -sf /dev/stderr /var/log/unit.log
+COPY docker/php-production.ini /usr/local/etc/php/conf.d/zz-production.ini
+RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+ENV COMPOSER_HOME=/opt/composer
+RUN composer global require --no-interaction --no-progress drush/drush:^13 \
+    && ln -s /opt/composer/vendor/bin/drush /usr/local/bin/drush
+COPY docker/runtimes/freeunit.json /docker-entrypoint.d/config.json
+COPY docker/entrypoint-freeunit.sh /usr/local/bin/entrypoint-freeunit.sh
+RUN chmod +x /usr/local/bin/entrypoint-freeunit.sh
+WORKDIR /app
+STOPSIGNAL SIGTERM
+ENTRYPOINT ["/usr/local/bin/entrypoint-freeunit.sh"]
+CMD ["unitd", "--no-daemon", "--control", "unix:/var/run/control.unit.sock"]

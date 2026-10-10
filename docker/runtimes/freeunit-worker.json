@@ -1,0 +1,48 @@
+{
+    "_comment": "Placeholder for phase 2 (issue 596 / PR 452): a schedule into a jobs application with processes 1, no listener. Not used by phase 0.",
+    "listeners": {
+        "*:80": {
+            "pass": "routes"
+        }
+    },
+    "routes": [
+        {
+            "action": {
+                "share": "/app/web$uri",
+                "fallback": {
+                    "pass": "applications/drupal/index"
+                }
+            }
+        }
+    ],
+    "applications": {
+        "drupal": {
+            "type": "php",
+            "processes": 20,
+            "targets": {
+                "index": {
+                    "root": "/app/web/",
+                    "script": "index.php"
+                }
+            },
+            "limits": {
+                "requests": 10000,
+                "timeout": 30
+            }
+        },
+        "jobs": {
+            "type": "php",
+            "processes": 1,
+            "root": "/app/apps/",
+            "script": "drupal_boot_cron.php",
+            "limits": {
+                "timeout": 300
+            }
+        }
+    },
+    "settings": {
+        "http": {
+            "max_body_size": 8388608
+        }
+    }
+}

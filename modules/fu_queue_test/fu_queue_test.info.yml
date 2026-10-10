@@ -1,0 +1,5 @@
+name: 'FreeUnit queue test'
+type: module
+description: 'Tiny harness module: one queue worker with a known, measurable per-item cost, plus an HTTP drain route for benchmark arm B.'
+package: FreeUnit
+core_version_requirement: ^11 || ^12

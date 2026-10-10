@@ -1,0 +1,11 @@
+fu_queue_test.drain:
+  path: '/fu-queue-drain/{key}/{n}'
+  defaults:
+    _controller: '\Drupal\fu_queue_test\Controller\FuQueueDrainController::drain'
+    _title: 'Drain the FreeUnit queue test'
+    n: 50
+  requirements:
+    _access: 'TRUE'
+    n: '\d+'
+  options:
+    no_cache: TRUE
