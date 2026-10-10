@@ -124,9 +124,14 @@ elif [ "${DB}" = mysql ] || [ "${DB}" = mysqli ]; then
     # container exit 1 -- which then looks like a DNS failure in the next step.
     # Wait for initialization to finish, then check the real server.
     wait_maria() {
+        local logs
         docker exec "$DBC" mariadb -uroot -e 'SELECT 1' >/dev/null 2>&1 || return 1
-        docker logs "$DBC" 2>&1 | grep -q 'Temporary server started' || return 0
-        docker logs "$DBC" 2>&1 | grep -qE 'Temporary server stopped|init process done'
+        # Read the log once: `docker logs | grep -q` under `set -o pipefail`
+        # fails with 141 (docker gets SIGPIPE when grep stops early), so the
+        # marker could be present and still be reported missing.
+        logs=$(docker logs "$DBC" 2>&1 || true)
+        grep -q 'Temporary server started' <<<"$logs" || return 0
+        grep -qE 'Temporary server stopped|init process done' <<<"$logs"
     }
     # The image's first-run initialization occasionally stalls at "Temporary server
     # started" on a fresh volume. A second start finds the data directory already
