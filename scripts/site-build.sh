@@ -229,6 +229,14 @@ docker run --rm --network "$NET" \
             export DRUPAL_ROOT
             CLI=\"php /run/apps-src/drupal_cli.php\"
             \$CLI install $PROFILE
+
+            # Drupal 12's standard profile sets page.front to /admin/welcome, an
+            # admin-only page: an anonymous GET / is a 403 and no page-cache entry
+            # is created. Drupal 11's standard profile used /node; match it. The
+            # drush path (11.4) already installs /node, so this is only here.
+            if [ "$PROFILE" = standard ]; then
+                \$CLI front /node
+            fi
         fi
 
         # The autoloader composer create-project leaves behind is not optimized: every

@@ -75,8 +75,22 @@ function db_spec(): array {
 // Install runs before a kernel exists. Drupal 12's core/scripts/drupal installer is
 // hardcoded to SQLite (it has no --db-url), so this calls install_drupal() with the
 // database spec in the settings form -- exactly what drush's site:install does.
-if ($cmd === 'install') {
-    $profile = $args[0] ?? 'demo_umami';
+if ($cmd === 'install' || $cmd === 'install-recipe') {
+    // A recipe installs with an empty profile: the recipe carries the whole site.
+    // Drupal 12's own `dr install` accepts a recipe too, but it hardcodes SQLite
+    // (it requires pdo_sqlite and has no --db-url), so the same recipe parameter
+    // goes to install_drupal() with a real driver spec instead.
+    $recipe = '';
+    if ($cmd === 'install-recipe') {
+        $recipe = $args[0] ?? '';
+        if ($recipe === '') {
+            fail('install-recipe needs a recipe directory, e.g. core/recipes/standard');
+        }
+        $profile = '';
+    }
+    else {
+        $profile = $args[0] ?? 'demo_umami';
+    }
     $pass = getenv('SITE_PASS') ?: 'admin';
     $site_name = getenv('SITE_NAME') ?: 'FreeUnit benchmark';
     chdir($root);
@@ -117,13 +131,18 @@ if ($cmd === 'install') {
         ],
     ];
     try {
+        if ($recipe !== '') {
+            // The key Drupal\Core\Command\InstallCommand uses, so install_drupal()
+            // builds the site from the recipe (it resolves the path from the root).
+            $settings['parameters']['recipe'] = $recipe;
+        }
         install_drupal($class_loader, $settings);
     }
     catch (\Throwable $e) {
         fail('install failed: ' . get_class($e) . ': ' . $e->getMessage());
     }
     echo json_encode([
-        'install' => $profile,
+        'install' => $recipe !== '' ? "recipe:$recipe" : $profile,
         'database' => $db_spec['database'],
         'host' => $db_spec['host'] ?? '',
     ], JSON_UNESCAPED_SLASHES) . "\n";
@@ -169,6 +188,15 @@ switch ($cmd) {
         }
         \Drupal::state()->set($key, $value);
         echo json_encode(['state' => $key, 'value' => $value]) . "\n";
+        break;
+
+    case 'front':
+        // Drupal 12's standard profile sets page.front to /admin/welcome, an
+        // admin-only page, so an anonymous GET / is a 403 and nothing is page
+        // cached. Drupal 11's standard profile used /node; do the same.
+        $path = $args[0] ?? '/node';
+        \Drupal::configFactory()->getEditable('system.site')->set('page.front', $path)->save();
+        echo json_encode(['front' => $path]) . "\n";
         break;
 
     case 'user-create':
