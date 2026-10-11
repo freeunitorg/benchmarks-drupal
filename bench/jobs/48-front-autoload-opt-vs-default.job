@@ -1,4 +1,4 @@
-# The Composer autoloader, in one job: the classmap-authoritative autoloader against
+# The Composer autoloader, in one job: the optimized autoloader against
 # the one composer create-project leaves behind, on the same Drupal 12.0, the same
 # profile and the same runtime. Both sides run freeunit, so the null phase of this
 # job is the freeunit-vs-freeunit band. This is the cheapest production step in
@@ -23,5 +23,5 @@ LOAD_CPUS=2,3,6,7
 DB_CPUS=4,5
 PRIMARY=s_instructions
 NULL_LIMIT_PCT=5
-EXPECT="the classmap-autoritative autoloader is at or below the default one per request"
+EXPECT="the optimized autoloader is at or below the default one per request"
 FALSIFY="NO CLAIM: the autoloader is not a measurable share at this cell"

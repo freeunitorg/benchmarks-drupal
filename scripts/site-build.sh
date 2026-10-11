@@ -241,11 +241,15 @@ docker run --rm --network "$NET" \
 
         # The autoloader composer create-project leaves behind is not optimized: every
         # class outside core's small classmap costs a PSR-4 stat() per candidate
-        # directory on every request. Classmap-authoritative is the standard production
-        # step; see docs/drupal-perf-opportunities.md. COMPOSER_OPT=0 restores the
-        # unoptimized baseline for an A/B.
+        # directory on every request, so build the classmap. NOT
+        # --classmap-authoritative: Drupal 12 registers core module namespaces (the
+        # database driver lives in core/modules/mysql) at runtime, and authoritative
+        # mode disables the PSR-4 fallback those registrations need, which fails the
+        # boot with 'Class "Drupal\mysql\Driver\Database\mysql\Connection" not
+        # found'. COMPOSER_OPT=0 restores the baseline for an A/B.
+        # See docs/drupal-perf-opportunities.md.
         if [ \"\${COMPOSER_OPT:-1}\" = 1 ]; then
-            composer dump-autoload --optimize --classmap-authoritative --no-interaction
+            composer dump-autoload --optimize --no-interaction
         fi
 
         # Opt-in: an OPcache preload file for this site. Drupal core has none, and the

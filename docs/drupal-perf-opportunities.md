@@ -39,8 +39,12 @@ Read on the built 12.0 site on pro4s-2:
 
 ## The levers, in the order worth trying
 
-1. **Classmap-authoritative autoloader** (`composer dump-autoload --optimize
-   --classmap-authoritative`). Removes PSR-4 lookups and `file_exists` probes for
+1. **Optimized autoloader** (`composer dump-autoload --optimize`). **Not**
+   `--classmap-authoritative`: Drupal 12 registers core module namespaces at
+   runtime (the database driver is `core/modules/mysql`), and authoritative mode
+   disables the PSR-4 fallback those registrations need, so the boot fails with
+   `Class "Drupal\mysql\Driver\Database\mysql\Connection" not found`.
+   Measured on the first 12.0-standard rebuild. Removes PSR-4 lookups and `file_exists` probes for
    every class on every request. Measurable as instructions retired per request,
    which is exactly what the benchmark counts. No new dependency, no behaviour
    change, applies to all three runtimes.
@@ -93,6 +97,6 @@ honest:
   variant and its own job pair, so a reader can see the effect on one runtime
   without it leaking into the others.
 
-Implemented with this note: the classmap-authoritative autoloader in
+Implemented with this note: the optimized autoloader in
 `scripts/site-build.sh`, and a preload file generator that the cell helper mounts
 when a site has one.
