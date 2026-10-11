@@ -47,6 +47,11 @@ results/         one directory per run: results.tsv, summary.json, meta.txt,
 scripts/         site-build.sh
 ```
 
+## What it found
+
+A plain-language summary of the published results:
+[docs/report-2026-10.md](docs/report-2026-10.md).
+
 ## Current state
 
 What is published, what is queued on which box and what is still unmeasured:
