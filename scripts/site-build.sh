@@ -245,7 +245,7 @@ docker run --rm --network "$NET" \
         # step; see docs/drupal-perf-opportunities.md. COMPOSER_OPT=0 restores the
         # unoptimized baseline for an A/B.
         if [ \"\${COMPOSER_OPT:-1}\" = 1 ]; then
-            composer dump-autoload --optimize --classmap-authoritative --no-interaction --no-progress
+            composer dump-autoload --optimize --classmap-authoritative --no-interaction
         fi
 
         # Opt-in: an OPcache preload file for this site. Drupal core has none, and the
