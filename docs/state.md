@@ -1,6 +1,6 @@
 # Current state (resume here)
 
-Last updated 2026-10-10 ~18:35Z. Written so a fresh session needs three files:
+Last updated 2026-10-11 ~18:50Z. Written so a fresh session needs three files:
 this one, `run/campaign.done` on each box, and the run directories under
 `results/`. Details live in `docs/progress.md`; the reusable lessons are in the
 harness findings (`freeunit-harness/run/agent-findings/strace-20261010-*.md`).
