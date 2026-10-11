@@ -199,6 +199,26 @@ switch ($cmd) {
         echo json_encode(['front' => $path]) . "\n";
         break;
 
+    case 'front-node':
+        // /node is not a route in Drupal 12: the frontpage view is optional config
+        // of the node module in 11.4 but ships only with the demo_umami profile in
+        // 12, so a standard site has no front page at all. Create a real page (as
+        // the old standard profile's welcome node did) and point the front page at
+        // it; it is cacheable and readable by anonymous and authenticated users.
+        $title = $args[0] ?? 'Welcome to the FreeUnit benchmark';
+        $node = \Drupal\node\Entity\Node::create([
+          'type' => 'page',
+          'title' => $title,
+          'status' => 1,
+          'promote' => 1,
+          'body' => ['value' => 'Front page of the benchmark site.', 'format' => 'basic_html'],
+        ]);
+        $node->save();
+        $path = '/node/' . $node->id();
+        \Drupal::configFactory()->getEditable('system.site')->set('page.front', $path)->save();
+        echo json_encode(['front' => $path, 'nid' => (int) $node->id()]) . "\n";
+        break;
+
     case 'user-create':
         [$name, $pass] = [$args[0] ?? 'bench-user', $args[1] ?? 'bench-pass'];
         $storage = \Drupal::entityTypeManager()->getStorage('user');

@@ -230,12 +230,13 @@ docker run --rm --network "$NET" \
             CLI=\"php /run/apps-src/drupal_cli.php\"
             \$CLI install $PROFILE
 
-            # Drupal 12's standard profile sets page.front to /admin/welcome, an
-            # admin-only page: an anonymous GET / is a 403 and no page-cache entry
-            # is created. Drupal 11's standard profile used /node; match it. The
-            # drush path (11.4) already installs /node, so this is only here.
+            # Drupal 12's standard site has no front page: the profile points it at
+            # /admin/welcome (403 for anonymous), and /node is not a route either
+            # because the frontpage view ships only with demo_umami in 12. Create a
+            # page node and point the front page at it, as Drupal 11's welcome node
+            # did. The drush path (11.4) installs /node, so this is drush-free only.
             if [ "$PROFILE" = standard ]; then
-                \$CLI front /node
+                \$CLI front-node
             fi
         fi
 
