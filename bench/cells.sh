@@ -33,7 +33,9 @@ PORT=${BASE_PORT:-8081}
 # request bytes rather than PHP execution (job 29/30, the auth-page follow-up).
 if [ "${EXTRA_COOKIE_BYTES:-0}" -gt 0 ]; then
     pad=$(head -c "$EXTRA_COOKIE_BYTES" /dev/zero | tr '\0' 'x')
-    COOKIE_HDR="${COOKIE_HDR}bench=${pad}; "
+    # COOKIE_HDR itself is only built below, from the per-side jars; start from the
+    # side's own header when there is one so a padded auth job keeps its session.
+    COOKIE_HDR="${COOKIE_HDR_A:-}bench=${pad}; "
 fi
 # Per-side site and database. A job that compares two backends sets SITE_DIR_A/
 # SITE_DIR_B (or DB_A/DB_B); each side then has its own network, its own database
@@ -68,7 +70,8 @@ for _side in A B; do
     eval "COOKIE_FILE_$_side=$_jar"
     eval "COOKIE_HDR_$_side=\"$(awk '($1 ~ /^#HttpOnly_/ || $1 !~ /^#/) && NF >= 7 { printf "%s=%s; ", $6, $7 }' "$_jar")\""
 done
-COOKIE_HDR="${COOKIE_HDR_A:-}"
+# Keep the padded value from the EXTRA_COOKIE_BYTES block above when present.
+COOKIE_HDR="${COOKIE_HDR:-${COOKIE_HDR_A:-}}"
 
 die() {
     echo "cells.sh: $*" >&2
