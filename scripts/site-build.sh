@@ -9,7 +9,7 @@
 #   11.5           Drupal 11.5.x-dev, demo_umami
 #   11.5-standard  Drupal 11.5.x-dev, standard
 #   12.0           Drupal 12.0.0-beta1, demo_umami
-#   12.0-standard  Drupal 12.0.0-beta1, standard
+#   12.0-standard  NOT SUPPORTED (Drupal 12 standard profile ships no content model)
 #
 # 11.5 is not released yet and its branch is not on Packagist, so the entry uses
 # 11.5.x-dev and composer needs --stability=dev; the build fails loudly until the
@@ -25,7 +25,7 @@
 # wipes through a container. Records $RUNROOT/site/<site>/meta.txt.
 set -euo pipefail
 
-SITE=${1:?usage: site-build.sh <11.4|11.4-standard|11.5|11.5-standard|12.0|12.0-standard> [RUNROOT] [--force]}
+SITE=${1:?usage: site-build.sh <11.4|11.4-standard|11.5|11.5-standard|12.0> [RUNROOT] [--force]}
 RUNROOT=${2:-/data/projects/benchmarks-drupal/run}
 FORCE=${3:-}
 TOOL_IMAGE=${TOOL_IMAGE:-drupal-bench-freeunit:1.37.0}
@@ -57,7 +57,14 @@ case "$SITE" in
 11.5)          DRUPAL_TAG=drupal/recommended-project:11.5.x-dev;    PROFILE=demo_umami; DRUPAL_STABILITY="--stability=dev" ;;
 11.5-standard) DRUPAL_TAG=drupal/recommended-project:11.5.x-dev;    PROFILE=standard; DRUPAL_STABILITY="--stability=dev" ;;
 12.0)          DRUPAL_TAG=drupal/recommended-project:12.0.0-beta1; PROFILE=demo_umami ;;
-12.0-standard) DRUPAL_TAG=drupal/recommended-project:12.0.0-beta1; PROFILE=standard ;;
+# 12.0-standard is deliberately absent: Drupal 12's standard profile installs no
+# content types, node view displays or frontpage view (only the demo_umami profile
+# carries them), so the install has no page to serve. Use 12.0, or a recipe.
+12.0-standard) echo "site-build: 12.0-standard is not a usable site on Drupal 12:" >&2
+              echo "  the standard profile ships no node.type.*, no node view displays and" >&2
+              echo "  no frontpage view (only demo_umami has them), so there is no page." >&2
+              echo "  Use 12.0, or install a recipe with apps/drupal_cli.php install-recipe." >&2
+              exit 2 ;;
 # The same 12.0 install with the optimizations from docs/drupal-perf-opportunities.md:
 # a classmap-authoritative autoloader and an OPcache preload file. A job that pairs
 # this with 12.0 measures them inside one job, against that job's own null band.

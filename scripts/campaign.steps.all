@@ -1,14 +1,16 @@
-# Drupal 12.0.0-beta1 and the standard profile, plus the authenticated-page
-# decomposition that answers why FreeUnit is slightly behind PHP-FPM there.
+# Drupal 12.0.0-beta1, plus the authenticated-page decomposition that answers why
+# FreeUnit is slightly behind PHP-FPM there.
+#
+# There is no 12.0-standard step: Drupal 12's standard profile installs no content
+# model at all (no node.type.*, no node view displays, no frontpage view - measured
+# against the installed site), so there is no page to benchmark. 11.4-standard
+# stays, and 12.0 covers Drupal 12. See docs/drupal-perf-opportunities.md.
 site:11.4-standard
 site:12.0
-site:12.0-standard
 job:bench/jobs/21-drupal-front-freeunit-vs-fpm-11.4-standard.job
 job:bench/jobs/22-drupal-auth-freeunit-vs-fpm-11.4-standard.job
 job:bench/jobs/23-drupal-front-freeunit-vs-fpm-12.0.job
 job:bench/jobs/24-drupal-auth-freeunit-vs-fpm-12.0.job
-job:bench/jobs/25-drupal-front-freeunit-vs-fpm-12.0-standard.job
-job:bench/jobs/26-drupal-auth-freeunit-vs-fpm-12.0-standard.job
 job:bench/jobs/27-auth-decompose-freeunit.job
 job:bench/jobs/28-auth-decompose-freeunit-master.job
 job:bench/jobs/29-front-cookie-1k.job
