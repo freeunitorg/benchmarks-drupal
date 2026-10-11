@@ -8,56 +8,83 @@ harness findings (`freeunit-harness/run/agent-findings/strace-20261010-*.md`).
 ## Published
 
 Page: https://freeunit.org/benchmarks-drupal/ (Pages renders `results/*/summary.json`
-plus the cron/queue TSVs; `report/render.py`, no typed numbers). Committed results: 14
-measured runs + 4 tick runs.
+plus the cron/queue TSVs; `report/render.py`). **22 measured runs**, plus 4 tick runs.
+Only real measurements are published now: `collect.sh` skips a run whose headline is
+`INVALID` or `NO DATA`, and the summary table shows `n/a` instead of dividing by a
+zero mean.
 
-| comparison (Drupal 11.4 umami / Symfony, c32, s_instructions) | verdict |
+| comparison (c32 server instructions, lower is better) | verdict |
 |---|---|
-| front-anon FreeUnit 1.37.0 vs nginx+FPM | CLAIM, FPM 7.7% more |
-| front-anon FreeUnit master vs FPM | CLAIM, FPM 7.7% more |
-| front-anon FPM vs Apache+mod_php | CLAIM, Apache 54.7% more |
-| front-anon master vs Apache | CLAIM, Apache 66.8% more |
-| front-auth 1.37.0 vs FPM | CLAIM, FPM 0.6% fewer |
-| front-auth master vs FPM | NO CLAIM (master 0.3% below FPM) |
-| master vs 1.37.0 (anon, auth) | NO CLAIM |
-| share probe (default vs direct routes) | NO CLAIM |
+| 11.4 umami front-anon, 1.37.0 and master vs nginx+FPM | CLAIM, FPM 7.7% more |
+| 11.4 umami front-anon, FPM vs Apache | CLAIM, Apache 54.7% more |
+| 11.4 umami front-anon, master vs Apache | CLAIM, Apache 66.8% more |
+| 11.4 umami front-auth, 1.37.0 vs FPM | CLAIM, FPM 0.6% fewer |
+| 11.4 umami front-auth, master vs FPM | NO CLAIM |
+| 11.4-standard front-anon / front-auth | CLAIM FPM 6.8% more / NO CLAIM |
+| 12.0 front-anon / front-auth | CLAIM FPM 10.3% more / CLAIM FPM 0.3% fewer |
+| `hello`, `php-headers`, `php-body` (no framework) | CLAIM, FPM 97-197% more |
 | Symfony front, 1.37.0 and master vs FPM | CLAIM, FPM 5.8% more |
+| master vs 1.37.0, share probe | NO CLAIM |
 
 Cron/queue arms: cold CLI 5.90 s mean vs HTTP 0.70-0.73 s on all three runtimes, no
-process growth over 20 ticks. The authenticated-page gap is cycles and context switches,
-not instructions or the database: `strace-20261010-auth-page-cycles-not-instructions.md`.
+process growth over 20 ticks.
 
-## Running right now
+**Drupal 12's `standard` profile is dropped** (arm removed, two INVALID runs deleted):
+it installs no content model at all - zero `node.type.*`, zero
+`core.entity_view_display.node.*`, no frontpage view - so there is no page to
+benchmark. Evidence and the recipe path: the harness finding
+`strace-20261010-drupal12-standard-front-page.md`. `12.0` (umami) covers Drupal 12.
 
-Both waiters ran their queues on 2026-10-10 ~18:42-18:51 and **every job failed**, on three
-bugs that are now fixed (see below). The images were also stale: `bin/drupal-bench` is a PHP
-script and the boxes have no PHP, so `bin/drupal-bench build` had been dying with
-`/usr/bin/env: 'php': No such file or directory` and the waiter only warned. The image list now
-lives in `scripts/build-images.sh` (no host PHP, builds master too, verifies the extensions) and
-the waiter retries once then refuses to start. `run.sh` read `PORT` before anything set it
-(`PORT: unbound variable`) and Drupal's mysqli driver needs the `mysqli` extension, which the
-stale image did not have. Image rebuilds were restarted on both boxes; the queues then need
-another run to pick up the new images.
+## Working state
 
-The two hosts' waiters start a campaign when the CPUs a measurement uses are
-quiet (≤5% over `SERVER_CPUS,DB_CPUS,LOAD_CPUS`) and the cell port is free:
+* **pro4s-2** ran the queue to completion 2026-10-11T02:08Z: 41 steps OK. Sites built:
+  `11.4`, `11.4-mysqli`, `11.4-pgsql`, `11.4-sqlite`, `11.4-standard`, `12.0`, `hello`,
+  `symfony`.
+* **pro4s-4** is stopped: the WordPress job produced 49 result rows in 9 h (~1.5 h per
+  cell) and was going nowhere; its containers were cleared by hand.
+* Both waiters are ready but `DEADLINE_UTC=06:00Z` has passed, so a campaign will not
+  start until the grant is extended.
 
-* **pro4s-2**: `scripts/wait-idle.sh scripts/campaign.steps.all` (32 steps: Drupal 12 +
-  12.0-standard + 11.4-standard, decomposition 27/28, cookie cells 29/30, DB backends
-  35-38, pedantic mysqli 39-41, framework-free control 31-34, 12.0 cron arms).
-* **pro4s-4**: `scripts/wait-idle.sh scripts/campaign.steps.wp` (WordPress 42-47).
+## What is left
 
-Both are in tmux (`drupal-wait`, plus `drupal-watch` writing health lines). Check with:
+Harness bugs that are fixed but not yet re-run:
 
-```sh
-ssh pro4s-2 'tail -3 /data/projects/benchmarks-drupal/wait-idle.log'
-ssh pro4s-2 'grep -E "OK|FAIL" /data/projects/benchmarks-drupal/run/campaign.log | tail'
-ssh pro4s-4 'tail -3 /data/projects/benchmarks-drupal/wait-idle.log'
-```
+1. **Cookie cells 29/30** - `COOKIE_HDR` was built before the cookie jars existed
+   (fixed: start from `COOKIE_HDR_A`, and do not overwrite it later).
+2. **Decomposition 27/28** - asks for `worker_us`, but the null phase never emits it, so
+   the run is `NO DATA`. The sampler must emit `front_us`/`worker_us` in the null blocks.
+3. **DB axis 35-41** - `cells.sh: cannot start postgres` / `cannot start mariadb` /
+   `start failed: freeunit` (sqlite). The sites exist; the cell helper's start path for
+   the alternate backends was never validated.
 
-A step counts as done only when it exits 0, so a failed build or job is retried by the
-next run. `campaign.sh` stops at `DEADLINE_UTC` (06:00Z).
+Never validated:
 
+4. **WordPress 42-47** - the cell loop stalls after a few cells; diagnose the
+   perf-sampler/container restart between cells.
+5. **Perf variants** `12.0-nopt` / `12.0-preload`, jobs 48/49 - not in the campaign.
+
+Waiting on others:
+
+6. **Drupal 11.5** - `11.5.x-dev` is not on Packagist yet (support is coded; PHP 8.5).
+7. **Master pin** - 13 commits behind `origin/master` (libunit memory fixes, none PHP).
+
+Product:
+
+8. **`freeunit` Drupal module** (freeunit4drupal/packages/freeunit) - installed nowhere
+   yet; validate on the 12.0 site (path repo, enable, `APP_RUNTIME`), then a stock vs
+   module job.
+
+## Traps that cost the most (full list in the findings and docs/progress.md)
+
+* `vendor/bin/dr install` can never install into a database (early return on any
+  `$databases`, SQLite otherwise); `install_drupal()` with the driver spec is the path.
+  `dr install` in 12 does accept a **recipe** but still requires `pdo_sqlite`.
+* `composer dump-autoload --classmap-authoritative` breaks Drupal 12: core registers
+  module namespaces at runtime and the driver class then cannot be found. `--optimize`
+  alone is safe.
+* `docker run | grep -q` under `set -o pipefail` fails with 141 when grep stops early;
+  read the output into a variable (this bit the image check and both MariaDB waits).
+* Never `pkill -f` a pattern that matches the command you are running in.
 ## Validated against built
 
 Built and cookie-verified: `site/11.4`, `site/11.4-standard` (drush path), `site/12.0`
