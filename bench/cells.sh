@@ -53,7 +53,11 @@ ORDER=(X Y Y X Y X X Y)
 SWAP=(Y X X Y X Y Y X)
 
 # sv SIDE SUFFIX -> the value of <SUFFIX>_<SIDE>, e.g. sv A CNAME
-sv() { local n="$2_$1"; eval "printf '%s' \"\${$n}\""; }
+# sv SIDE SUFFIX -> the value of <SUFFIX>_<SIDE>, e.g. sv A CNAME.
+# ${...:-} on purpose: a job without a cookie jar never sets COOKIE_HDR_A/B, and a
+# bare expansion under set -u made every call in such a job fail with
+# "COOKIE_HDR_A: unbound variable".
+sv() { local n="$2_$1"; eval "printf '%s' \"\${$n:-}\""; }
 
 # Cookie bytes per side: an authenticated job needs the session cookie of that
 # side's site, and the two sides may be different installations.
