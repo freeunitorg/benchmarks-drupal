@@ -40,6 +40,13 @@ while read -r run; do
     [ -n "$run" ] || continue
     case "$run" in 00-*) continue ;; esac
     ssh -n "$HOST" "test -f $REMOTE_ROOT/run/$run/summary.json" || continue
+    # A run whose headline is INVALID or NO DATA is a failed measurement, not a
+    # result: publishing it puts a row of dashes on the page and a zero mean into
+    # the summary ratio. Leave it on the host for the campaign to retry.
+    headline=$(ssh -n "$HOST" "python3 -c \"import json,sys; print(json.load(open('$REMOTE_ROOT/run/$run/summary.json')).get('headline',''))\" 2>/dev/null" || true)
+    case "$headline" in
+    INVALID*|"NO DATA"*) echo "collect: skipping $run ($headline)"; continue ;;
+    esac
     mkdir -p "$DEST/$run"
     for f in summary.json meta.txt compare.txt job.txt results.tsv preflight.txt cells.log site-meta.txt; do
         rsync -a "$HOST:$REMOTE_ROOT/run/$run/$f" "$DEST/$run/" 2>/dev/null || true

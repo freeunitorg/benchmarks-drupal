@@ -96,10 +96,17 @@ def summary_section(summaries):
         out.append('<table><thead><tr><th>runtime</th><th>' + esc(primary.replace("_", " "))
                    + '</th><th>relative</th></tr></thead><tbody>')
         for rt in order:
-            ratio = means[rt] / best if primary in LOWER_IS_BETTER else best / means[rt]
+            # A runtime whose primary mean is 0 has no measurement (a failed side or
+            # a metric the sampler did not emit); show a dash instead of dividing.
+            if best <= 0 or means[rt] <= 0:
+                ratio = "n/a"
+            elif primary in LOWER_IS_BETTER:
+                ratio = f"{means[rt] / best:.2f}x"
+            else:
+                ratio = f"{best / means[rt]:.2f}x"
             cls = ' class="best"' if abs(means[rt] - best) < 1e-9 else ""
             out.append(f'<tr{cls}><td>{esc(runtime_title(rt))}</td><td>{fmt(means[rt])}</td>'
-                       f'<td>{ratio:.2f}x</td></tr>')
+                       f'<td>{ratio}</td></tr>')
         out.append("</tbody></table>")
     return "\n".join(out)
 
