@@ -1,128 +1,98 @@
 # Current state (resume here)
 
-Last updated 2026-10-11 ~18:50Z. Written so a fresh session needs three files:
-this one, `run/campaign.done` on each box, and the run directories under
-`results/`. Details live in `docs/progress.md`; the reusable lessons are in the
-harness findings (`freeunit-harness/run/agent-findings/strace-20261010-*.md`).
+Last updated 2026-10-12 ~08:15Z. A fresh session needs three things: this file,
+`run/campaign.done` on each box, and `results/`. Details in `docs/progress.md`; the
+reusable lessons are in the harness `run/agent-findings/strace-20261012-*.md` and
+`opencode-2026101*` files.
 
 ## Published
 
-Page: https://freeunit.org/benchmarks-drupal/ (Pages renders `results/*/summary.json`
-plus the cron/queue TSVs; `report/render.py`). **22 measured runs**, plus 4 tick runs.
-Only real measurements are published now: `collect.sh` skips a run whose headline is
-`INVALID` or `NO DATA`, and the summary table shows `n/a` instead of dividing by a
-zero mean.
+https://freeunit.org/benchmarks-drupal/ — 22 measured runs + 4 tick runs, rebuilt by
+Pages from `results/*/summary.json` (`report/render.py`, no typed numbers; `collect.sh`
+skips INVALID/NO DATA runs).
 
-| comparison (c32 server instructions, lower is better) | verdict |
-|---|---|
-| 11.4 umami front-anon, 1.37.0 and master vs nginx+FPM | CLAIM, FPM 7.7% more |
-| 11.4 umami front-anon, FPM vs Apache | CLAIM, Apache 54.7% more |
-| 11.4 umami front-anon, master vs Apache | CLAIM, Apache 66.8% more |
-| 11.4 umami front-auth, 1.37.0 vs FPM | CLAIM, FPM 0.6% fewer |
-| 11.4 umami front-auth, master vs FPM | NO CLAIM |
-| 11.4-standard front-anon / front-auth | CLAIM FPM 6.8% more / NO CLAIM |
-| 12.0 front-anon / front-auth | CLAIM FPM 10.3% more / CLAIM FPM 0.3% fewer |
-| `hello`, `php-headers`, `php-body` (no framework) | CLAIM, FPM 97-197% more |
-| Symfony front, 1.37.0 and master vs FPM | CLAIM, FPM 5.8% more |
-| master vs 1.37.0, share probe | NO CLAIM |
+Headline verdicts (c32 retired instructions, lower is better): cached Drupal front page
+**FPM +7.7 %** vs FreeUnit 1.37.0 and vs master (11.4 umami), **+6.8 %** (11.4 standard),
+**+10.3 %** (12.0), Symfony **+5.8 %**, Apache **+54.7 % / +66.8 %**; framework-free PHP
+**+97 / +109 / +197 %**; authenticated Drupal a tie (1.37.0 −0.6 %, master inside noise,
+12.0 FPM −0.3 %, the difference being cycles/CX not instructions/DB); master vs 1.37.0 and
+the share probe NO CLAIM. Written up for humans in `docs/report-2026-10.md`.
 
-Cron/queue arms: cold CLI 5.90 s mean vs HTTP 0.70-0.73 s on all three runtimes, no
-process growth over 20 ticks.
+## Running now: the master regression check (pro4s-2)
 
-**Drupal 12's `standard` profile is dropped** (arm removed, two INVALID runs deleted):
-it installs no content model at all - zero `node.type.*`, zero
-`core.entity_view_display.node.*`, no frontpage view - so there is no page to
-benchmark. Evidence and the recipe path: the harness finding
-`strace-20261010-drupal12-standard-front-page.md`. `12.0` (umami) covers Drupal 12.
+`scripts/campaign.steps.master-12`: fresh `site:12.0`, then
+`06-front-anon-master-vs-1370-12.0` and `07-front-auth-master-vs-1370-12.0` — master
+against the pinned 1.37.0 tarball on Drupal 12. Waiter in tmux `drupal-wait`, deadline
+12:00Z.
 
-## Working state
+Facts and traps from setting it up:
 
-* **pro4s-2** ran the queue to completion 2026-10-11T02:08Z: 41 steps OK. Sites built:
-  `11.4`, `11.4-mysqli`, `11.4-pgsql`, `11.4-sqlite`, `11.4-standard`, `12.0`, `hello`,
-  `symfony`.
-* **pro4s-4** is stopped: the WordPress job produced 49 result rows in 9 h (~1.5 h per
-  cell) and was going nowhere; its containers were cleared by hand.
-* Both waiters are ready but `DEADLINE_UTC=06:00Z` has passed, so a campaign will not
-  start until the grant is extended.
+* the master image had been pinned at **`868ccc29`**, so every published "master" number
+  was stale; it is now built at **`8492d5ee`** (`FREEUNIT_MASTER_REF`, `org.freeunit.ref`).
+* `build-images.sh` now writes `run/freeunit-master-sha`; `run.sh` reads that file, so
+  before this change every master run recorded `freeunit_master_sha=unknown`.
+* the 12.0 site and its volume were removed for a fresh install, but the campaign's
+  **`campaign.done` still held `site:12.0 exit=0`**, so the step was skipped and both jobs
+  failed with "no installed site". The entries were deleted; if a step must re-run, delete
+  its `exit=0` line from `run/campaign.done` or the builder's `site_installed` check skips it.
+* `pro4s-4` is stopped (its WordPress job stalled at ~1.5 h/cell); nothing of ours runs there.
 
-## What is left
+## Upstream work (freeunitorg/freeunit)
 
-Harness bugs that are fixed but not yet re-run:
+* **#679 / PR #680 — python: the embedded interpreter can load the system stdlib.**
+  Branch `python/base-prefix-home`, head **`b35a3bdf`**, based on master `87c5059f`.
+  The fix records `sys.executable` at configure time and sets `config.executable` when the
+  application config has no `home`. Verified end to end on aarch64: a module built for
+  `/tmp/altbindir` reports that prefix, that executable and its site-packages; a system
+  build is unchanged. CI: **1 failed, 460 passed, 2 errors** — `test_python_application_path`
+  (`No module named 'wsgi'`, about `nxt_python_set_path` for a `path`-only app, independent
+  of this change) and `test_python_isolation_rootfs_no_language_deps` (the rootfs has no
+  interpreter `bin`, and CPython 3.14 refuses an isolated config whose executable is
+  absent). All non-Python legs green. The three options are in the PR comments; part 2
+  (mount + `sys.path`) is unavoidably coupled, so it needs a decision, not another variant.
+* **#33 — h1p: do not read a h1proto's connection through a foreign object** (draft PR).
+  Independently verified by me: pre-change the crash call **SIGSEGV, exit 139**; the head
+  passes **86 tests, exit 0**, and `.github/scripts/check-test-hooks.sh` is rc=0. Caller
+  narrowed in a comment: `nxt_h1p_shutdown()` (`nxt_h1proto.c:2634`) reads `c->socket.data`
+  as a h1proto, reached from `nxt_h1p_conn_close/error`, the close/error handlers of the
+  three idle/keepalive states, while the peer path puts `nxt_http_peer_t` in the same slot.
+  Ready for the maintainer's review.
+* Earlier: kTLS numbers and the aarch64 result are on #29; the static-handler `sendfile`
+  finding is #32 (the bot corrected my gate: `nxt_conn_io_sendbuf()` chooses by buffer type,
+  `.old_sendbuf` has no reader); the Drupal 12 standard-profile/recipe finding is on
+  freeunit4drupal#1.
 
-1. **Cookie cells 29/30** - `COOKIE_HDR` was built before the cookie jars existed
-   (fixed: start from `COOKIE_HDR_A`, and do not overwrite it later).
-2. **Decomposition 27/28** - asks for `worker_us`, but the null phase never emits it, so
-   the run is `NO DATA`. The sampler must emit `front_us`/`worker_us` in the null blocks.
-3. **DB axis 35-41** - `cells.sh: cannot start postgres` / `cannot start mariadb` /
-   `start failed: freeunit` (sqlite). The sites exist; the cell helper's start path for
-   the alternate backends was never validated.
+## Harness
 
-Never validated:
+* `freeunitorg/freeunit-harness` **PR #1**: the aarch64 host recipe
+  (`skills/freeunit-cross-arch/references/aarch64-host.md` + a References pointer),
+  `make doctor` clean, `@codex review` requested, **no review posted yet**.
+* `run/servers.md` (private) carries the Oracle aarch64 inventory; the ARM recipe is the
+  public skill reference.
+* Task ledger: `job/python-home-prefix` (issue #679 linked), `research/kernel-cheap-wins`
+  (survey → #32/#34, real-NIC A/B outstanding), `tag/1.37.1` (677 recorded).
 
-4. **WordPress 42-47** - the cell loop stalls after a few cells; diagnose the
-   perf-sampler/container restart between cells.
-5. **Perf variants** `12.0-nopt` / `12.0-preload`, jobs 48/49 - not in the campaign.
+## Traps that cost the most
 
-Waiting on others:
-
-6. **Drupal 11.5** - `11.5.x-dev` is not on Packagist yet (support is coded; PHP 8.5).
-7. **Master pin** - 13 commits behind `origin/master` (libunit memory fixes, none PHP).
-
-Product:
-
-8. **`freeunit` Drupal module** (freeunit4drupal/packages/freeunit) - installed nowhere
-   yet; validate on the 12.0 site (path repo, enable, `APP_RUNTIME`), then a stock vs
-   module job.
-
-## Traps that cost the most (full list in the findings and docs/progress.md)
-
-* `vendor/bin/dr install` can never install into a database (early return on any
-  `$databases`, SQLite otherwise); `install_drupal()` with the driver spec is the path.
-  `dr install` in 12 does accept a **recipe** but still requires `pdo_sqlite`.
-* `composer dump-autoload --classmap-authoritative` breaks Drupal 12: core registers
-  module namespaces at runtime and the driver class then cannot be found. `--optimize`
-  alone is safe.
-* `docker run | grep -q` under `set -o pipefail` fails with 141 when grep stops early;
-  read the output into a variable (this bit the image check and both MariaDB waits).
-* Never `pkill -f` a pattern that matches the command you are running in.
-## Validated against built
-
-Built and cookie-verified: `site/11.4`, `site/11.4-standard` (drush path), `site/12.0`
-(drush-free path), `site/symfony`. Code-complete but **not yet built or measured**:
-`12.0-standard`, `11.4` on `mysqli`/`pgsql`/`sqlite`, `wp`, `wp-persistent`, `hello`;
-also unmeasured: decomposition and cookie cells, DB backends, mysqli pair, WP.
-
-## Traps that cost the most (full list in the findings and docs/progress.md)
-
-* `vendor/bin/dr install` can never install into a database: it early-returns on any
-  `$databases` in settings.php and hardcodes SQLite otherwise. Use `install_drupal()`
-  with the driver spec (`apps/drupal_cli.php install`).
-* The tool-container command is one host double-quoted string: no backticks, no bare `"`,
-  no unescaped `$` inside it, comments included.
-* Never `CREATE USER` outside the MariaDB entrypoint (1396 kills the container and shows
-  up later as a DNS failure); wait for the init markers and retry a stuck first run.
-* The MariaDB image runs a temporary init server, so a client can answer *before*
-  initialization finishes; wait for the init markers, not just a successful `SELECT 1`.
-* `LC_ALL=C` in measurement scripts (awk printed `37,6`).
-
-## Other live threads
-
-* **freeunit-exp** (bot workbench fork): issue #6 is the agent's task list. T1 (Unit
-  config is string-only, unknown keys abort) and T2 (Drupal core install owns SQLite)
-  are verified and merged as PRs #7/#8; T3 (one test case for the string rule) has a
-  go-ahead. My comment on #6 corrects the Drupal 12 recipe (never `dr install`). Open:
-  PR #9 (bot README) and #5 (review of PR 645). The App still needs this fork in its
-  repository access list.
-* **freeunit4drupal**: issue #1 carries the three findings that bear on its plan
-  (D6 PHP provisioning, D7 support matrix, D8 databases, D11 config generation).
-* The harness perf-suite patch (DB_CPUS + `db_*` descriptions) is still uncommitted in
-  the harness working tree; the finding has the mutation evidence.
+* `vendor/bin/dr install` cannot install into a database (early return on any `$databases`,
+  SQLite otherwise); use `install_drupal()` with the driver spec.
+* Drupal 12's `standard` profile installs no content model at all; the arm was dropped.
+* `composer dump-autoload --classmap-authoritative` breaks Drupal 12 (runtime module
+  namespaces); `--optimize` alone is safe.
+* `docker run | grep -q` under `set -o pipefail` fails with 141 when grep stops early.
+* Never `pkill -f` a pattern that matches the command you are running.
+* A stale `unitd` on the test port answers your curl with the **old** module; kill by pid
+  and use a fresh port when verifying a rebuilt module.
+* **Never run several `Py_InitializeFromConfig` variants in one process**: CPython caches
+  the path configuration, so every row after the first reports the first variant's prefix.
+  This contaminated a whole measurement table here (see PR #680's comments).
 
 ## Next steps
 
-1. Let the queues run, then `bin/drupal-bench collect pro4s-2` (and `pro4s-4`) and push;
-   the page picks up new runs automatically. Collect only run ids from the job list:
-   another session shares `/data/projects/benchmarks-drupal/run` on pro4s-4.
-2. Fix whatever fails first (site builds are the fragile part; each failure is retried).
-3. Then: Drupal 12 cron arms, the mysqli worker-mode question (issue 596), Alpine/musl
-   image, `benchmarks-drupal` naming now that WordPress lives there.
+1. Let the regression jobs finish, then `scripts/collect-commit.sh pro4s-2` (one commit and
+   push per run) and confirm `meta.txt` shows `freeunit_master_sha=8492d5ee…`.
+2. Decide the #679 shape (pin + isolation/`sys.path` together, opt-in, or docs) and finish
+   PR #680; #33 only needs a review.
+3. Then: Drupal 12 cron arms, the mysqli worker-mode question (issue 596), the Alpine/musl
+   image, `benchmarks-drupal` naming now that WordPress lives there, and the real-NIC A/B for
+   the static-`sendfile` change (#32) and kTLS (#34).
