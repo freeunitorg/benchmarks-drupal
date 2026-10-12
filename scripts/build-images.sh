@@ -15,10 +15,16 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 MASTER_REF=${FREEUNIT_MASTER_REF:-868ccc29214b979510cee37b2084d2cf3b34e382}
+RUNROOT=${RUNROOT:-run}
 
 docker build -f docker/Dockerfile.freeunit -t drupal-bench-freeunit:1.37.0 .
 docker build -f docker/Dockerfile.freeunit \
     --build-arg FREEUNIT_REF="$MASTER_REF" -t drupal-bench-freeunit:master .
+
+# The run's meta.txt reads this file, so a published master number names the
+# commit it was built from instead of "unknown".
+mkdir -p "$RUNROOT"
+printf '%s\n' "$MASTER_REF" > "$RUNROOT/freeunit-master-sha"
 docker build -f docker/Dockerfile.php --target php-fpm -t drupal-bench-fpm:8.5 .
 docker build -f docker/Dockerfile.php --target apache -t drupal-bench-apache:8.5 .
 docker pull mariadb:10.11

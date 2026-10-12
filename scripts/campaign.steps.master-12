@@ -1,0 +1,7 @@
+# Regression check for the current FreeUnit master on Drupal 12: rebuild the site
+# fresh, then compare master against the pinned 1.37.0 tarball on the anonymous
+# (page-cache hit) and authenticated cells. The 1.37.0-vs-master delta is the
+# post-release work since the 1.37.0 tag.
+site:12.0
+job:bench/jobs/06-front-anon-master-vs-1370-12.0.job
+job:bench/jobs/07-front-auth-master-vs-1370-12.0.job
