@@ -18,7 +18,7 @@ Headline verdicts (c32 retired instructions, lower is better): cached Drupal fro
 12.0 FPM −0.3 %, the difference being cycles/CX not instructions/DB); master vs 1.37.0 and
 the share probe NO CLAIM. Written up for humans in `docs/report-2026-10.md`.
 
-## Running now: the master regression and the master profile (pro4s-2)
+## Running now: the master profile and its bisect (pro4s-2)
 
 The Drupal 12 regression check is **done and published**: `06-front-anon` and
 `07-front-auth` (master vs the pinned 1.37.0) both came back NO CLAIM, so the
@@ -27,15 +27,25 @@ pinned at **`868ccc29`** until 2026-10-12, so every earlier "master" number came
 from that commit; the two new runs name **`8492d5ee`** in `meta.txt`.
 
 Master has since moved to **`2dc6596f`**, and the three commits between the two
-pins are all on the response path: `dc30c8a7` compresses the body part sent with
-the response headers, `2dc6596f` sends the response through the port queue again
-(+531 lines in `src/nxt_unit.c`), `183c84d5` is CI only.  `scripts/campaign.steps.master-profile`
-runs `freeunit-master` against `freeunit-master-old` (the same runtime
-configuration at `8492d5ee`) on a bare PHP response (`50`), a large body (`51`)
-and the Drupal 12 anonymous front page (`52`) — a within-run A/B, so the null
-band is those commits alone rather than cross-run noise.  Waiter in tmux
-`drupal-profile`, deadline 08:00Z; `build-images.sh` builds both tags and writes
-`run/freeunit-master-sha` and `run/freeunit-master-old-sha`.
+pins are all on the response path: `dc30c8a7` (#670, router) compresses the body
+part sent with the response headers, `2dc6596f` (#638, libunit) sends the
+response through the port queue again (+531 lines in `src/nxt_unit.c`),
+`183c84d5` is CI only.  The within-run A/B (`freeunit-master-old` = `8492d5ee`
+against `freeunit-master` = `2dc6596f`, jobs 50/51/52) **claims a real win for the
+new tree**:
+
+```
+php-hello c32   s_instructions -10.95%  (band 1.74, 12/12)   s_cycles -9.17%  rps +12.7%
+php-body c32    s_instructions  -6.79%  (band 4.70, 12/12)   s_cycles -6.95%  server_us -7.9%
+Drupal 12 anon  s_instructions  -0.27%  (band 0.15, 11/12)
+```
+
+That pair covers **two** commits, so it does not attribute the gain.  `dc30c8a7`
+sits directly on `8492d5ee` and `2dc6596f` sits on it, so a third image
+(`freeunit-master-mid`, jobs 53-58, `scripts/campaign.steps.master-bisect`)
+splits it: old->mid is #670 alone, mid->new is #638 alone.  Waiter in tmux
+`drupal-bisect`, deadline 14:00Z.  Both effects were posted to #638 and #670 with
+the caveat that the split was still running.
 
 Traps from setting this up:
 
@@ -47,6 +57,8 @@ Traps from setting this up:
 * real time jumped ~17.5 h between sessions (2026-10-13T01:47Z when the notes said
   08:15Z of the 12th); a `DEADLINE_UTC` written earlier is in the past and the waiter
   stops before the first step.
+* `scripts/collect-commit.sh` runs **locally** (it calls `collect.sh`, which rsyncs from
+  the host); running it on the box tries to commit in a copy that is not a git repository.
 * `pro4s-4` is stopped (its WordPress job stalled at ~1.5 h/cell); nothing of ours runs there.
 
 ## Upstream work (freeunitorg/freeunit)
@@ -73,11 +85,17 @@ Traps from setting this up:
   finding is #32 (the bot corrected my gate: `nxt_conn_io_sendbuf()` chooses by buffer type,
   `.old_sendbuf` has no reader); the Drupal 12 standard-profile/recipe finding is on
   freeunit4drupal#1.
-* **#22** (isolation + cgroup v2, a research task held until 1.37.1): I contributed the live
-  half of its "ncpu derivation" measurement without claiming the task — on the aarch64
-  cgroup-v2 host a hand-made `cpu.max=100000 100000` makes unitd log `the cgroup CPU limit
-  lowers the CPU count from 2 to 1`, while a *cpuset* restriction keeps ncpu 2; a quota on
-  an ancestor is honoured because the walk takes the minimum non-zero `cpu.max` up the tree.
+* **#22** (isolation + cgroup v2, a research task held until 1.37.1): I contributed measurements
+  without claiming the task.  (a) On the aarch64 cgroup-v2 host a hand-made
+  `cpu.max=100000 100000` makes unitd log `the cgroup CPU limit lowers the CPU count from 2 to 1`,
+  a control with no quota stays at 2, a **cpuset** restriction is invisible to it, and an
+  ancestor quota is honoured because the walk takes the minimum non-zero `cpu.max` up the tree.
+  (b) Throttle trace, PHP 8.5.11 `processes: 8`, `wrk -t2 -c32 -d10s`: control 48 999 req/10 s,
+  p50 5.89 ms, p99 16.83 ms, `cpu.stat` clean; a half-CPU quota 12 637 req/10 s, p50 26.28 ms,
+  p99 89.85 ms, `nr_throttled` 100 of 125 periods, `throttled_usec` 14.5 s in a 10 s window
+  (summed per task, so it exceeds wall time).  A fractional quota is reported as one CPU.
+* **#638 / #670** (the two response-path merges): the combined A/B result is posted on both,
+  labelled as unattributed, with the bisect to follow.
 * Open profiling-shaped items in the exp queue as of 2026-10-13: **#36** (32-bit musl leg),
   **#34** (kTLS step 2), **#32** (static sendfile), **#22** (above), **#11** (1.37.1 review
   follow-ups), **#6** (benchmark-finding verification, already answered).
