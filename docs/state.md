@@ -18,48 +18,51 @@ Headline verdicts (c32 retired instructions, lower is better): cached Drupal fro
 12.0 FPM −0.3 %, the difference being cycles/CX not instructions/DB); master vs 1.37.0 and
 the share probe NO CLAIM. Written up for humans in `docs/report-2026-10.md`.
 
-## Running now: the master profile and its bisect (pro4s-2)
+## Running now: two boxes, two loops, both gated on someone else's work
 
-The Drupal 12 regression check is **done and published**: `06-front-anon` and
-`07-front-auth` (master vs the pinned 1.37.0) both came back NO CLAIM, so the
-post-release work has no effect on a page-cache-hit cell.  The master image was
-pinned at **`868ccc29`** until 2026-10-12, so every earlier "master" number came
-from that commit; the two new runs name **`8492d5ee`** in `meta.txt`.
+Published: 30 comparisons on five pages (`index`, `drupal-11.4`, `drupal-12.0`,
+`php`, `symfony`); the report was split per application family because the single
+page had reached 103 KB and the runtime x database matrix lands on Drupal.
 
-Master has since moved to **`2dc6596f`**, and the three commits between the two
-pins are all on the response path: `dc30c8a7` (#670, router) compresses the body
-part sent with the response headers, `2dc6596f` (#638, libunit) sends the
-response through the port queue again (+531 lines in `src/nxt_unit.c`),
-`183c84d5` is CI only.  The within-run A/B (`freeunit-master-old` = `8492d5ee`
-against `freeunit-master` = `2dc6596f`, jobs 50/51/52) **claims a real win for the
-new tree**:
+**pro4s-2** (`sd-91675`, tmux `ws-loop`) finishes the master bisect and then runs
+the matrix: `scripts/campaign.steps.master-bisect` (56 body mid->new, 57/58 the
+Drupal 12 pair) then `scripts/campaign.steps.matrix-12` (15 jobs: Drupal 12
+front-anon x mysql/mysqli/pgsql/sqlite x Angie/FreeNginx/nginx/nginx-src against
+FreeUnit, plus the two fork-vs-source-nginx checks).  The loop retries a pass that
+loses jobs to a busy window, up to 2026-10-14T06:00Z.  It is waiting: another
+session has the box at 100 % busy with three containers.
 
-```
-php-hello c32   s_instructions -10.95%  (band 1.74, 12/12)   s_cycles -9.17%  rps +12.7%
-php-body c32    s_instructions  -6.79%  (band 4.70, 12/12)   s_cycles -6.95%  server_us -7.9%
-Drupal 12 anon  s_instructions  -0.27%  (band 0.15, 11/12)
-```
+**pro4s-4** (`sd-92483`, tmux `wp`) runs `scripts/campaign.steps.wp`:
+75-wp-smoke (deleted after it passes, never published), then 42-47.  Its `run/`
+tree and the two WP sites were rebuilt from scratch because the old ones predated
+the drop-in fix and five stalled `42-*` directories were left behind by the
+nine-hour hang.  Waiting too: 49 foreign containers and 22 % busy on the measured
+CPUs.
 
-That pair covers **two** commits, so it does not attribute the gain.  `dc30c8a7`
-sits directly on `8492d5ee` and `2dc6596f` sits on it, so a third image
-(`freeunit-master-mid`, jobs 53-58, `scripts/campaign.steps.master-bisect`)
-splits it: old->mid is #670 alone, mid->new is #638 alone.  Waiter in tmux
-`drupal-bisect`, deadline 14:00Z.  Both effects were posted to #638 and #670 with
-the caveat that the split was still running.
+The new runtimes (Angie 1.12.3, FreeNginx 1.31.4, nginx 1.31.6 from source) are
+built and smoke-tested: all three serve the hello app including `?mode=body` and
+`?mode=headers`, and their process titles are `angie:` and `nginx:` as the perf
+sampler expects.  `freeunit-master` is rebuilt at `2dc6596f` (was `868ccc29`
+until 2026-10-12, so every earlier master number came from that commit).
 
-Traps from setting this up:
+Collected so far from the bisect: 53/54/55, which attribute the whole response-path
+win to #638 (-10.06 % instructions, 12/12) and none to #670 (+0.23 %, inside the
+band).  56 came back INVALID during the interference (alerts=1, ok-counts halved)
+and is retried; the 27/28 decompose runs are deliberately unpublished NO DATA.
 
-* the campaign only understands `site:`/`job:`/`ticks:` lines; a bare job name is
-  `unknown step` rc=99.  A failed step is not recorded as done, so the retry is free.
-* the 12.0 site and its volume were removed for a fresh install, but
-  **`campaign.done` still held `site:12.0 exit=0`**, so the step was skipped and both
-  jobs failed with "no installed site".  Delete the step's `exit=0` line to re-run it.
-* real time jumped ~17.5 h between sessions (2026-10-13T01:47Z when the notes said
-  08:15Z of the 12th); a `DEADLINE_UTC` written earlier is in the past and the waiter
-  stops before the first step.
-* `scripts/collect-commit.sh` runs **locally** (it calls `collect.sh`, which rsyncs from
-  the host); running it on the box tries to commit in a copy that is not a git repository.
-* `pro4s-4` is stopped (its WordPress job stalled at ~1.5 h/cell); nothing of ours runs there.
+Traps from this stretch:
+
+* `wait_http` ran `curl` with no timeout, so a runtime that accepted the
+  connection and stopped answering hung a job for 2h25m (the same shape as the
+  nine-hour WordPress stall).  Fixed with `--connect-timeout 2 --max-time 5`.
+* the campaign understands only `site:`/`job:`/`ticks:` lines (a bare job name is
+  `unknown step` rc=99), and a `campaign.done` line is not evidence that the
+  artefact still exists: a stale `site:12.0 exit=0` skipped a site rebuild whose
+  directory had been deleted.
+* on a box shared with another session, name the prefixes:
+  `COLLECT_ONLY="42- 43- 44- 45- 46- 47-" scripts/collect-commit.sh pro4s-4`.
+* `ssh pro4s-2` and `ssh pro4s-4` work with the default config, so `make sync`,
+  `collect.sh` and `collect-commit.sh` need no `-F`.
 
 ## Upstream work (freeunitorg/freeunit)
 
@@ -137,11 +140,13 @@ Traps from setting this up:
 1. Let the profile jobs finish, then `scripts/collect-commit.sh pro4s-2` (run it **locally** —
    it calls `collect.sh`, which rsyncs from the host; running it on the box commits in a
    copy that is not a git repository) and confirm `meta.txt` names both master shas.
-2. **PR #680** needs the shape decision (pin the interpreter *and* the isolation/`sys.path`
+2. Collect the WP runs with `COLLECT_ONLY` and the matrix runs when the loops
+   finish, then confirm each `meta.txt` names the runtime versions.
+3. **PR #680** needs the shape decision (pin the interpreter *and* the isolation/`sys.path`
    side together, make it opt-in, or document the limitation); **#33** is verified and only
    needs a review.
-3. Watch the exp queue (the watcher logs it) and take the profiling-shaped items: the RPS/p95
+4. Watch the exp queue (the watcher logs it) and take the profiling-shaped items: the RPS/p95
    half of #22 on the perf box, then #32/#34.
-4. Then: Drupal 12 cron arms, the mysqli worker-mode question (issue 596), the Alpine/musl
+5. Then: Drupal 12 cron arms, the mysqli worker-mode question (issue 596), the Alpine/musl
    image, `benchmarks-drupal` naming now that WordPress lives there, and the real-NIC A/B for
    the static-`sendfile` change (#32) and kTLS (#34).
