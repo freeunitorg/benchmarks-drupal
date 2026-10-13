@@ -189,6 +189,26 @@ set), `o-build` not ours.  The five-minute validator's session name for pro4s-2 
 `ws-loop` to `matrix`; it reports no problems.  The earlier loop exited by design after 12
 passes with 9 jobs left, which is why the queue looked dead.
 
+
+### The Apache arms (requested 2026-10-13), and a trap that ate two live logs
+
+Jobs **76/77/78** (WordPress and Drupal 12 front-anon, FreeUnit and nginx+FPM against
+mod_php) and **86/87** (the same with `freeunit-master`) run on pro4s-2, chained after the
+matrix by `/tmp/matrix-loop.sh` in tmux `bench`; **83/84/85/88/89** are the A1 equivalents
+(`PERF=0`, `PRIMARY=server_us`, one core each) in tmux `apachearm` on o-build, whose image
+build is chained apache -> `freeunit-master` at `2dc6596f` and writes `run/freeunit-master-sha`.
+
+Trap worth remembering: **`make sync` uses `rsync --delete`, so a log or script living in the
+repository root on the box is deleted while its process keeps writing to the unlinked inode**.
+That is why `bench-loop.log` and `apache-arm-loop.log` did not exist while their loops ran.
+Loop logs now live under `run/` (excluded from rsync) and the loop scripts in `/tmp`.
+
+Also fixed here: `bench/cells.sh` `start_db()` created the **A** network through the global
+`$NET` whatever side it was starting, so every two-side (SPLIT) job died with
+`network dbnet-<pid>-b not found` before its database came up.  That is why jobs 66-70 failed
+and why the older database-axis jobs 35-41 were never publishable.  It now creates the
+network of the side it is starting.
+
 ## Traps that cost the most
 
 * `vendor/bin/dr install` cannot install into a database (early return on any `$databases`,
