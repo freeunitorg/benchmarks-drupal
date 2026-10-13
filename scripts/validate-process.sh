@@ -94,8 +94,10 @@ for row in "${BOXES[@]}"; do
     # A job that is running but whose log has not moved for 25 minutes is stuck:
     # the shape of the unbounded curl.  Gate waits print every minute, and a job
     # logs per cell, so 25 minutes of silence is never normal.
-    if [ "${running_run:-0}" -gt 0 ] && [ "${joblog_age:-0}" -gt 1500 ]; then
-        p="$p job-stalled:${joblog:-?}:$((joblog_age/60))m"
+    # cells.log advances once per cell, about a minute; the campaign log only gets a
+    # line when a job starts, so it cannot tell a slow job from a dead one.
+    if [ "${running_run:-0}" -gt 0 ] && [ "${newest_cells_age:-0}" -gt 900 ]; then
+        p="$p job-stalled:${joblog:-?}:cells-silent-$((newest_cells_age/60))m"
     fi
     # Containers with nothing running: leftovers that will hold the port.
     if [ "${running_run:-0}" -eq 0 ] && [ "${ours:-0}" -gt 0 ]; then
