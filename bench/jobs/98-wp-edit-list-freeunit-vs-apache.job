@@ -1,0 +1,26 @@
+# WordPress admin posts list: freeunit against apache.
+# The classic admin list table with its query and pagination.
+# The three WordPress workloads suggested for showing the runtime itself: they
+# do real core work, are deterministic, and are what an operator actually waits
+# on.  wp-edit and wp-edit-list carry the session cookie the site build mints;
+# wp-rest-posts is anonymous and must not.
+JOB=98-wp-edit-list-freeunit-vs-apache
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=wp-edit-list
+RUNTIME_A=freeunit
+RUNTIME_B=apache
+SITE=wp
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the classic stack retires more instructions per request than FreeUnit"
+FALSIFY="a delta inside the null band, or FreeUnit above the classic stack"

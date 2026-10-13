@@ -1,0 +1,16 @@
+# The WordPress workloads that need a session, or exercise the REST controller:
+# REST posts, the block editor and the admin list, each against mod_php and
+# nginx+PHP-FPM, with the release and with master.
+site:wp
+job:bench/jobs/90-wp-rest-posts-freeunit-vs-apache.job
+job:bench/jobs/91-wp-rest-posts-freeunit-vs-nginx-fpm.job
+job:bench/jobs/92-wp-rest-posts-master-vs-apache.job
+job:bench/jobs/93-wp-rest-posts-master-vs-nginx-fpm.job
+job:bench/jobs/94-wp-edit-freeunit-vs-apache.job
+job:bench/jobs/95-wp-edit-freeunit-vs-nginx-fpm.job
+job:bench/jobs/96-wp-edit-master-vs-apache.job
+job:bench/jobs/97-wp-edit-master-vs-nginx-fpm.job
+job:bench/jobs/98-wp-edit-list-freeunit-vs-apache.job
+job:bench/jobs/99-wp-edit-list-freeunit-vs-nginx-fpm.job
+job:bench/jobs/100-wp-edit-list-master-vs-apache.job
+job:bench/jobs/101-wp-edit-list-master-vs-nginx-fpm.job

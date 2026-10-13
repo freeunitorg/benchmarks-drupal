@@ -307,19 +307,37 @@ wait_http() {  # url tries
 }
 
 # ---------------------------------------------------------------- workload
+# Workloads that need a session.  The anonymous front page must never carry a
+# cookie, or the request stops being the anonymous render the cell is about.
+needs_cookie() {
+    case "$WORKLOAD" in
+    drupal-auth|wp-edit|wp-edit-list|wp-admin|wp-front-auth) return 0 ;;
+    *) return 1 ;;
+    esac
+}
+
 url_for() {
     case "$WORKLOAD" in
     php-headers) echo "http://127.0.0.1:$PORT/?mode=headers" ;;
     php-body)    echo "http://127.0.0.1:$PORT/?mode=body" ;;
     wp-front)    echo "http://127.0.0.1:$PORT/" ;;
+    wp-front-auth) echo "http://127.0.0.1:$PORT/" ;;
     wp-cron)     echo "http://127.0.0.1:$PORT/wp-cron.php?doing_wp_cron=1" ;;
+    # Through the REST controller and the main query, no theme: the most PHP-bound
+    # WordPress request that needs no session, so it is the cleanest of the three.
+    wp-rest-posts) echo "http://127.0.0.1:$PORT/wp-json/wp/v2/posts?per_page=10" ;;
+    # The block editor: full admin bootstrap, capability checks, meta queries.
+    wp-edit)     echo "http://127.0.0.1:$PORT/wp-admin/post.php?post=${WP_POST_ID:-1}&action=edit" ;;
+    # The admin list table: a classic admin query with pagination.
+    wp-edit-list) echo "http://127.0.0.1:$PORT/wp-admin/edit.php" ;;
+    wp-admin)    echo "http://127.0.0.1:$PORT/wp-admin/" ;;
     *)           echo "http://127.0.0.1:$PORT/" ;;
     esac
 }
 oha_args() {  # conns side -> OHA_A
     OHA_A=(-c "$1" --no-tui)
     [ -n "${RATE:-}" ] && [ "$RATE" != 0 ] && OHA_A+=(-q "$RATE")
-    if [ -n "$COOKIE_HDR" ] && { [ "$WORKLOAD" = drupal-auth ] || [ "${EXTRA_COOKIE_BYTES:-0}" -gt 0 ]; }; then
+    if [ -n "$COOKIE_HDR" ] && { needs_cookie || [ "${EXTRA_COOKIE_BYTES:-0}" -gt 0 ]; }; then
         OHA_A+=(-H "Cookie: $COOKIE_HDR")
     fi
     [ -n "${AE:-}" ] && OHA_A+=(-H "Accept-Encoding: $AE")
@@ -341,7 +359,7 @@ preflight() {  # runtime name side -> 0 ok
     # page-cache guard can never pass.
     local with_cookie="" sidehdr
     sidehdr=$(sv "$side" COOKIE_HDR)
-    { [ "$WORKLOAD" = drupal-auth ] || [ "${EXTRA_COOKIE_BYTES:-0}" -gt 0 ]; } && [ -n "$sidehdr" ] && with_cookie="yes"
+    { needs_cookie || [ "${EXTRA_COOKIE_BYTES:-0}" -gt 0 ]; } && [ -n "$sidehdr" ] && with_cookie="yes"
     for try in 1 2; do
         if [ -n "$with_cookie" ]; then
             hdr=$(curl -s --connect-timeout 2 --max-time 10 -D - -o /dev/null -H "Cookie: $sidehdr" -w '\nHTTP %{http_code}' "$(url_for)" | tr -d '\r')
@@ -355,6 +373,11 @@ preflight() {  # runtime name side -> 0 ok
             printf '%s' "$hdr" | grep -qi '^x-drupal-cache: HIT' && break ;;
         drupal-auth)
             printf '%s' "$hdr" | grep -qi '^x-drupal-dynamic-cache: ' && break ;;
+        wp-rest-posts)
+            printf '%s' "$hdr" | grep -qi '^content-type: application/json' && break ;;
+        wp-edit|wp-edit-list|wp-admin|wp-front-auth)
+            # a session that stopped being valid answers 302 to wp-login.php
+            break ;;
         *) break ;;
         esac
     done
@@ -365,6 +388,8 @@ preflight() {  # runtime name side -> 0 ok
         printf '%s' "$hdr" | grep -qi '^x-drupal-cache: HIT' || { log "preflight $name: no page-cache HIT"; return 1; } ;;
     drupal-auth)
         printf '%s' "$hdr" | grep -qi '^x-drupal-dynamic-cache: ' || log "preflight $name: no dynamic-cache header (recorded)" ;;
+    wp-rest-posts)
+        printf '%s' "$hdr" | grep -qi '^content-type: application/json' || { log "preflight $name: REST answer is not application/json"; return 1; } ;;
     esac
     {
         echo "runtime=$name url=$(url_for) workload=$WORKLOAD http=$code bytes=${bytes:-?}"

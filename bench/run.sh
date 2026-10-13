@@ -125,7 +125,11 @@ SITEKEY_B=$SITE_B
 SITE_DIR_B="$RUNROOT/site/$SITEKEY_B"
 OUT="$OUTDIR"; RESROOT="$RUNROOT"
 COOKIE_FILE="$SITE_DIR/cookie.txt"; COOKIE_FILE_B="$SITE_DIR_B/cookie.txt"
+# The WordPress editor cell needs the id of the post the site build created; it is
+# in the site's meta.txt, which also tells the reader which id was measured.
+WP_POST_ID=$(awk -F= '$1 == "wp_post_id" { print $2 }' "$SITE_DIR/meta.txt" 2>/dev/null)
 export SITE_DIR SITE_DIR_A SITE_DIR_B OUT RESROOT COOKIE_FILE COOKIE_FILE_B JOB RUN_ID PHASES WORKLOAD
+export WP_POST_ID
 export RUNTIME_A RUNTIME_B SITE CONNS DUR WARM REPS RATE APP_PROCS PERF AE DECOMPOSE EXTRA_COOKIE_BYTES DB DB_A DB_B
 # cells.sh has its own OHA default of bare "oha" on PATH; the host that has oha
 # outside PATH answered "no oha (oha)" until this was exported.

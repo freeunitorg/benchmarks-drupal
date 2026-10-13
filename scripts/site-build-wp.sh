@@ -44,6 +44,7 @@ SITEDIR="$RUNROOT/site/$SITEKEY"
 DBCVOL=${DBCVOL:-drupal-bench-db-$SITEKEY}
 NET="dbnet-wp-$$"
 DBC="db-wp-$$"
+RTC="rt-build-wp-$$"
 REPO=$(cd "$(dirname "$0")/.." && pwd)
 
 # WordPress's only supported database is MySQL/MariaDB (mysqli).
@@ -52,13 +53,23 @@ mysql|mysqli) ;;
 *) echo "site-build-wp: WordPress needs DB=mysql (it uses mysqli); got '$DB'" >&2; exit 2 ;;
 esac
 
-cleanup() { docker rm -f "$DBC" >/dev/null 2>&1 || true; docker network rm "$NET" >/dev/null 2>&1 || true; }
+cleanup() {
+    docker rm -f "$RTC" >/dev/null 2>&1 || true
+    docker rm -f "$DBC" >/dev/null 2>&1 || true
+    docker network rm "$NET" >/dev/null 2>&1 || true
+}
 trap cleanup EXIT
 
+# A site is complete only if it also has what the authenticated cells need: the
+# session cookie the admin workloads send and the post id the editor cell names.
+# Without this, adding a workload to an existing site silently measures a 302 to
+# wp-login.php, and the campaign's site step skips the rebuild that would fix it.
 site_installed() {
     [ -f "$SITEDIR/meta.txt" ] && grep -q '^wp=' "$SITEDIR/meta.txt" 2>/dev/null \
         && [ -f "$SITEDIR/web/wp-includes/version.php" ] \
-        && [ -f "$SITEDIR/web/wp-config.php" ]
+        && [ -f "$SITEDIR/web/wp-config.php" ] \
+        && [ -f "$SITEDIR/wp-post-id" ] \
+        && grep -q wordpress_logged_in_ "$SITEDIR/cookie.txt" 2>/dev/null
 }
 if site_installed && [ "$FORCE" != "--force" ]; then
     echo "site-build-wp: $SITEDIR already installed (use --force to rebuild)"
@@ -122,6 +133,13 @@ docker run --rm --network "$NET" \
         fi
 
         $WP post generate --count=200 --post_type=post >/dev/null
+        # A post of known id for the editor cell, and an application password the
+        # authenticated REST cell can use.  The password stays in its own file: the
+        # version lines go to meta.txt, which is published with the run.
+        $WP post create --post_title="Core work" --post_content="Deterministic body for the editor cell." \
+            --post_status=publish --porcelain > /run/site/'"$SITEKEY"'/wp-post-id
+        $WP user application-password create admin bench --porcelain \
+            > /run/site/'"$SITEKEY"'/wp-app-password 2>/dev/null || true
         $WP option update blogdescription "FreeUnit benchmark site"
         $WP rewrite structure "/%postname%/" --hard >/dev/null
         $WP rewrite flush --hard >/dev/null
@@ -129,11 +147,43 @@ docker run --rm --network "$NET" \
 
         wpv=$($WP core version)
         phpv=$(php -r "echo PHP_VERSION;")
-        printf "wp=%s\nphp=%s\ndb=%s\ndb_host=%s\nsite=%s\npersistent=%s\nwp_cli=%s\ntarball_md5=%s\ninstalled=%s\n" \
+        printf "wp=%s\nphp=%s\ndb=%s\ndb_host=%s\nsite=%s\npersistent=%s\nwp_cli=%s\ntarball_md5=%s\nwp_post_id=%s\ninstalled=%s\n" \
             "$wpv" "$phpv" "$DB_NAME" "$DB_HOST" "http://127.0.0.1:$PORT" "$WP_PERSISTENT" "$WP_CLI_VERSION" "$WP_VERSION_MD5" \
+            "$(cat /run/site/'"$SITEKEY"'/wp-post-id 2>/dev/null || echo 1)" \
             "$(date -u +%FT%TZ)" > /run/site/'"$SITEKEY"'/meta.txt
     '
 
 chown -R "$(id -u):$(id -g)" "$SITEDIR" 2>/dev/null || true
+
+# The admin cells need a session, and WordPress mints it only at login.  Start the
+# site once, log in like a browser does (the test cookie first, then the POST), and
+# keep the jar at the path run.sh hands the jobs.  A jar without a session is not
+# fatal here: the cell's preflight sees the 302 to wp-login and the run is INVALID,
+# which is louder than a build warning.
+echo "site-build-wp: login cookie for the wp-edit and wp-edit-list workloads"
+docker rm -f "$RTC" >/dev/null 2>&1 || true
+docker run -d --name "$RTC" --network "$NET" -p "127.0.0.1:$PORT:80" \
+    -v "$SITEDIR:/app" -v "$RUNROOT/runtimes/freeunit.json:/docker-entrypoint.d/config.json:ro" \
+    "$TOOL_IMAGE" >/dev/null
+for _ in $(seq 60); do
+    [ "$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$PORT/" 2>/dev/null)" = 200 ] && break
+    sleep 1
+done
+rm -f "$SITEDIR/cookie.txt"
+curl -s -c "$SITEDIR/cookie.txt" -o /dev/null "http://127.0.0.1:$PORT/wp-login.php" || true
+curl -s -b "$SITEDIR/cookie.txt" -c "$SITEDIR/cookie.txt" -o /dev/null \
+    --data-urlencode "log=admin" --data-urlencode "pwd=admin" \
+    --data-urlencode "wp-submit=Log In" --data-urlencode "testcookie=1" \
+    --data-urlencode "redirect_to=http://127.0.0.1:$PORT/wp-admin/" \
+    "http://127.0.0.1:$PORT/wp-login.php" || true
+WPC=$(awk '($1 ~ /^#HttpOnly_/ || $1 !~ /^#/) && NF >= 7 { printf "%s=%s; ", $6, $7 }' "$SITEDIR/cookie.txt" 2>/dev/null)
+if printf '%s' "$WPC" | grep -q wordpress_logged_in_; then
+    code=$(curl -s -o /dev/null -w '%{http_code}' -H "Cookie: $WPC" "http://127.0.0.1:$PORT/wp-admin/edit.php")
+    echo "site-build-wp: session cookie ok, /wp-admin/edit.php -> $code"
+else
+    echo "site-build-wp: WARNING no session cookie in $SITEDIR/cookie.txt" >&2
+fi
+docker rm -f "$RTC" >/dev/null 2>&1 || true
+
 echo "site-build-wp: done -> $SITEDIR"
 cat "$SITEDIR/meta.txt"
