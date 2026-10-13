@@ -212,8 +212,10 @@ def summary_section(summaries):
 
     if not groups:
         return ""
+    primaries = sorted({g[3] for g in groups})
     out = ['<h2 id="summary">Summary: the primary metric per runtime</h2>',
-           '<p class="note">Primary metric: server instructions per request (lower is better), '
+           '<p class="note">Primary metric: '
+           + esc(", ".join(p.replace("_", " ") for p in primaries)) + ' (lower is better), '
            'measured c32 on one host in one window. The ratio is against the best runtime in that '
            'row. Each comparison has its null band printed in the run sections below; a ratio '
            'smaller than the band is not a difference. Caveat: this table pools absolute means from '
@@ -442,7 +444,13 @@ STYLE = """
 """
 
 
+# Runs taken anywhere else (the aarch64 host) get their own page: their primary
+# metric is CPU time, because that guest has no PMU, so they must not be read as
+# an extension of the instruction-count tables.
+PINNED_HOSTS = {"sd-91675", "sd-92483", "pro4s-2", "pro4s-4", "localhost"}
+
 FAMILY_TITLE = {
+    "arm64": "ARM64 (Oracle A1)",
     "symfony": "Symfony",
     "wordpress": "WordPress",
     "php": "Framework-free PHP",
@@ -450,6 +458,9 @@ FAMILY_TITLE = {
 }
 
 FAMILY_LEDE = {
+    "arm64": "The same servers on an aarch64 host, where the guest has no PMU: the primary "
+             "metric is the server's own CPU time per request, not retired instructions. Read "
+             "the ratios; the absolute numbers are not comparable with the x86 pages.",
     "symfony": "Symfony on the same runtimes.",
     "wordpress": "WordPress front page, the HTTP cron path, and the persistent-connection "
                  "drop-in.",
@@ -461,7 +472,7 @@ FAMILY_LEDE = {
 
 # Drupal gets one page per site, because the runtime x database matrix lands there
 # and a single Drupal page grew to as much as the whole report used to be.
-PAGE_ORDER = {"drupal": 0, "symfony": 1, "wordpress": 2, "php": 3, "other": 4}
+PAGE_ORDER = {"drupal": 0, "symfony": 1, "wordpress": 2, "php": 3, "arm64": 4, "other": 5}
 
 
 def page_title(key):
@@ -482,6 +493,9 @@ def page_lede(key):
 # names an unexpected site still lands somewhere sensible instead of vanishing.
 def family_of(d):
     m = d.get("meta") or {}
+    host = str(m.get("host") or "")
+    if host and host not in PINNED_HOSTS:
+        return "arm64"
     site = str(m.get("site") or "")
     workload = str(m.get("workload") or "")
     if site.startswith("wp") or workload.startswith("wp-"):

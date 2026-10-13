@@ -1,0 +1,26 @@
+# The framework-free cell on the Ampere A1 host, where the guest has no PMU: perf
+# reports "No supported events found", so there are no retired instructions to
+# count and the primary metric is the server's own CPU time per request (schedstat
+# over the container's cgroup).  One core for the server and one for the load
+# generator, because the host has two and sharing them costs latency that has
+# nothing to do with the software.  Ratios are comparable with the x86 pages;
+# absolute numbers are not.
+JOB=82-arm-body-freeunit-vs-fpm
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-body
+RUNTIME_A=freeunit
+RUNTIME_B=nginx-fpm
+SITE=hello
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="FreeUnit needs less server CPU per request than nginx plus PHP-FPM on aarch64"
+FALSIFY="a delta inside the null band, or FPM cheaper"

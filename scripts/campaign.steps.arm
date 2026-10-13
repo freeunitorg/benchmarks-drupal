@@ -1,0 +1,8 @@
+# The aarch64 column, measured on the Oracle Ampere A1 host.  No PMU is exposed
+# there, so the primary metric is server CPU per request, not instructions; the
+# cells are the framework-free ones, which need no database and isolate the
+# server from the application.
+site:hello
+job:bench/jobs/80-arm-hello-freeunit-vs-fpm.job
+job:bench/jobs/81-arm-headers-freeunit-vs-fpm.job
+job:bench/jobs/82-arm-body-freeunit-vs-fpm.job
