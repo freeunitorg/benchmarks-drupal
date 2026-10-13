@@ -38,7 +38,7 @@ mkdir -p "$HERE/run"
 # it is probed for leftovers and disk only, and never reported as a down loop.
 BOXES=(
 "pro4s-2|/data/projects/benchmarks-drupal|-|run/bench-loop.log|scripts/campaign.steps.master-bisect,scripts/campaign.steps.matrix-12,scripts/campaign.steps.apache|66-,67-,68-,69-,70-,71-,72-,73-,74-,76-,77-,78-,86-,87-"
-"pro4s-4|/data/projects/benchmarks-drupal|wp|wp-loop.log|scripts/campaign.steps.wp|42-,43-,44-,45-,46-,47-,75-"
+"pro4s-4|/data/projects/benchmarks-drupal|-|run/wp-loop.log|scripts/campaign.steps.wp,scripts/campaign.steps.wp-auth|42-,43-,44-,45-,46-,47-,75-,90-,91-,92-,93-,94-,95-,96-,97-,98-,99-,100-,101-"
 "o-build|/home/alpine/bench-arm|-|run/apache-arm-loop.log|scripts/campaign.steps.apache-arm|83-,84-,85-,88-,89-"
 )
 
