@@ -37,9 +37,9 @@ mkdir -p "$HERE/run"
 # A session name of "-" means the box is not ours to run right now (claimed elsewhere):
 # it is probed for leftovers and disk only, and never reported as a down loop.
 BOXES=(
-"pro4s-2|/data/projects/benchmarks-drupal|bench|run/bench-loop.log|scripts/campaign.steps.master-bisect,scripts/campaign.steps.matrix-12,scripts/campaign.steps.apache|66-,67-,68-,69-,70-,71-,72-,73-,74-,76-,77-,78-,86-,87-"
+"pro4s-2|/data/projects/benchmarks-drupal|-|run/bench-loop.log|scripts/campaign.steps.master-bisect,scripts/campaign.steps.matrix-12,scripts/campaign.steps.apache|66-,67-,68-,69-,70-,71-,72-,73-,74-,76-,77-,78-,86-,87-"
 "pro4s-4|/data/projects/benchmarks-drupal|wp|wp-loop.log|scripts/campaign.steps.wp|42-,43-,44-,45-,46-,47-,75-"
-"o-build|/home/alpine/bench-arm|apachearm|run/apache-arm-loop.log|scripts/campaign.steps.apache-arm|83-,84-,85-,88-,89-"
+"o-build|/home/alpine/bench-arm|-|run/apache-arm-loop.log|scripts/campaign.steps.apache-arm|83-,84-,85-,88-,89-"
 )
 
 probe() {  # host root session logfile manifests
@@ -103,7 +103,13 @@ for row in "${BOXES[@]}"; do
     fi
     [ "${port:-0}" -gt 0 ] && [ "${running_run:-0}" -eq 0 ] && p="$p port-8081-held"
     [ "${disk_gb:-99}" -lt 5 ] && p="$p disk-low:${disk_gb}G"
-    [ "${log_age:-0}" -gt 1800 ] && p="$p loop-log-stale:$((log_age/60))m"
+    # A loop we do not run in tmux has no session to check: its log is the liveness
+    # signal, and the gate writes to it about once a minute.
+    if [ "$session" = "-" ]; then
+        [ "${log_age:-0}" -gt 900 ] && p="$p loop-log-stale:$((log_age/60))m"
+    else
+        [ "${log_age:-0}" -gt 1800 ] && p="$p loop-log-stale:$((log_age/60))m"
+    fi
 
     line="$host session=$([ "$session" = "-" ] && echo n/a || { [ "${tmux_sessions:-0}" = 1 ] && echo up || echo DOWN; }) remaining=${remaining:-?} done=${done:-?} running=${running_run:-?} ours=${ours:-?} log=$((${log_age:-0}/60))m job=$([ "${running_run:-0}" -gt 0 ] && echo "${joblog:-?}($((joblog_age/60))m)" || echo idle)${p:+ PROBLEM:$p}"
     report="$report\n$line"
