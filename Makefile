@@ -19,7 +19,7 @@ help:
 	@echo "make site SITE=11.4       build and install a Drupal site (demo_umami)"
 	@echo "make bench JOB=...        run one bench job (claim, gate, cells, compare)"
 	@echo "make ticks RUNTIME=... ARM=A|B TICKS=20   cron/queue arms"
-	@echo "make report               render report/index.html from committed results"
+	@echo "make report               render public/ (index + one page per family)"
 	@echo "make pull                 copy results back from the host"
 
 sync:

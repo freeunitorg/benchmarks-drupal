@@ -30,7 +30,9 @@ Built in the repository:
   `fu_queue_test` enabled, `big_pipe` uninstalled, cron/queue keys set, auth cookie stored).
 * `modules/fu_queue_test` gained the HTTP drain route for arm B
   (`/fu-queue-drain/{key}/{n}`); `apps/drupal_stub.py` gained `TRIGGER=cron-url`.
-* `report/render.py` (summary.json -> index.html, no typed numbers) and the `pages`
+* `report/render.py` (summary.json -> an overview page plus one page per application
+  family: `index.html`, `drupal-11.4.html`, `drupal-12.0.html`, `symfony.html`,
+  `php.html`, and `wordpress.html` once that job runs; no typed numbers) and the `pages`
   workflow.
 
 Fixes found while building (each cost one failed image build, recorded so the next

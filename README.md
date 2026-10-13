@@ -41,7 +41,7 @@ apps/            the gist's drupal_boot_cron.php, drupal_boot_queue.php,
                  fork_spawn.php, drupal_stub.py (arm A/B/C ticker)
 bench/           cells.sh (measured cells), run.sh (claim/gate/compare),
                  tick.sh (cron+queue arms), perf-compare.py, jobs/*.job
-report/          render.py: results/*/summary.json -> index.html
+report/          render.py: results/*/summary.json -> one page per application family
 results/         one directory per run: results.tsv, summary.json, meta.txt,
                  compare.txt, job.txt -- the only source of truth
 scripts/         site-build.sh

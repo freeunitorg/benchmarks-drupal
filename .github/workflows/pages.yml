@@ -1,6 +1,6 @@
 name: pages
 
-# Renders report/index.html from committed results/*/summary.json and publishes
+# Renders public/ from committed results/*/summary.json and publishes every page
 # it to gh-pages. No benchmark runs here: shared runners cannot pin cores or read
 # hardware counters (plan section 7).
 

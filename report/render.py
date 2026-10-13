@@ -145,11 +145,13 @@ def null_lines(d):
 
 # ------------------------------------------------------------------ human summary
 
-def short_version(summaries):
+def short_version(summaries, limit=0):
     """The page's own abstract, assembled from the runs rather than typed.
 
     Every number and every claim in it is a headline or a count copied from a
-    summary.json, so it cannot drift away from the tables.
+    summary.json, so it cannot drift away from the tables.  `limit` caps how many
+    runs are listed per verdict, which is what keeps the overview page small now
+    that the families have their own pages.
     """
     if not summaries:
         return ""
@@ -173,9 +175,13 @@ def short_version(summaries):
             continue
         out.append(f'<h3>{esc(key)} <span class="meta">({len(runs)})</span></h3>')
         out.append('<ul class="verdicts">')
-        for d in runs:
+        shown = runs[:limit] if limit else runs
+        for d in shown:
             out.append(f'<li>{badge(d)} <a href="#{esc(d.get("run_id"))}">{esc(run_label(d))}</a> '
                        f'<span class="meta">{esc(d.get("headline"))}</span></li>')
+        if limit and len(runs) > limit:
+            out.append(f'<li class="meta">and {len(runs) - limit} more under '
+                       f'<a href="#runs">every run</a> on this page.</li>')
         out.append("</ul>")
     return "\n".join(out)
 
@@ -425,57 +431,221 @@ STYLE = """
  .run-title { font-weight: 600; margin: 0 .5rem 0 .4rem; }
  details[open].run { background: #fcfcfd; }
  :target { scroll-margin-top: 1rem; background: #fffbe6; }
+ nav.pages { margin: .8rem 0 1.2rem; display: flex; flex-wrap: wrap; gap: .4rem; }
+ nav.pages a, nav.pages span.here { border: 1px solid #d7dbe0; border-radius: .4rem; padding: .25rem .6rem; font-size: 13px; }
+ nav.pages a { text-decoration: none; }
+ nav.pages span.here { background: #eef1f4; font-weight: 600; border-color: #c3c9d1; }
+ nav.pages a:hover { background: #f6f8fa; }
  nav.toc ol { margin: .3rem 0 0; padding-left: 1.2rem; }
  p.lede { color: #444; }
  @media print { details.run { break-inside: avoid; } }
 """
 
 
-def main():
-    summaries = load_summaries()
-    body = "\n".join(part for part in [
-        short_version(summaries),
-        summary_section(summaries),
-        ticks_section(RESULTS),
-        run_index(summaries),
-        run_sections(summaries),
-    ] if part) or "<p>No results yet.</p>"
+FAMILY_TITLE = {
+    "symfony": "Symfony",
+    "wordpress": "WordPress",
+    "php": "Framework-free PHP",
+    "other": "Other",
+}
+
+FAMILY_LEDE = {
+    "symfony": "Symfony on the same runtimes.",
+    "wordpress": "WordPress front page, the HTTP cron path, and the persistent-connection "
+                 "drop-in.",
+    "php": "The control application: one PHP file, no framework, no database. This is where "
+           "the per-request cost of the server itself shows, so it is the page to read first "
+           "when the servers are being compared.",
+    "other": "Runs that do not belong to one of the application families.",
+}
+
+# Drupal gets one page per site, because the runtime x database matrix lands there
+# and a single Drupal page grew to as much as the whole report used to be.
+PAGE_ORDER = {"drupal": 0, "symfony": 1, "wordpress": 2, "php": 3, "other": 4}
+
+
+def page_title(key):
+    if key.startswith("drupal-"):
+        return f"Drupal {key[len('drupal-'):]}"
+    return FAMILY_TITLE.get(key, key)
+
+
+def page_lede(key):
+    if key.startswith("drupal-"):
+        site = key[len("drupal-"):]
+        return (f"{SITE_TITLE.get(site, site)} on Apache+mod_php, nginx+PHP-FPM, the two nginx "
+                "forks built from source, and FreeUnit, across the database axis.")
+    return FAMILY_LEDE.get(key, "")
+
+
+# The page a run lands on. Site first and workload as the fallback, so a run that
+# names an unexpected site still lands somewhere sensible instead of vanishing.
+def family_of(d):
+    m = d.get("meta") or {}
+    site = str(m.get("site") or "")
+    workload = str(m.get("workload") or "")
+    if site.startswith("wp") or workload.startswith("wp-"):
+        return "wordpress"
+    if site == "symfony" or workload.startswith("symfony"):
+        return "symfony"
+    if site == "hello" or workload.startswith("php-"):
+        return "php"
+    if site.startswith("11.4") or site.startswith("12.0") or workload.startswith("drupal-"):
+        if site.startswith("11.4"):
+            return "drupal-11.4"
+        if site.startswith("12.0"):
+            return "drupal-12.0"
+        return "drupal-" + (site or "other")
+    return "other"
+
+
+def page_keys(groups):
+    """The pages that have runs, Drupal versions first, then the families."""
+    def order(k):
+        base = "drupal" if k.startswith("drupal-") else k
+        return (PAGE_ORDER.get(base, 9), k)
+    return sorted(groups, key=order)
+
+
+def nav(current, groups):
+    """Sibling links, with the current page marked: the split only helps if the
+    reader can see the other pages from any of them."""
+    items = [("index.html", "Overview", sum(len(v) for v in groups.values()))]
+    for key in page_keys(groups):
+        items.append((f"{key}.html", page_title(key), len(groups[key])))
+    out = ['<nav class="pages">']
+    for href, title, n in items:
+        if href[:-5] == current:
+            out.append(f'<span class="here">{esc(title)} <span class="meta">({n})</span></span>')
+        else:
+            out.append(f'<a href="{href}">{esc(title)} <span class="meta">({n})</span></a>')
+    out.append("</nav>")
+    return "\n".join(out)
+
+
+def verdict_counts(summaries):
+    counts = {}
+    for d in summaries:
+        key = verdict_of(d) or "?"
+        counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
+def overview_body(groups, all_summaries):
+    """The overview page: one row per family, plus the cron/queue arms, which are a
+    cross-family story and do not belong to one application page."""
+    out = ['<h2 id="pages">Pages</h2>',
+           '<p class="note">The result set is split by application family so each page stays '
+           'readable while the runtime and database matrices grow. Every page carries its own '
+           'short version, ranking table, run index and per-run detail; the raw data is the same '
+           'committed <code>results/</code> tree for all of them.</p>',
+           '<table class="index"><thead><tr><th>page</th><th>runs</th><th>sites</th>'
+           '<th>claim</th><th>no claim</th><th>invalid</th><th>no data</th>'
+           '</tr></thead><tbody>']
+    for key in page_keys(groups):
+        runs = groups[key]
+        counts = verdict_counts(runs)
+        sites = len({(d.get("meta") or {}).get("site") for d in runs})
+        out.append(
+            f'<tr><td><a href="{key}.html">{esc(page_title(key))}</a>'
+            f'<div class="meta">{esc(page_lede(key))}</div></td>'
+            f'<td>{len(runs)}</td><td>{sites}</td>'
+            f'<td>{counts.get("CLAIM", 0)}</td>'
+            f'<td>{counts.get("NO CLAIM", 0)}</td>'
+            f'<td>{counts.get("INVALID", 0)}</td>'
+            f'<td>{counts.get("NO DATA", 0)}</td>'
+            '</tr>')
+    out.append("</tbody></table>")
+    out.append(ticks_section(RESULTS))
+    out.append(short_version(all_summaries, limit=6))
+    return "\n".join(part for part in out if part)
+
+
+def page_body(key, runs):
+    return "\n".join(part for part in [
+        short_version(runs),
+        summary_section(runs),
+        run_index(runs),
+        run_sections(runs),
+    ] if part)
+
+
+def document(title, current, groups, lede, body, note=""):
     now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    toc = ('<nav class="toc"><ol>'
-           '<li><a href="#short">The short version</a></li>'
-           '<li><a href="#summary">Summary</a></li>'
-           '<li><a href="#arms">Cron and queue arms</a></li>'
-           '<li><a href="#runs">Every run</a></li>'
-           '<li><a href="#details">Run detail</a></li>'
-           '</ol></nav>')
-    page = f"""<!doctype html>
+    return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Drupal on Apache, nginx+PHP-FPM and FreeUnit</title>
-<meta name="description" content="Reproducible comparison of Drupal, Symfony and framework-free PHP on Apache+mod_php, nginx+PHP-FPM and FreeUnit, with a null band beside every comparison.">
+<title>{esc(title)}</title>
+<meta name="description" content="Reproducible comparison of Drupal, Symfony, WordPress and framework-free PHP on Apache+mod_php, nginx+PHP-FPM, Angie, FreeNginx and FreeUnit, with a null band beside every comparison.">
 <style>{STYLE}</style></head><body>
-<h1>Drupal on Apache, nginx + PHP-FPM and FreeUnit</h1>
-<p class="lede">An instruction-count comparison of the same application on three runtimes,
-one job at a time, with the measurement noise bounded before any claim is made.
-<a href="https://github.com/freeunitorg/benchmarks-drupal/blob/main/docs/report-2026-10.md">Read the
-findings in prose</a>, or start with <a href="#short">the short version</a> below.</p>
-{toc}
-<p class="note">Everything here is rebuilt from committed
-<code>results/&lt;run-id&gt;/summary.json</code> files. The <strong>null band</strong> is printed
-beside every comparison: it is the same job run with both sides identical (A against a copy of
-A), so a delta smaller than the band is noise and is reported as <em>no claim</em>. Host class,
-governor, PHP, Drupal tag, database and runtime versions are in each run's header.</p>
+<h1>{esc(title)}</h1>
+<p class="lede">{lede}</p>
+{nav(current, groups)}
+{note}
 {body}
-<p class="data">Rendered {esc(now)} from {len(summaries)} summaries. A plain-language
-summary of the findings is in
+<p class="data">Rendered {esc(now)}. A plain-language summary of the findings is in
 <a href="https://github.com/freeunitorg/benchmarks-drupal/blob/main/docs/report-2026-10.md">docs/report-2026-10.md</a>;
 the suite's resume note is <code>docs/state.md</code>.</p>
 </body></html>
 """
-    os.makedirs(os.path.dirname(os.path.abspath(OUT)), exist_ok=True)
-    with open(OUT, "w", encoding="utf-8") as fh:
-        fh.write(page)
-    print(f"render.py: {len(summaries)} summaries -> {OUT}")
+
+
+def main():
+    summaries = load_summaries()
+    groups = {}
+    for d in summaries:
+        groups.setdefault(family_of(d), []).append(d)
+
+    outdir_abs = os.path.abspath(OUT)
+    if OUT.endswith(".html"):
+        index_path = outdir_abs
+        outdir = os.path.dirname(outdir_abs) or "."
+    else:
+        outdir = outdir_abs
+        index_path = os.path.join(outdir_abs, "index.html")
+
+    os.makedirs(outdir, exist_ok=True)
+    written = []
+
+    note = ('<p class="note">Everything here is rebuilt from committed '
+            '<code>results/&lt;run-id&gt;/summary.json</code> files. The <strong>null band</strong> '
+            'is printed beside every comparison: it is the same job run with both sides identical '
+            '(A against a copy of A), so a delta smaller than the band is noise and is reported as '
+            '<em>no claim</em>. Host class, governor, PHP, Drupal tag, database and runtime '
+            'versions are in each run\'s header.</p>')
+
+    if groups:
+        body = overview_body(groups, summaries)
+        title = "Application-server benchmarks: Drupal, Symfony, WordPress and plain PHP"
+        lede = ('An instruction-count comparison of the same application on several runtimes, one '
+                'job at a time, with the measurement noise bounded before any claim is made. '
+                '<a href="https://github.com/freeunitorg/benchmarks-drupal/blob/main/docs/report-2026-10.md">Read '
+                'the findings in prose</a>.')
+        with open(index_path, "w", encoding="utf-8") as fh:
+            fh.write(document(title, "index", groups, lede, body, note))
+        written.append(index_path)
+
+        for key in page_keys(groups):
+            path = os.path.join(outdir, f"{key}.html")
+            title = f"{page_title(key)} benchmarks"
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write(document(title, key, groups, page_lede(key),
+                                  page_body(key, groups[key]), note))
+            written.append(path)
+    else:
+        with open(index_path, "w", encoding="utf-8") as fh:
+            fh.write(document("Application-server benchmarks", "index", groups,
+                              "No results yet.", "<p>No results yet.</p>", note))
+        written.append(index_path)
+
+    # A page that no longer has runs (a family emptied, a key renamed) must not be
+    # left behind on the published site as a stale copy of an older result set.
+    keep = {os.path.basename(p) for p in written}
+    for stale in glob.glob(os.path.join(outdir, "*.html")):
+        if os.path.basename(stale) not in keep:
+            os.remove(stale)
+
+    print(f"render.py: {len(summaries)} summaries -> {', '.join(os.path.basename(p) for p in written)}")
 
 
 main()

@@ -55,8 +55,10 @@ done
 
 # The page is derived from every collected run, so it belongs with the same batch
 # but is not part of any single benchmark.
-if [ "$DRY" != "--dry-run" ] && ! git diff --quiet -- public/index.html 2>/dev/null; then
-    git add public/index.html
-    git -c user.name="Strace" -c user.email="strace@pi" commit -q -m "report: re-render the page for the newly collected runs"
+# The report is one page per application family plus an overview, so a re-render
+# touches several files; they belong in one commit whatever changed.
+if [ "$DRY" != "--dry-run" ] && ! git diff --quiet -- public 2>/dev/null; then
+    git add public
+    git -c user.name="Strace" -c user.email="strace@pi" commit -q -m "report: re-render the pages for the newly collected runs"
     git push >/dev/null 2>&1 && echo "pushed page update"
 fi
