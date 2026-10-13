@@ -14,17 +14,22 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-MASTER_REF=${FREEUNIT_MASTER_REF:-868ccc29214b979510cee37b2084d2cf3b34e382}
+MASTER_REF=${FREEUNIT_MASTER_REF:-2dc6596f53d73a9f7fae37ca18fe289c77ab1cc0}
+# The previous master pin, for a within-run A/B of the commits merged since it.
+MASTER_OLD_REF=${FREEUNIT_MASTER_OLD_REF:-8492d5ee43a99a8f1504598ed44d046b61d85131}
 RUNROOT=${RUNROOT:-run}
 
 docker build -f docker/Dockerfile.freeunit -t drupal-bench-freeunit:1.37.0 .
 docker build -f docker/Dockerfile.freeunit \
     --build-arg FREEUNIT_REF="$MASTER_REF" -t drupal-bench-freeunit:master .
+docker build -f docker/Dockerfile.freeunit \
+    --build-arg FREEUNIT_REF="$MASTER_OLD_REF" -t drupal-bench-freeunit:master-old .
 
 # The run's meta.txt reads this file, so a published master number names the
 # commit it was built from instead of "unknown".
 mkdir -p "$RUNROOT"
 printf '%s\n' "$MASTER_REF" > "$RUNROOT/freeunit-master-sha"
+printf '%s\n' "$MASTER_OLD_REF" > "$RUNROOT/freeunit-master-old-sha"
 docker build -f docker/Dockerfile.php --target php-fpm -t drupal-bench-fpm:8.5 .
 docker build -f docker/Dockerfile.php --target apache -t drupal-bench-apache:8.5 .
 docker pull mariadb:10.11

@@ -1,0 +1,22 @@
+# Same two masters, a large body: dc30c8a7 compresses the part sent with the
+# headers and 2dc6596f changes how the rest leaves libunit, so a body-heavy
+# response is where those commits should show.
+JOB=51-body-master-new-vs-old
+ISSUE="https://github.com/freeunitorg/freeunit/pull/680"
+PHASES="null ab"
+WORKLOAD=php-body
+RUNTIME_A=freeunit-master-old
+RUNTIME_B=freeunit-master
+SITE=hello
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="new master at or below old on a body-heavy response"
+FALSIFY="new master above old by more than the null band"
