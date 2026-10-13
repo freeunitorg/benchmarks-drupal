@@ -123,7 +123,11 @@ Traps from this stretch:
 
 ### Upstream CI and layout work (2026-10-13)
 
-* **PR #700** (draft, ours): the two sanitized CI legs are not the same compiler,
+* **PR #700** (draft, ours): **CI green on the head** — `c-tests-asan (clang)`
+  3m07s and `c-tests-asan (gcc)` 3m14s, both starting 17:53:52Z, plus every
+  `sanitize (*)` leg — so the added gcc leg costs one runner for three minutes
+  (20 is the timeout, not the runtime) and the newly applied
+  `-fno-sanitize-recover=undefined` surfaced nothing.  The two sanitized CI legs are not the same compiler,
   flags or scope — `c-tests-asan` is clang-only with `-fno-sanitize-recover=undefined`
   over the unit tests, `sanitize.yml` is gcc (image default) without it over the
   runtimes — so this makes the C core a `cc: [clang, gcc]` matrix with one flag set
