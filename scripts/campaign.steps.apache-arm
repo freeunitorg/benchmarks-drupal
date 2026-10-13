@@ -5,3 +5,5 @@ site:12.0
 job:bench/jobs/83-arm-wp-front-freeunit-vs-apache.job
 job:bench/jobs/84-arm-front-anon-freeunit-vs-apache-12.0.job
 job:bench/jobs/85-arm-front-anon-nginx-fpm-vs-apache-12.0.job
+job:bench/jobs/88-arm-wp-front-master-vs-apache.job
+job:bench/jobs/89-arm-front-anon-master-vs-apache-12.0.job
