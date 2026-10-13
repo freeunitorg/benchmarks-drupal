@@ -1,0 +1,24 @@
+# Drupal 12 front page, anonymous (page-cache hit), on the PHP 8.5 image.
+# Part of the runtime x database matrix: the two sides differ only in the server
+# that fronts the same PHP-FPM pool, so the null band bounds the noise and the
+# delta is the server.
+JOB=73-front-anon-freeunit-vs-angie-fpm-12.0-sqlite
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=angie-fpm
+SITE=12.0
+DB=sqlite
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="SQLite does not change the runtime gap"
+FALSIFY="a delta inside the null band, or the fork ahead of its own baseline"

@@ -6,7 +6,10 @@
 # fork comparison, where a package build on one side and a source build on the
 # other would be a confound.
 #
-#   build-webserver.sh NAME URL SHA256 PREFIX CONFIGURE_ARGS...
+#   build-webserver.sh NAME URL SHA256 PREFIX BIN CONFIGURE_ARGS...
+#
+# NAME is only what the tarball is called; BIN is what the project installs
+# (FreeNginx installs "nginx", Angie installs "angie").
 #
 # The sha256 is pinned in the Dockerfile next to the URL.  Upstream publishes
 # signatures, not checksums, for both Angie and FreeNginx, so the value here is
@@ -17,7 +20,8 @@ name=$1
 url=$2
 sha=$3
 prefix=$4
-shift 4
+bin=$5
+shift 5
 
 src="/tmp/$name.tar.gz"
 
@@ -37,4 +41,4 @@ make install
 rm -rf "/tmp/$name" "$src"
 
 # Fail the layer rather than the first request if the binary cannot run.
-"$prefix/sbin/$name" -V 2>&1 | head -n 2
+"$prefix/sbin/$bin" -V 2>&1 | head -n 2

@@ -1,0 +1,23 @@
+# Runtime x database matrix on Drupal 12 (PHP 8.5): nginx, the source-built
+# nginx baseline, Angie and FreeNginx each against FreeUnit, plus the two
+# fork-vs-baseline checks, then the same servers over mysqli, PostgreSQL and
+# SQLite.  Each site key is <site>-<db>, so the backends do not share state.
+site:12.0
+job:bench/jobs/65-front-anon-freeunit-vs-nginx-fpm-12.0.job
+job:bench/jobs/60-front-anon-freeunit-vs-nginx-src-12.0.job
+job:bench/jobs/61-front-anon-freeunit-vs-angie-fpm-12.0.job
+job:bench/jobs/62-front-anon-freeunit-vs-freenginx-fpm-12.0.job
+job:bench/jobs/63-front-anon-nginx-src-vs-angie-fpm-12.0.job
+job:bench/jobs/64-front-anon-nginx-src-vs-freenginx-fpm-12.0.job
+site:12.0:mysqli
+job:bench/jobs/66-front-anon-freeunit-vs-nginx-fpm-12.0-mysqli.job
+job:bench/jobs/67-front-anon-freeunit-vs-angie-fpm-12.0-mysqli.job
+job:bench/jobs/68-front-anon-freeunit-vs-freenginx-fpm-12.0-mysqli.job
+site:12.0:pgsql
+job:bench/jobs/69-front-anon-freeunit-vs-nginx-fpm-12.0-pgsql.job
+job:bench/jobs/70-front-anon-freeunit-vs-angie-fpm-12.0-pgsql.job
+job:bench/jobs/71-front-anon-freeunit-vs-freenginx-fpm-12.0-pgsql.job
+site:12.0:sqlite
+job:bench/jobs/72-front-anon-freeunit-vs-nginx-fpm-12.0-sqlite.job
+job:bench/jobs/73-front-anon-freeunit-vs-angie-fpm-12.0-sqlite.job
+job:bench/jobs/74-front-anon-freeunit-vs-freenginx-fpm-12.0-sqlite.job

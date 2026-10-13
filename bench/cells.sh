@@ -100,6 +100,9 @@ image_for() {  # runtime family -> image
     freeunit-master-mid) echo "drupal-bench-freeunit:master-mid" ;;
     freeunit-direct) echo "drupal-bench-freeunit:${FREEUNIT_TAG:-1.37.0}" ;;
     nginx-fpm) echo "drupal-bench-fpm:${TAG}" ;;
+    nginx-src) echo "drupal-bench-nginx-src:${TAG}" ;;
+    angie-fpm) echo "drupal-bench-angie:${TAG}" ;;
+    freenginx-fpm) echo "drupal-bench-freenginx:${TAG}" ;;
     apache)    echo "drupal-bench-apache:${TAG}" ;;
     *) die "unknown runtime $1" ;;
     esac
@@ -140,6 +143,12 @@ pids_role() {  # runtime role -> pids of the front proxy or the PHP workers
         freeunit*:worker) case "$c" in *application*) echo "$p" ;; esac ;;
         nginx-fpm:front)  case "$c" in *"nginx:"*) echo "$p" ;; esac ;;
         nginx-fpm:worker) case "$c" in *"php-fpm:"*) echo "$p" ;; esac ;;
+        # nginx-src and FreeNginx both title the process "nginx:"; Angie uses its
+        # own name, so the two cannot share a pattern.
+        nginx-src:front|freenginx-fpm:front)  case "$c" in *"nginx:"*) echo "$p" ;; esac ;;
+        nginx-src:worker|freenginx-fpm:worker) case "$c" in *"php-fpm:"*) echo "$p" ;; esac ;;
+        angie-fpm:front)  case "$c" in *"angie:"*) echo "$p" ;; esac ;;
+        angie-fpm:worker) case "$c" in *"php-fpm:"*) echo "$p" ;; esac ;;
         apache:*)         echo "$p" ;;
         esac
     done
@@ -266,7 +275,7 @@ start_rt() {  # runtime side -> name
             ${preload_vol[@]+"${preload_vol[@]}"} \
             "$img" >/dev/null || die "cannot start $rt"
         ;;
-    nginx-fpm|apache)
+    nginx-fpm|apache|nginx-src|angie-fpm|freenginx-fpm)
         docker run -d --name "$name" --network "$net" --cpuset-cpus "$SERVER_CPUS" \
             --label "bench-run=${RUN_ID:-manual}" --label bench-role=runtime \
             -p "127.0.0.1:$PORT:80" \

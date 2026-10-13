@@ -37,8 +37,27 @@ printf '%s\n' "$MASTER_OLD_REF" > "$RUNROOT/freeunit-master-old-sha"
 printf '%s\n' "$MASTER_MID_REF" > "$RUNROOT/freeunit-master-mid-sha"
 docker build -f docker/Dockerfile.php --target php-fpm -t drupal-bench-fpm:8.5 .
 docker build -f docker/Dockerfile.php --target apache -t drupal-bench-apache:8.5 .
+
+# The webservers built from upstream tarballs. Versions and checksums are pinned
+# in docker/Dockerfile.php next to each URL; a bump edits that one line.
+docker build -f docker/Dockerfile.php --target nginx-src -t drupal-bench-nginx-src:8.5 .
+docker build -f docker/Dockerfile.php --target angie-fpm -t drupal-bench-angie:8.5 .
+docker build -f docker/Dockerfile.php --target freenginx-fpm -t drupal-bench-freenginx:8.5 .
 docker pull mariadb:10.11
 docker pull postgres:17
+
+# The version each webserver image actually carries, so a published run can name
+# it without inspecting the image later.
+{
+    for pair in "nginx-package:drupal-bench-fpm:8.5:/usr/sbin/nginx" \
+                "nginx-src:drupal-bench-nginx-src:8.5:/usr/local/nginx/sbin/nginx" \
+                "angie:drupal-bench-angie:8.5:/usr/local/angie/sbin/angie" \
+                "freenginx:drupal-bench-freenginx:8.5:/usr/local/freenginx/sbin/nginx"; do
+        name=${pair%%:*}; rest=${pair#*:}; image=${rest%%:*}; bin=${rest##*:}
+        version=$(docker run --rm --entrypoint "$bin" "$image" -v 2>&1 | head -n 1)
+        printf '%s=%s\n' "$name" "$version"
+    done
+} > "$RUNROOT/webserver-versions.txt" 2>/dev/null || true
 
 # Prove the modules the database axis and WordPress need actually landed. A
 # stale image is otherwise invisible until a site install fails halfway.
@@ -46,7 +65,9 @@ echo "checking the extensions the images must carry"
 # Read the module list once per image: `docker run | grep -q` under `set -o
 # pipefail` fails the pipeline with 141 when grep closes the pipe early, which
 # reported modules that are present as missing.
-for img in drupal-bench-freeunit:1.37.0 drupal-bench-freeunit:master drupal-bench-fpm:8.5 drupal-bench-apache:8.5; do
+for img in drupal-bench-freeunit:1.37.0 drupal-bench-freeunit:master drupal-bench-fpm:8.5 \
+           drupal-bench-apache:8.5 drupal-bench-nginx-src:8.5 drupal-bench-angie:8.5 \
+           drupal-bench-freenginx:8.5; do
     mods=$(docker run --rm --entrypoint php "$img" -m 2>/dev/null || true)
     for ext in mysqli pdo_pgsql pdo_sqlite pdo_mysql intl mbstring; do
         if ! grep -qix "$ext" <<<"$mods"; then
