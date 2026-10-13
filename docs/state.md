@@ -144,6 +144,51 @@ Traps from this stretch:
 * **#693** is the Claude session's to measure (claimed the alpine box for 120 min);
   my arm64 loop there is stopped and the validator treats that box as "not ours".
 
+
+## Upstream CI work in flight (2026-10-13, evening)
+
+* **PR #700** (`ci/sanitizer-parity`) — **squashed by the maintainer to `f871edc5`** with an
+  identical tree to my `2e1f071d`; ready for review, not a draft, and green:
+  `c-tests-asan (clang)` 3m07s, `c-tests-asan (gcc)` 2m16s, `sanitize (go)` pass.
+  It does two things: `c-tests-asan` becomes a `cc: [clang, gcc]` matrix with one flag set,
+  and `sanitize.yml` names `--cc=gcc`.  **It deliberately does not share
+  `-fno-sanitize-recover=undefined` with the runtime leg** — the Codex review caught that this
+  makes the leg's allowlist inert (the gate at `.github/workflows/sanitize.yml:411` reads
+  reports as a post-hoc scan), and that is the same reason the file already refuses to set
+  `halt_on_error`; I confirmed it and fixed it in `2e1f071d`, replying in the review thread.
+  Measured while writing it: gcc 15.3.0 and 16.2.0 **reject** `-fsanitize=memory` (MSan is
+  clang-only), `-fsanitize=hwaddress` builds on both but aborts on x86_64 (tagged-address ABI,
+  aarch64-only), gcc TSan aborts on ASLR entropy inside a container, and gcc 15/16 now define
+  `__has_feature` (so `defined(__clang__) && defined(__has_feature)` in #693 is load-bearing).
+* **Issue #701** — `layout-check.sh` compares both `NXT_MMAP_TINY_CHUNK` arms for the `const`
+  macros but reads the 16 `shm` structs from a single build.  Implementation is **in flight** in
+  `/tmp/freeunit-exp` on branch `ci/layout-check-both-arms` (**not pushed**), two commits:
+  `f8fe121d` (the real change) and `6021d2d1` (**test-only**, must be dropped).  The change:
+  `build COMMIT DIR [CC_OPT]` takes an extra `--cc-opt` and the tiny arm skips the const program
+  (which self-compiles both arms in one directory); four builds at the end, base/head x
+  default/tiny; `layout()` loops the two arms, tags rows `## <arm> <file>` and does the
+  unitd-vs-nxt_unit.o MISMATCH check per arm.  Untracked `tools/perf/layout-check-old.sh` is a
+  scratch copy of the old script — delete it.  Still to do: update the "about 40 s" note in
+  `.github/workflows/layout-check.yml`, finish the local proof (see below), push, open the PR.
+  Local proof state: all four builds compile in a `debian:trixie` container (pahole installed),
+  but **pahole 1.30 there exits non-zero when the ELF carries no BTF** — it prints
+  `libbpf: failed to find '.BTF'` plus `Invalid argument` although the DWARF dump is correct —
+  so the stock script dies under `set -e` and a lenient wrapper was needed; the old-vs-new
+  comparison run was then cut short, so the "old passes / new fails on a tiny-arm-only struct
+  change" proof is **not finished**.  A synthetic commit is ready for it: `6021d2d1` adds a
+  `#ifdef NXT_MMAP_TINY_CHUNK` field to `nxt_port_queue_item_t` in `src/nxt_port_queue.h`.
+* **#693** belongs to the Claude session (it claimed the alpine box for 120 min for exactly that
+  benchmark); my arm64 loop there is stopped, the validator treats `o-build` as `n/a`, and I
+  installed the missing `oha 1.16.0` at the path the harness expects.
+
+## Queues as of 2026-10-13T20:00Z
+
+`pro4s-2` tmux `matrix` (9 jobs: the mysqli/pgsql/sqlite blocks 66-74; the bisect is complete
+and published — #638 is the whole win, #670 flat), `pro4s-4` tmux `wp` (3 left of the WordPress
+set), `o-build` not ours.  The five-minute validator's session name for pro4s-2 changed from
+`ws-loop` to `matrix`; it reports no problems.  The earlier loop exited by design after 12
+passes with 9 jobs left, which is why the queue looked dead.
+
 ## Traps that cost the most
 
 * `vendor/bin/dr install` cannot install into a database (early return on any `$databases`,

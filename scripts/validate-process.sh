@@ -37,7 +37,7 @@ mkdir -p "$HERE/run"
 # A session name of "-" means the box is not ours to run right now (claimed elsewhere):
 # it is probed for leftovers and disk only, and never reported as a down loop.
 BOXES=(
-"pro4s-2|/data/projects/benchmarks-drupal|ws-loop|loop.log|scripts/campaign.steps.master-bisect,scripts/campaign.steps.matrix-12|53-,54-,55-,56-,57-,58-,60-,61-,62-,63-,64-,65-,66-,67-,68-,69-,70-,71-,72-,73-,74-"
+"pro4s-2|/data/projects/benchmarks-drupal|matrix|matrix-loop.log|scripts/campaign.steps.master-bisect,scripts/campaign.steps.matrix-12|53-,54-,55-,56-,57-,58-,60-,61-,62-,63-,64-,65-,66-,67-,68-,69-,70-,71-,72-,73-,74-"
 "pro4s-4|/data/projects/benchmarks-drupal|wp|wp-loop.log|scripts/campaign.steps.wp|42-,43-,44-,45-,46-,47-,75-"
 "o-build|/home/alpine/bench-arm|-|arm-loop.log|scripts/campaign.steps.arm|80-,81-,82-"
 )
