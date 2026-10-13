@@ -1,8 +1,7 @@
-# WordPress 7.1.3 on wp-front: FreeUnit vs the classic stack.
-# WordPress has no page cache and uses mysqli directly (there is no PDO path), so
-# every measured request is a full bootstrap plus its queries.
+# No FreeUnit in this pair: it is the classic-stack control that says whether the
+# front render is server-bound at all.
 JOB=44-wp-front-nginx-fpm-vs-apache
-ISSUE=https://github.com/freeunitorg/benchmarks-drupal
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
 PHASES="null ab"
 WORKLOAD=wp-front
 RUNTIME_A=nginx-fpm
@@ -19,5 +18,5 @@ LOAD_CPUS=2,3,6,7
 DB_CPUS=4,5
 PRIMARY=s_instructions
 NULL_LIMIT_PCT=5
-EXPECT="FreeUnit at or below the classic stack on a full WordPress render"
-FALSIFY="NO CLAIM, or the classic stack cheaper"
+EXPECT="mod_php costs more per request than nginx plus PHP-FPM on a full WordPress render"
+FALSIFY="NO CLAIM, or Apache cheaper than nginx plus PHP-FPM"

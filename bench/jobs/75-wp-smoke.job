@@ -1,0 +1,23 @@
+# Cheap pre-flight for the WordPress campaign. Run it before 42-47 after a site
+# rebuild, then delete its run directory: it has no null phase by design, so it is
+# not a comparison and must not be published.
+JOB=75-wp-smoke
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="ab"
+WORKLOAD=wp-front
+RUNTIME_A=freeunit
+RUNTIME_B=nginx-fpm
+SITE=wp
+DB=mysql
+CONNS=32
+WARM=2
+DUR=3
+REPS=1
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="nothing: this run only proves the site and both runtimes answer, and is deleted"
+FALSIFY="a cell that does not answer, or an alert"

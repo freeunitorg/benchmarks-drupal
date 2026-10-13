@@ -1,10 +1,8 @@
-# A wp-content/db.php drop-in that opens a persistent mysqli handle, against the
-# stock wpdb, on the same runtime and the same database. WordPress 7.1.3 has no
-# persistent-connection support in wpdb, so the drop-in is the only seam; it pays
-# off exactly when the PHP process survives between requests, which is the case
-# under freeunit workers. Both sites are installed identically otherwise.
+# A and B are two sites with the same WordPress, same plugins and same database
+# schema; the only difference is wp-content/db.php, which opens the mysqli handle
+# with the persistent prefix. Both sides run FreeUnit, so the runtime is held still.
 JOB=46-wp-persistent-vs-default-freeunit
-ISSUE=https://github.com/freeunitorg/benchmarks-drupal
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
 PHASES="null ab"
 WORKLOAD=wp-front
 RUNTIME_A=freeunit
@@ -22,5 +20,5 @@ LOAD_CPUS=2,3,6,7
 DB_CPUS=4,5
 PRIMARY=s_instructions
 NULL_LIMIT_PCT=5
-EXPECT="the persistent handle removes the per-request connection cost"
+EXPECT="the persistent handle removes a measurable share of the per-request cost on FreeUnit"
 FALSIFY="NO CLAIM: the connection setup is not a measurable share at this cell"

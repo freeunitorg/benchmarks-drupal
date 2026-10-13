@@ -1,10 +1,8 @@
-# A wp-content/db.php drop-in that opens a persistent mysqli handle, against the
-# stock wpdb, on the same runtime and the same database. WordPress 7.1.3 has no
-# persistent-connection support in wpdb, so the drop-in is the only seam; it pays
-# off exactly when the PHP process survives between requests, which is the case
-# under nginx-fpm workers. Both sites are installed identically otherwise.
+# The same pair on php-fpm, where the worker also survives between requests. Two
+# runtimes are measured so a result can be attributed to the drop-in and not to one
+# server's connection handling.
 JOB=47-wp-persistent-vs-default-nginx-fpm
-ISSUE=https://github.com/freeunitorg/benchmarks-drupal
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
 PHASES="null ab"
 WORKLOAD=wp-front
 RUNTIME_A=nginx-fpm
@@ -22,5 +20,5 @@ LOAD_CPUS=2,3,6,7
 DB_CPUS=4,5
 PRIMARY=s_instructions
 NULL_LIMIT_PCT=5
-EXPECT="the persistent handle removes the per-request connection cost"
+EXPECT="the persistent handle removes a measurable share on php-fpm as well"
 FALSIFY="NO CLAIM: the connection setup is not a measurable share at this cell"
