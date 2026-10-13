@@ -160,6 +160,8 @@ cp -f "$RUNROOT/site/$SITE/meta.txt" "$OUTDIR/site-meta.txt" 2>/dev/null || true
     echo "freeunit_master_image=$(docker image inspect -f '{{.Id}}' drupal-bench-freeunit:master 2>/dev/null | cut -c8-19)"
     echo "freeunit_master_old_sha=$(cat "$RUNROOT/freeunit-master-old-sha" 2>/dev/null || echo unknown)"
     echo "freeunit_master_old_image=$(docker image inspect -f '{{.Id}}' drupal-bench-freeunit:master-old 2>/dev/null | cut -c8-19)"
+    echo "freeunit_master_mid_sha=$(cat "$RUNROOT/freeunit-master-mid-sha" 2>/dev/null || echo unknown)"
+    echo "freeunit_master_mid_image=$(docker image inspect -f '{{.Id}}' drupal-bench-freeunit:master-mid 2>/dev/null | cut -c8-19)"
     echo "fpm_image=$(docker image inspect -f '{{.Id}}' drupal-bench-fpm:8.5 2>/dev/null | cut -c8-19)"
     echo "apache_image=$(docker image inspect -f '{{.Id}}' drupal-bench-apache:8.5 2>/dev/null | cut -c8-19)"
     echo "mariadb_image=$(docker image inspect -f '{{.Id}}' mariadb:10.11 2>/dev/null | cut -c8-19)"

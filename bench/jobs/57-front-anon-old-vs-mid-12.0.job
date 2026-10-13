@@ -1,0 +1,23 @@
+# Bisect of the two response-path commits merged after 8492d5ee: #670
+# (dc30c8a7, router) is the midpoint, #638 (2dc6596f, libunit) the tip, so
+# old->mid measures #670 alone and mid->new measures #638 alone.  The CI commit
+# between them cannot change a runtime.
+JOB=57-front-anon-old-vs-mid-12.0
+ISSUE="https://github.com/freeunitorg/freeunit/compare/8492d5ee...2dc6596f"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-master-old
+RUNTIME_B=freeunit-master-mid
+SITE=12.0
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the commit under test reduces server instructions per request"
+FALSIFY="a delta inside the null band, or a regression"

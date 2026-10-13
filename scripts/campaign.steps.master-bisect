@@ -1,0 +1,11 @@
+# Split the 8492d5ee -> 2dc6596f gain between #670 (old -> mid) and #638
+# (mid -> new).  hello and body first, because that is where the effect is;
+# the Drupal 12 pair is the real-application check.
+site:hello
+job:bench/jobs/53-hello-old-vs-mid.job
+job:bench/jobs/54-hello-mid-vs-new.job
+job:bench/jobs/55-body-old-vs-mid.job
+job:bench/jobs/56-body-mid-vs-new.job
+site:12.0
+job:bench/jobs/57-front-anon-old-vs-mid-12.0.job
+job:bench/jobs/58-front-anon-mid-vs-new-12.0.job

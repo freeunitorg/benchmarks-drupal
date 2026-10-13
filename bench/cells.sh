@@ -97,6 +97,7 @@ image_for() {  # runtime family -> image
     freeunit)  echo "drupal-bench-freeunit:${FREEUNIT_TAG:-1.37.0}" ;;
     freeunit-master) echo "drupal-bench-freeunit:master" ;;
     freeunit-master-old) echo "drupal-bench-freeunit:master-old" ;;
+    freeunit-master-mid) echo "drupal-bench-freeunit:master-mid" ;;
     freeunit-direct) echo "drupal-bench-freeunit:${FREEUNIT_TAG:-1.37.0}" ;;
     nginx-fpm) echo "drupal-bench-fpm:${TAG}" ;;
     apache)    echo "drupal-bench-apache:${TAG}" ;;
@@ -253,7 +254,7 @@ start_rt() {  # runtime side -> name
     local preload_vol=()
     [ -f "$sitedir/preload.ini" ] && preload_vol=(-v "$sitedir/preload.ini:/usr/local/etc/php/conf.d/zz-preload.ini:ro")
     case "$rt" in
-    freeunit|freeunit-direct|freeunit-master|freeunit-master-old)
+    freeunit|freeunit-direct|freeunit-master|freeunit-master-old|freeunit-master-mid)
         local cfg="$RESROOT/runtimes/$rt.json"
         [ -f "$cfg" ] || cfg="$RESROOT/runtimes/freeunit.json"
         docker run -d --name "$name" --network "$net" --cpuset-cpus "$SERVER_CPUS" \
@@ -440,7 +441,7 @@ PY
     local alerts=0
     [ "$pre" = 1 ] && alerts=$((alerts + 1))
     case "$rt" in
-    freeunit|freeunit-master|freeunit-master-old|freeunit-direct) docker logs "$name" 2>&1 | grep -qE '\[(alert|crit|emerg)\]' && alerts=$((alerts + 1)) ;;
+    freeunit|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-direct) docker logs "$name" 2>&1 | grep -qE '\[(alert|crit|emerg)\]' && alerts=$((alerts + 1)) ;;
     *) docker logs "$name" 2>&1 | grep -qE '\[(crit|emerg|alert)\]|worker process is shutting down unexpectedly' && alerts=$((alerts + 1)) ;;
     esac
     emit "$ph" "$side" "$cell" "$k" "$s" alerts "$alerts"
