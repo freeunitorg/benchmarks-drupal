@@ -31,7 +31,6 @@ JOB="" PHASES="null ab" WORKLOAD=drupal-front RUNTIME_A=freeunit RUNTIME_B=nginx
 SITE=11.4 CONNS=32 DUR=8 WARM=2 REPS=2 RATE="" APP_PROCS=20 PERF=1 AE=""
 SERVER_CPUS=0,1 LOAD_CPUS=2,3,6,7 DB_CPUS=4,5 BASE_PORT=8081
 DB=${DB:-mysql}
-DB_A=${DB:-mysql}
 NULL_LIMIT_PCT=5 PRIMARY=s_instructions EXPECT="" FALSIFY="" ISSUE=""
 DECOMPOSE=${DECOMPOSE:-0}
 EXTRA_COOKIE_BYTES=${EXTRA_COOKIE_BYTES:-0}
@@ -39,6 +38,14 @@ OHA=${OHA:-/data/projects/cache/cargo/bin/oha}
 PERF_IMAGE=${PERF_IMAGE:-freeunit-perf-lab:1}
 # shellcheck disable=SC1090
 . "$JOBFILE"
+
+# After the job file, so that a job naming one backend (DB=pgsql and nothing else)
+# gets it on both sides.  When DB_A was defaulted before the source, it kept the
+# default mysql, the two backends differed, and cells.sh took the two-side path
+# with a MariaDB on one side of a PostgreSQL site: every request answered 302.
+DB=${DB:-mysql}
+DB_A=${DB_A:-$DB}
+DB_B=${DB_B:-$DB}
 
 [ -n "$ENV_SERVER_CPUS" ] && SERVER_CPUS=$ENV_SERVER_CPUS
 [ -n "$ENV_LOAD_CPUS" ] && LOAD_CPUS=$ENV_LOAD_CPUS
