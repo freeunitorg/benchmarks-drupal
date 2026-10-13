@@ -292,7 +292,11 @@ stop_rt() { [ -n "${1:-}" ] && docker rm -f "$1" >/dev/null 2>&1; }
 wait_http() {  # url tries
     local url=$1 n=${2:-60} i
     for i in $(seq "$n"); do
-        [ "$(curl -s -o /dev/null -w '%{http_code}' "$url" 2>/dev/null)" = 200 ] && return 0
+        # A timeout is not optional here: a runtime that accepts the connection and
+        # never answers leaves curl polling for ever, and cells.sh waits on the
+        # command substitution, so the whole job hangs instead of failing. Seen for
+        # 2h25m on a php-body cell and for hours on the WordPress job.
+        [ "$(curl -s --connect-timeout 2 --max-time 5 -o /dev/null -w '%{http_code}' "$url" 2>/dev/null)" = 200 ] && return 0
         sleep 0.5
     done
     return 1
@@ -336,9 +340,9 @@ preflight() {  # runtime name side -> 0 ok
     { [ "$WORKLOAD" = drupal-auth ] || [ "${EXTRA_COOKIE_BYTES:-0}" -gt 0 ]; } && [ -n "$sidehdr" ] && with_cookie="yes"
     for try in 1 2; do
         if [ -n "$with_cookie" ]; then
-            hdr=$(curl -s -D - -o /dev/null -H "Cookie: $sidehdr" -w '\nHTTP %{http_code}' "$(url_for)" | tr -d '\r')
+            hdr=$(curl -s --connect-timeout 2 --max-time 10 -D - -o /dev/null -H "Cookie: $sidehdr" -w '\nHTTP %{http_code}' "$(url_for)" | tr -d '\r')
         else
-            hdr=$(curl -s -D - -o /dev/null -w '\nHTTP %{http_code}' "$(url_for)" | tr -d '\r')
+            hdr=$(curl -s --connect-timeout 2 --max-time 10 -D - -o /dev/null -w '\nHTTP %{http_code}' "$(url_for)" | tr -d '\r')
         fi
         code=$(printf '%s' "$hdr" | awk '/^HTTP /{c=$2} END{print c}')
         [ "$code" = 200 ] || continue
