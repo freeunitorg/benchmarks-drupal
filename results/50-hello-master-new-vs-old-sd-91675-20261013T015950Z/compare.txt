@@ -1,0 +1,29 @@
+CLAIM php-hello-c32: B is 10.9 percent less server instructions per request, outside the null band of 1.7, 12 of 12 cells agree
+job 50-hello-master-new-vs-old  run 50-hello-master-new-vs-old-sd-91675-20261013T015950Z  A None ()  B None ()  governor powersave/balance_power  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  php-hello-c32  s_instructions           210766.089   210340.651    -0.20     [-1.74, +1.34]   1.74   8/12  PASS
+null  php-hello-c32  db_cs                         0.000        0.000    -5.24   [-20.57, +10.08]  20.57   3/12  NOISY
+null  php-hello-c32  db_cycles                    20.825       17.942   -12.47   [-36.04, +11.10]  36.04   8/12  NOISY
+null  php-hello-c32  db_instructions               5.470        4.138   -17.88   [-52.39, +16.64]  52.39   9/12  NOISY
+null  php-hello-c32  db_migrations                 0.000        0.000      n/a                n/a    n/a   0/12  NO DATA
+null  php-hello-c32  db_us                         0.007        0.009   +21.53   [-13.87, +56.94]  56.94   7/12  NOISY
+null  php-hello-c32  p50_ms                        2.664        2.655    -0.28     [-6.99, +6.44]   6.99   7/12  NOISY
+null  php-hello-c32  p99_ms                        7.774        7.314    -5.40    [-17.88, +7.07]  17.88   8/12  NOISY
+null  php-hello-c32  rps                       11199.138    11353.999    +1.38     [-5.25, +8.00]   8.00   7/12  NOISY
+null  php-hello-c32  s_cs                          6.675        6.667    -0.09     [-5.13, +4.95]   5.13   8/12  NOISY
+null  php-hello-c32  s_cycles                 413262.413   411138.805    -0.51     [-2.27, +1.26]   2.27   7/12  PASS
+null  php-hello-c32  s_migrations                  0.035        0.032   +18.07  [-89.81, +125.95] 125.95   4/12  NOISY
+null  php-hello-c32  server_us                   174.372      173.112    -0.64     [-7.34, +6.07]   7.34   7/12  NOISY
+ab    php-hello-c32  s_instructions           209802.453   186832.566   -10.95    [-12.31, -9.59]   1.74  12/12  CLAIM
+ab    php-hello-c32  db_cs                         0.000        0.000   -10.90    [-21.31, -0.48]  20.57   4/12  NOISY
+ab    php-hello-c32  db_cycles                    17.014       14.748   -13.28    [-19.03, -7.54]  36.04  11/12  NOISY
+ab    php-hello-c32  db_instructions               3.953        3.398   -13.99    [-22.60, -5.38]  52.39  11/12  NOISY
+ab    php-hello-c32  db_migrations                 0.000        0.000   -61.11  [-156.18, +33.95]    n/a   4/12  NO NULL GATE
+ab    php-hello-c32  db_us                         0.007        0.006   -10.52    [-22.69, +1.65]  56.94   8/12  NOISY
+ab    php-hello-c32  p50_ms                        2.574        2.314   -10.12    [-17.72, -2.52]   6.99  10/12  NOISY
+ab    php-hello-c32  p99_ms                        7.492        6.767    -9.69    [-19.75, +0.36]  17.88   7/12  NOISY
+ab    php-hello-c32  rps                       11505.471    12967.737   +12.70    [+4.64, +20.75]   8.00  10/12  NOISY
+ab    php-hello-c32  s_cs                          6.625        6.111    -7.76    [-11.98, -3.55]   5.13  10/12  NOISY
+ab    php-hello-c32  s_cycles                 412147.276   374353.828    -9.17    [-10.75, -7.59]   2.27  12/12  CLAIM
+ab    php-hello-c32  s_migrations                  0.019        0.010   -44.76   [-62.17, -27.34] 125.95  11/12  NOISY
+ab    php-hello-c32  server_us                   172.595      153.478   -11.09    [-17.91, -4.27]   7.34  10/12  NOISY
