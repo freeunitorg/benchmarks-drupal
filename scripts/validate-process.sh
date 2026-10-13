@@ -34,10 +34,12 @@ mkdir -p "$HERE/run"
 : >"$STATE.new"
 
 # host | root | tmux session | loop log (relative to root) | manifests | job prefixes
+# A session name of "-" means the box is not ours to run right now (claimed elsewhere):
+# it is probed for leftovers and disk only, and never reported as a down loop.
 BOXES=(
 "pro4s-2|/data/projects/benchmarks-drupal|ws-loop|loop.log|scripts/campaign.steps.master-bisect,scripts/campaign.steps.matrix-12|53-,54-,55-,56-,57-,58-,60-,61-,62-,63-,64-,65-,66-,67-,68-,69-,70-,71-,72-,73-,74-"
 "pro4s-4|/data/projects/benchmarks-drupal|wp|wp-loop.log|scripts/campaign.steps.wp|42-,43-,44-,45-,46-,47-,75-"
-"o-build|/home/alpine/bench-arm|armrun|arm-loop.log|scripts/campaign.steps.arm|80-,81-,82-"
+"o-build|/home/alpine/bench-arm|-|arm-loop.log|scripts/campaign.steps.arm|80-,81-,82-"
 )
 
 probe() {  # host root session logfile manifests
@@ -45,7 +47,7 @@ probe() {  # host root session logfile manifests
 set -u
 root=$1; session=$2; logf=$3; manifests=$4; prefixes=$5
 cd "$root" 2>/dev/null || { echo "root=missing"; exit 0; }
-echo "session=$(tmux ls 2>/dev/null | grep -c "^$session:")"
+echo "tmux_sessions=$(tmux ls 2>/dev/null | grep -c "^$session:")"
 echo "log_age=$(( $(date +%s) - $(stat -c %Y "$logf" 2>/dev/null || echo 0) ))"
 missing=""
 for m in ${manifests//,/ }; do [ -f "$m" ] || missing="$missing $m"; done
@@ -82,7 +84,12 @@ for row in "${BOXES[@]}"; do
     fi
     eval "$(printf '%s\n' "$out" | sed 's/^\([a-z_]*\)=\(.*\)$/\1="\2"/')" 2>/dev/null || true
     p=""
-    [ "${session:-0}" = 1 ] || p="$p session-down"
+    if [ "$session" = "-" ]; then
+        :   # not ours to run: no loop expectation, only leftovers/disk/port matter
+        log_age=0
+    else
+        [ "${tmux_sessions:-0}" = 1 ] || p="$p session-down"
+    fi
     [ -n "${manifests_missing// /}" ] && p="$p manifest-missing:${manifests_missing// /,}"
     # A job that is running but whose log has not moved for 25 minutes is stuck:
     # the shape of the unbounded curl.  Gate waits print every minute, and a job
@@ -98,7 +105,7 @@ for row in "${BOXES[@]}"; do
     [ "${disk_gb:-99}" -lt 5 ] && p="$p disk-low:${disk_gb}G"
     [ "${log_age:-0}" -gt 1800 ] && p="$p loop-log-stale:$((log_age/60))m"
 
-    line="$host session=$([ "${session:-0}" = 1 ] && echo up || echo DOWN) remaining=${remaining:-?} done=${done:-?} running=${running_run:-?} ours=${ours:-?} log=$((${log_age:-0}/60))m job=$([ "${running_run:-0}" -gt 0 ] && echo "${joblog:-?}($((joblog_age/60))m)" || echo idle)${p:+ PROBLEM:$p}"
+    line="$host session=$([ "$session" = "-" ] && echo n/a || { [ "${tmux_sessions:-0}" = 1 ] && echo up || echo DOWN; }) remaining=${remaining:-?} done=${done:-?} running=${running_run:-?} ours=${ours:-?} log=$((${log_age:-0}/60))m job=$([ "${running_run:-0}" -gt 0 ] && echo "${joblog:-?}($((joblog_age/60))m)" || echo idle)${p:+ PROBLEM:$p}"
     report="$report\n$line"
     [ -n "$p" ] && problems="$problems $host:$p"
     printf '%s|%s\n' "$host" "$p" >>"$STATE.new"

@@ -120,6 +120,26 @@ Traps from this stretch:
 * Task ledger: `job/python-home-prefix` (issue #679 linked), `research/kernel-cheap-wins`
   (survey → #32/#34, real-NIC A/B outstanding), `tag/1.37.1` (677 recorded).
 
+
+### Upstream CI and layout work (2026-10-13)
+
+* **PR #700** (draft, ours): the two sanitized CI legs are not the same compiler,
+  flags or scope — `c-tests-asan` is clang-only with `-fno-sanitize-recover=undefined`
+  over the unit tests, `sanitize.yml` is gcc (image default) without it over the
+  runtimes — so this makes the C core a `cc: [clang, gcc]` matrix with one flag set
+  and names the compiler in the runtime leg.  Measured for the PR: gcc 15.3.0 and
+  16.2.0 **reject** `-fsanitize=memory` (MSan is clang-only, so a gcc/clang parity
+  matrix can only be ASan+UBSan+LSan+TSan); `-fsanitize=hwaddress` builds on both
+  but aborts on x86_64 for want of a tagged-address ABI (aarch64-only); TSan under
+  gcc aborts on ASLR entropy inside a container; and gcc 15/16 now define
+  `__has_feature`, which is why #693's `defined(__clang__) && defined(__has_feature)`
+  guard matters.
+* **Issue #701** (ours): `tools/perf/layout-check.sh` compares the two
+  `NXT_MMAP_TINY_CHUNK` arms for the `const` macros but only one build for the 16
+  `shm` structs.  #693 itself adds no layout arm.
+* **#693** is the Claude session's to measure (claimed the alpine box for 120 min);
+  my arm64 loop there is stopped and the validator treats that box as "not ours".
+
 ## Traps that cost the most
 
 * `vendor/bin/dr install` cannot install into a database (early return on any `$databases`,
