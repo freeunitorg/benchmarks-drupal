@@ -1,0 +1,7 @@
+# The same two workloads with Apache on the Ampere A1 host, where the guest
+# has no PMU: PERF=0 and server CPU per request is the primary metric.
+site:wp
+site:12.0
+job:bench/jobs/83-arm-wp-front-freeunit-vs-apache.job
+job:bench/jobs/84-arm-front-anon-freeunit-vs-apache-12.0.job
+job:bench/jobs/85-arm-front-anon-nginx-fpm-vs-apache-12.0.job

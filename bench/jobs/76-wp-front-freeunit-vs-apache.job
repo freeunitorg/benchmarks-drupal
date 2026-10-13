@@ -1,0 +1,22 @@
+# WordPress front render, FreeUnit against Apache+mod_php.  WordPress has no page
+# cache, so every request renders; the two sides share the site and the database.
+JOB=76-wp-front-freeunit-vs-apache
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=wp-front
+RUNTIME_A=freeunit
+RUNTIME_B=apache
+SITE=wp
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="mod_php costs more per request than the alternative"
+FALSIFY="a delta inside the null band, or Apache cheaper"

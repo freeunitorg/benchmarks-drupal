@@ -1,0 +1,7 @@
+# Apache arms asked for by the maintainer: WordPress and Drupal 12 with
+# mod_php on the pinned x86 host.
+site:wp
+site:12.0
+job:bench/jobs/76-wp-front-freeunit-vs-apache.job
+job:bench/jobs/77-front-anon-freeunit-vs-apache-12.0.job
+job:bench/jobs/78-front-anon-nginx-fpm-vs-apache-12.0.job

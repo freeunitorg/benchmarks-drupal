@@ -174,11 +174,15 @@ perf_stop() {  # name
 
 # ---------------------------------------------------------------- database
 start_db() {  # side
-    docker network create "$NET" >/dev/null 2>&1 || true
-    docker rm -f "$CNAME" >/dev/null 2>&1 || true
     local side=${1:-A} i
     local db net cname
     db=$(sv "$side" DB); net=$(sv "$side" NET); cname=$(sv "$side" CNAME)
+    # The network of the side being started, not of side A: a job that compares two
+    # backends takes the two-side path, and with only "$NET" (the A global) created
+    # here, side B died with "network dbnet-<pid>-b not found" before its database
+    # could come up.  Idempotent, so a repeat call is harmless.
+    docker network create "$net" >/dev/null 2>&1 || true
+    docker rm -f "$cname" >/dev/null 2>&1 || true
     DBCVOL=$(sv "$side" DBCVOL)
     [ -n "$DBCVOL" ] || DBCVOL="drupal-bench-db-$(basename "$(sv "$side" SITE_DIR)")"
     if [ -n "${DBC_IMAGE:-}" ] && [ "${db}" != sqlite ]; then
