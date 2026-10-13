@@ -209,6 +209,39 @@ Also fixed here: `bench/cells.sh` `start_db()` created the **A** network through
 and why the older database-axis jobs 35-41 were never publishable.  It now creates the
 network of the side it is starting.
 
+
+### WordPress workloads that do real core work (2026-10-13)
+
+The front page is I/O-bound and similar across runtimes, so it is a weak instrument for
+"is FreeUnit faster for WordPress itself".  Twelve jobs (**90-101**) add the three
+suggested workloads — `wp-rest-posts` (`/wp-json/wp/v2/posts?per_page=10`), `wp-edit`
+(`/wp-admin/post.php?post=<id>&action=edit`) and `wp-edit-list` (`/wp-admin/edit.php`) —
+each against mod_php and nginx+PHP-FPM, with 1.37.0 and with master.  The site build now
+seeds a post of known id, mints a session cookie the way a browser does (test cookie, then
+the login POST) and writes an application password to the site directory for a future
+authenticated REST cell — deliberately **not** in `meta.txt`, which is published with every
+run.  `site_installed()` requires the cookie and the post id, so a site that predates a
+workload rebuilds instead of being skipped; **and the `site:wp`/`site:wp-persistent` lines
+had to be cleared from pro4s-4's `campaign.done`**, because the campaign's done-file skip
+outranks the builder's own check — the same trap as the Drupal 12 site earlier.
+
+Queues at 2026-10-13T20:55Z: pro4s-2 running the matrix then the Apache arms
+(remaining 14); pro4s-4 the WordPress front set then the core-workload set (14, and it
+rebuilds both WP sites on its next pass); o-build the ARM Apache set (5) once the master
+image finishes.  A1's main image finished; `freeunit-master` was building.
+
+Mistakes made and fixed in this stretch, for the record:
+
+* an `rsync --delete` invoked from the wrong working directory (the FreeUnit tree) overwrote
+  pro4s-4's benchmark tree; `run/` and `.git` were excluded so no results, sites or history
+  were lost, and the tree was restored from the correct directory (16 steps files, `run/`
+  intact at 52 entries).
+* a remote `pkill -f wp-loop.sh` killed its own ssh session, because the session's command
+  line contains that string; restarts now run from a helper script file.
+* the validator's stall check watched the campaign job log, which only advances when a job
+  starts, instead of the newest run's `cells.log`; that is what made a healthy 19-minute job
+  look stalled.  It now uses `cells.log` with a 15-minute threshold.
+
 ## Traps that cost the most
 
 * `vendor/bin/dr install` cannot install into a database (early return on any `$databases`,
