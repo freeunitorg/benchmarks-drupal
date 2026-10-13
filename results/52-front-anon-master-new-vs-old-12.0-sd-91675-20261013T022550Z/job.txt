@@ -1,0 +1,22 @@
+# The same A/B on a real application response (Drupal 12 anonymous front page):
+# a regression that only shows with a framework-sized response would be missed
+# by the two synthetic cells above.
+JOB=52-front-anon-master-new-vs-old-12.0
+ISSUE="https://github.com/freeunitorg/freeunit/pull/680"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-master-old
+RUNTIME_B=freeunit-master
+SITE=12.0
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="new master at or below old on a page-cache-hit Drupal 12 cell"
+FALSIFY="new master above old by more than the null band"

@@ -1,0 +1,33 @@
+job=52-front-anon-master-new-vs-old-12.0
+run_id=52-front-anon-master-new-vs-old-12.0-sd-91675-20261013T022550Z
+host=sd-91675
+date=2026-10-13T02:38:42Z
+workload=drupal-front
+runtime_a=freeunit-master-old
+runtime_b=freeunit-master
+site=12.0
+db=mysql
+phases=null ab conns=32 dur=8 warm=2 reps=3 rate=
+server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=4,5
+governor=powersave
+epp=balance_power
+kernel=6.8.0-136-generic
+oha=oha 1.16.0
+perf_image=1ec7891af56e
+freeunit_image=fc6e4d3ec4bd
+freeunit_master_sha=2dc6596f53d73a9f7fae37ca18fe289c77ab1cc0
+freeunit_master_image=9e04b14d4f2d
+freeunit_master_old_sha=8492d5ee43a99a8f1504598ed44d046b61d85131
+freeunit_master_old_image=cf7ad90f101a
+fpm_image=dbc4e1942bef
+apache_image=9f47a7b1d7ef
+mariadb_image=7db29378d4fd
+issue=https://github.com/freeunitorg/freeunit/pull/680
+expect=new master at or below old on a page-cache-hit Drupal 12 cell
+falsify=new master above old by more than the null band
+tag=drupal/recommended-project:12.0.0-beta1 drupal=12.0.0-beta1 php=8.5.11 profile=demo_umami drush=0 composer_opt=1 preload=0
+site-build: auth cookie verified (session cookie plus dynamic cache header)
+site=12.0
+runroot=/data/projects/benchmarks-drupal/run
+installed=2026-10-12T08:29:14Z
+user=bench-user
