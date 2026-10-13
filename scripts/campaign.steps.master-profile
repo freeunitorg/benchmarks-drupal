@@ -1,5 +1,9 @@
+# Profile the three upstream commits between the two master pins (8492d5ee ->
+# 2dc6596f): dc30c8a7 compresses the body sent with the response headers and
+# 2dc6596f sends the response through the port queue again.  A and B are the
+# same runtime, so the null band is the effect of those commits alone.
 site:hello
-50-hello-master-new-vs-old
-51-body-master-new-vs-old
+job:bench/jobs/50-hello-master-new-vs-old.job
+job:bench/jobs/51-body-master-new-vs-old.job
 site:12.0
-52-front-anon-master-new-vs-old-12.0
+job:bench/jobs/52-front-anon-master-new-vs-old-12.0.job
