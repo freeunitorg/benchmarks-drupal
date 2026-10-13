@@ -242,6 +242,21 @@ Mistakes made and fixed in this stretch, for the record:
   starts, instead of the newest run's `cells.log`; that is what made a healthy 19-minute job
   look stalled.  It now uses `cells.log` with a 15-minute threshold.
 
+
+### Two more traps, and two careless actions of mine (2026-10-13, late)
+
+* A killed job leaves children that inherited the `run/.run.lock` file descriptor — an
+  `oha` process was still holding it — so every retry exits "another bench/run.sh holds the
+  lock" with rc=1/2 and the queue churns.  Find the holders by reading `/proc/[0-9]*/fd/9`,
+  kill those, and only then let the loop retry.  `fuser` is not installed on those boxes.
+* **Do not run `docker rm -f $(docker ps -q)`**: I did, to clear a stuck job, and it also
+  removed containers that were not mine.  The filter used everywhere else in this suite —
+  `grep -E '^(rt|db-bench|perf)-|db-wp'` — is there for exactly that reason.
+* Also mine, earlier in the same stretch: an `rsync --delete` run from the wrong working
+  directory (the FreeUnit tree instead of the benchmark tree) overwrote pro4s-4's checkout.
+  `run/` and `.git` were excluded, so no results, sites or history were lost, and the tree was
+  restored from the correct directory.  Always `cd` explicitly before a sync.
+
 ## Traps that cost the most
 
 * `vendor/bin/dr install` cannot install into a database (early return on any `$databases`,
