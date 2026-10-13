@@ -39,7 +39,7 @@ mkdir -p "$HERE/run"
 BOXES=(
 "pro4s-2|/data/projects/benchmarks-drupal|bench|bench-loop.log|scripts/campaign.steps.master-bisect,scripts/campaign.steps.matrix-12,scripts/campaign.steps.apache|66-,67-,68-,69-,70-,71-,72-,73-,74-,76-,77-,78-,86-,87-"
 "pro4s-4|/data/projects/benchmarks-drupal|wp|wp-loop.log|scripts/campaign.steps.wp|42-,43-,44-,45-,46-,47-,75-"
-"o-build|/home/alpine/bench-arm|-|arm-loop.log|scripts/campaign.steps.arm|80-,81-,82-"
+"o-build|/home/alpine/bench-arm|apachearm|apache-arm-loop.log|scripts/campaign.steps.apache-arm|83-,84-,85-,88-,89-"
 )
 
 probe() {  # host root session logfile manifests
