@@ -1,0 +1,27 @@
+job=51-body-master-new-vs-old
+run_id=51-body-master-new-vs-old-sd-91675-20261013T021253Z
+host=sd-91675
+date=2026-10-13T02:25:49Z
+workload=php-body
+runtime_a=freeunit-master-old
+runtime_b=freeunit-master
+site=hello
+db=mysql
+phases=null ab conns=32 dur=8 warm=2 reps=3 rate=
+server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=4,5
+governor=powersave
+epp=balance_power
+kernel=6.8.0-136-generic
+oha=oha 1.16.0
+perf_image=1ec7891af56e
+freeunit_image=fc6e4d3ec4bd
+freeunit_master_sha=2dc6596f53d73a9f7fae37ca18fe289c77ab1cc0
+freeunit_master_image=9e04b14d4f2d
+freeunit_master_old_sha=8492d5ee43a99a8f1504598ed44d046b61d85131
+freeunit_master_old_image=cf7ad90f101a
+fpm_image=dbc4e1942bef
+apache_image=9f47a7b1d7ef
+mariadb_image=7db29378d4fd
+issue=https://github.com/freeunitorg/freeunit/pull/680
+expect=new master at or below old on a body-heavy response
+falsify=new master above old by more than the null band
