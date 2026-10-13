@@ -1,0 +1,29 @@
+NO CLAIM php-body-c32: inside the noise, no claim (B is 0.9 percent less server instructions per request, null band 4.9, 6 of 12 cells agree)
+job 55-body-old-vs-mid  run 55-body-old-vs-mid-sd-91675-20261013T085709Z  A None ()  B None ()  governor powersave/balance_power  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  php-body-c32   s_instructions           246701.260   250947.805    +1.73     [-1.44, +4.89]   4.89   8/12  PASS
+null  php-body-c32   db_cs                         0.000        0.001   +10.09    [-5.87, +26.04]  26.04   6/12  NOISY
+null  php-body-c32   db_cycles                    28.514       26.932    -4.98   [-27.21, +17.25]  27.21   6/12  NOISY
+null  php-body-c32   db_instructions               7.285        6.121   -12.98   [-44.07, +18.10]  44.07   7/12  NOISY
+null  php-body-c32   db_migrations                 0.000        0.000   -22.22    [-49.71, +5.27]  49.71   3/12  NOISY
+null  php-body-c32   db_us                         0.010        0.012   +22.61    [-5.19, +50.40]  50.40   7/12  NOISY
+null  php-body-c32   p50_ms                        3.550        3.611    +2.01     [-5.39, +9.40]   9.40   6/12  NOISY
+null  php-body-c32   p99_ms                       10.592       10.835    +2.57   [-10.26, +15.40]  15.40   8/12  NOISY
+null  php-body-c32   rps                        8262.147     8065.724    -2.09     [-6.76, +2.58]   6.76   6/12  NOISY
+null  php-body-c32   s_cs                          7.671        8.076    +5.34    [-5.78, +16.47]  16.47   8/12  NOISY
+null  php-body-c32   s_cycles                 551848.686   555852.706    +0.73     [-3.60, +5.06]   5.06   7/12  NOISY
+null  php-body-c32   s_migrations                  0.227        0.253   +14.29    [-6.58, +35.15]  35.15   7/12  NOISY
+null  php-body-c32   server_us                   233.202      241.877    +3.91     [-0.66, +8.48]   8.48   8/12  NOISY
+ab    php-body-c32   s_instructions           250353.725   248029.423    -0.91     [-3.01, +1.19]   4.89   6/12  NO CLAIM
+ab    php-body-c32   db_cs                         0.000        0.000    +1.48   [-17.32, +20.29]  26.04   4/12  NOISY
+ab    php-body-c32   db_cycles                    23.182       24.606    +5.83    [-6.00, +17.66]  27.21   7/12  NOISY
+ab    php-body-c32   db_instructions               5.632        5.980    +5.71    [-9.25, +20.67]  44.07   6/12  NOISY
+ab    php-body-c32   db_migrations                 0.000        0.000  +100.00  [-25.71, +225.71]  49.71   5/12  NOISY
+ab    php-body-c32   db_us                         0.011        0.011    +2.18   [-13.64, +18.01]  50.40   4/12  NOISY
+ab    php-body-c32   p50_ms                        3.592        3.570    -0.72    [-11.06, +9.61]   9.40   7/12  NOISY
+ab    php-body-c32   p99_ms                       10.918       11.477    +5.16    [-6.15, +16.47]  15.40   7/12  NOISY
+ab    php-body-c32   rps                        8021.509     7892.201    -1.67     [-9.49, +6.16]   6.76   8/12  NOISY
+ab    php-body-c32   s_cs                          8.027        7.707    -3.76    [-10.77, +3.24]  16.47   7/12  NOISY
+ab    php-body-c32   s_cycles                 561389.380   557988.619    -0.53     [-5.17, +4.11]   5.06   7/12  NOISY
+ab    php-body-c32   s_migrations                  0.235        0.264   +12.82   [-29.51, +55.15]  35.15   9/12  NOISY
+ab    php-body-c32   server_us                   245.012      243.442    -0.59     [-6.66, +5.47]   8.48   6/12  NOISY

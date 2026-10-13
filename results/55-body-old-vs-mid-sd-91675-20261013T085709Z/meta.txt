@@ -1,0 +1,29 @@
+job=55-body-old-vs-mid
+run_id=55-body-old-vs-mid-sd-91675-20261013T085709Z
+host=sd-91675
+date=2026-10-13T09:10:06Z
+workload=php-body
+runtime_a=freeunit-master-old
+runtime_b=freeunit-master-mid
+site=hello
+db=mysql
+phases=null ab conns=32 dur=8 warm=2 reps=3 rate=
+server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=4,5
+governor=powersave
+epp=balance_power
+kernel=6.8.0-136-generic
+oha=oha 1.16.0
+perf_image=1ec7891af56e
+freeunit_image=af677669baf2
+freeunit_master_sha=2dc6596f53d73a9f7fae37ca18fe289c77ab1cc0
+freeunit_master_image=a790b914994a
+freeunit_master_old_sha=8492d5ee43a99a8f1504598ed44d046b61d85131
+freeunit_master_old_image=b66d4cad5ee6
+freeunit_master_mid_sha=dc30c8a7e76fe86f8063ce7eafcefc285137629a
+freeunit_master_mid_image=5c56a0389809
+fpm_image=c84b56c8337f
+apache_image=e4f6ea8bf817
+mariadb_image=7db29378d4fd
+issue=https://github.com/freeunitorg/freeunit/compare/8492d5ee...2dc6596f
+expect=the commit under test reduces server instructions per request
+falsify=a delta inside the null band, or a regression
