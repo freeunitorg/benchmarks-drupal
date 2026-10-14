@@ -257,6 +257,25 @@ Mistakes made and fixed in this stretch, for the record:
   `run/` and `.git` were excluded, so no results, sites or history were lost, and the tree was
   restored from the correct directory.  Always `cd` explicitly before a sync.
 
+
+### Fresh master (2026-10-14)
+
+Upstream master moved from the pin `2dc6596f` to **`cc94deb2`**, whose message is "mp: keep
+freed pool clusters in each thread for reuse" — the merged form of #693 — on top of
+`c70bdbd11` "libunit, port, http: pin the shared layouts and pack request structs".  Both sit on
+paths these cells measure, so the pin in `scripts/build-images.sh` is now `cc94deb2` and
+`scripts/campaign.steps.master-fresh` runs Drupal 12 anonymous and authenticated against the
+release, Drupal 12 anonymous against mod_php, and the WordPress front page against PHP-FPM and
+mod_php, all on the freshly built master image (the A1 master image is rebuilt at the same
+commit for jobs 88/89).  Both x86 supervisors chain that manifest last, so every pass rebuilds
+master through `wait-idle.sh` and records the commit in `run/freeunit-master-sha`.
+
+Published at this point: **48 comparisons on six pages** including `wordpress.html`, which now
+carries all four WordPress front/cron runs — FreeUnit 1.37.0 1.9% behind nginx+FPM, master 1.7%
+behind, nginx+FPM 4.8% ahead of mod_php, wp-cron a 0.3% tie.  That page had been stale because
+three of those runs sat untracked locally: `public/` is rendered by CI and never committed, so a
+run reaches the page only when `collect-commit.sh` (not `collect.sh`) is what pulls it.
+
 ## Traps that cost the most
 
 * `vendor/bin/dr install` cannot install into a database (early return on any `$databases`,
