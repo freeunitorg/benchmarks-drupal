@@ -38,6 +38,11 @@ printf '%s\n' "$MASTER_MID_REF" > "$RUNROOT/freeunit-master-mid-sha"
 docker build -f docker/Dockerfile.php --target php-fpm -t drupal-bench-fpm:8.5 .
 docker build -f docker/Dockerfile.php --target apache -t drupal-bench-apache:8.5 .
 
+# The same FreeUnit tree built against musl (Alpine's php85 is the same 8.5.11), for
+# the C-library comparison.  Its PHP is php85, not php, which is why the extension
+# check below skips it.
+docker build -f docker/Dockerfile.freeunit-alpine -t drupal-bench-freeunit:musl .
+
 # The webservers built from upstream tarballs. Versions and checksums are pinned
 # in docker/Dockerfile.php next to each URL; a bump edits that one line.
 docker build -f docker/Dockerfile.php --target nginx-src -t drupal-bench-nginx-src:8.5 .

@@ -64,6 +64,26 @@ COPY docker/entrypoint-nginx-fpm.sh /usr/local/bin/entrypoint-nginx-fpm.sh
 RUN chmod +x /usr/local/bin/entrypoint-nginx-fpm.sh
 CMD ["/usr/local/bin/entrypoint-nginx-fpm.sh"]
 
+# The same PHP-FPM stack on Alpine/musl, for the libc comparison: the C library is
+# the only difference from the php-fpm target above.  The target is derived from the
+# php-fpm *variant of the upstream image*, not from php-fpm-base, because the base is
+# the Debian image.
+FROM php:8.5.11-fpm-alpine AS php-fpm-alpine
+COPY --from=php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/install-php-extensions
+COPY --from=composer /composer /usr/bin/composer
+RUN set -eux; \
+    install-php-extensions intl mbstring pdo_mysql mysqli pdo_pgsql pdo_sqlite gd zip opcache exif apcu; \
+    apk add --no-cache nginx curl mariadb-client
+COPY docker/php-production.ini /usr/local/etc/php/conf.d/zz-production.ini
+RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+COPY docker/runtimes/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
+# Alpine's nginx includes /etc/nginx/http.d, where the Debian image includes conf.d
+COPY docker/runtimes/nginx.conf /etc/nginx/http.d/default.conf
+COPY docker/entrypoint-nginx-fpm.sh /usr/local/bin/entrypoint-nginx-fpm.sh
+RUN chmod +x /usr/local/bin/entrypoint-nginx-fpm.sh
+WORKDIR /app
+CMD ["/usr/local/bin/entrypoint-nginx-fpm.sh"]
+
 # ---------------------------------------------------------------- the forks
 # nginx, Angie and FreeNginx from their own tarballs with one script and one flag
 # set, so a difference between the three is the source and not the packager.  The

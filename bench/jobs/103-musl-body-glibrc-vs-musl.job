@@ -1,0 +1,21 @@
+# As 102 with a 64 KiB body, where the copy path dominates.
+JOB=103-musl-body-glibrc-vs-musl
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-body
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-musl
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="musl costs a different number of instructions than glibc for the same server"
+FALSIFY="a delta inside the null band: then the C library does not show at this cell"

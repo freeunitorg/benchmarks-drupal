@@ -1,0 +1,24 @@
+# As 102 on a real application response.  The two sides differ in PHP build options as
+# well as libc (same upstream version), so this is the whole-stack comparison an operator
+# chooses between, not pure libc isolation; the harness's tools/libc-cost lab is the
+# instrument for the isolation question.
+JOB=104-musl-front-anon-glibrc-vs-musl-12.0
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-musl
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="musl costs a different number of instructions than glibc for the same server"
+FALSIFY="a delta inside the null band: then the C library does not show at this cell"
