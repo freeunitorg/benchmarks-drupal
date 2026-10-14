@@ -1,0 +1,26 @@
+# The mu-plugin makes the cron request do a fixed amount of work, so the cell
+# compares wrappers, not whatever happened to be due.
+# Caveat to check when this first runs: if a runtime returns the response before the
+# job finishes, its instruction count covers only the part that ran before the
+# response and the pair is not like-for-like. Wall time for that question is the
+# ticks arm in bench/tick.sh, not this job.
+JOB=45-wp-cron-freeunit-vs-nginx-fpm
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=wp-cron
+RUNTIME_A=freeunit
+RUNTIME_B=nginx-fpm
+SITE=wp
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the same cron request costs the same on both runtimes"
+FALSIFY="a delta outside the band, read with the detach caveat below"
