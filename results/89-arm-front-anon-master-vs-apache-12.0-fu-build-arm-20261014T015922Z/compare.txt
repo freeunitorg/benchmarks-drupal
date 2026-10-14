@@ -1,0 +1,13 @@
+CLAIM drupal-front-c32: B is 40.0 percent more server CPU per request (us), outside the null band of 4.6, 8 of 8 cells agree
+job 89-arm-front-anon-master-vs-apache-12.0  run 89-arm-front-anon-master-vs-apache-12.0-fu-build-arm-20261014T015922Z  A None ()  B None ()  governor unknown/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  drupal-front-c32 server_us                  2652.101     2676.828    +0.95     [-2.72, +4.63]   4.63    4/8  PASS
+null  drupal-front-c32 db_us                      1187.597     1190.917    +0.29     [-2.57, +3.15]   3.15    4/8  PASS
+null  drupal-front-c32 p50_ms                       93.091       94.087    +1.08     [-2.15, +4.30]   4.30    6/8  PASS
+null  drupal-front-c32 p99_ms                      117.966      119.742    +1.54     [-2.63, +5.70]   5.70    5/8  NOISY
+null  drupal-front-c32 rps                         374.150      369.819    -1.15     [-4.96, +2.67]   4.96    4/8  PASS
+ab    drupal-front-c32 server_us                  2572.831     3600.841   +39.98   [+37.97, +41.98]   4.63    8/8  CLAIM
+ab    drupal-front-c32 db_us                      1161.859     1199.244    +3.22     [+1.70, +4.75]   3.15    8/8  CLAIM
+ab    drupal-front-c32 p50_ms                       89.583       72.585   -18.97   [-20.73, -17.20]   4.30    8/8  CLAIM
+ab    drupal-front-c32 p99_ms                      113.505      107.717    -5.10     [-7.69, -2.51]   5.70    8/8  NOISY
+ab    drupal-front-c32 rps                         386.160      274.426   -28.93   [-30.29, -27.56]   4.96    8/8  CLAIM

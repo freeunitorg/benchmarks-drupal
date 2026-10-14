@@ -1,0 +1,21 @@
+# The classic pair on the A1 host, for the same reason as 78.
+JOB=85-arm-front-anon-nginx-fpm-vs-apache-12.0
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=nginx-fpm
+RUNTIME_B=apache
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="mod_php costs more per request than the alternative"
+FALSIFY="a delta inside the null band, or Apache cheaper"

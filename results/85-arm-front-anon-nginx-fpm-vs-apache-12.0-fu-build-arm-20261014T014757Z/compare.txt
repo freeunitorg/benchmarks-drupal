@@ -1,0 +1,13 @@
+CLAIM drupal-front-c32: B is 27.9 percent more server CPU per request (us), outside the null band of 4.4, 8 of 8 cells agree
+job 85-arm-front-anon-nginx-fpm-vs-apache-12.0  run 85-arm-front-anon-nginx-fpm-vs-apache-12.0-fu-build-arm-20261014T014757Z  A None ()  B None ()  governor unknown/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  drupal-front-c32 server_us                  2759.064     2705.227    -1.94     [-4.40, +0.52]   4.40    8/8  PASS
+null  drupal-front-c32 db_us                      1185.833     1168.589    -1.45     [-3.29, +0.38]   3.29    6/8  PASS
+null  drupal-front-c32 p50_ms                       89.312       86.688    -2.90     [-5.94, +0.15]   5.94    7/8  NOISY
+null  drupal-front-c32 p99_ms                      119.598      118.464    -0.90     [-5.49, +3.68]   5.49    6/8  NOISY
+null  drupal-front-c32 rps                         355.613      363.462    +2.24     [-0.80, +5.27]   5.27    7/8  NOISY
+ab    drupal-front-c32 server_us                  2728.056     3488.642   +27.89   [+25.82, +29.95]   4.40    8/8  CLAIM
+ab    drupal-front-c32 db_us                      1178.520     1167.409    -0.94     [-2.56, +0.67]   3.29    7/8  NO CLAIM
+ab    drupal-front-c32 p50_ms                       87.441       70.020   -19.92   [-22.24, -17.61]   5.94    8/8  NOISY
+ab    drupal-front-c32 p99_ms                      118.798      102.704   -13.54   [-15.84, -11.25]   5.49    8/8  NOISY
+ab    drupal-front-c32 rps                         361.601      284.151   -21.41   [-23.47, -19.35]   5.27    8/8  NOISY

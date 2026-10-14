@@ -1,0 +1,13 @@
+CLAIM wp-front-c32: B is 5.3 percent more server CPU per request (us), outside the null band of 2.6, 8 of 8 cells agree
+job 88-arm-wp-front-master-vs-apache  run 88-arm-wp-front-master-vs-apache-fu-build-arm-20261014T015311Z  A None ()  B None ()  governor unknown/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  wp-front-c32   server_us                 90406.965    90644.988    +0.27     [-2.08, +2.61]   2.61    5/8  PASS
+null  wp-front-c32   db_us                      4623.956     4581.559    -0.89     [-6.78, +4.99]   6.78    4/8  NOISY
+null  wp-front-c32   p50_ms                     2574.360     2593.351    +0.75     [-2.99, +4.49]   4.49    5/8  PASS
+null  wp-front-c32   p99_ms                     4838.571     4863.285    +0.52     [-1.93, +2.97]   2.97    5/8  PASS
+null  wp-front-c32   rps                          11.074       11.040    -0.30     [-2.64, +2.04]   2.64    5/8  PASS
+ab    wp-front-c32   server_us                 92140.786    97041.907    +5.34     [+3.49, +7.18]   2.61    8/8  CLAIM
+ab    wp-front-c32   db_us                      4760.477     4762.953    +0.10     [-3.60, +3.81]   6.78    3/8  NOISY
+ab    wp-front-c32   p50_ms                     2627.678     1568.212   -40.29   [-42.90, -37.69]   4.49    8/8  CLAIM
+ab    wp-front-c32   p99_ms                     4915.113     7720.268   +57.14   [+54.96, +59.31]   2.97    8/8  CLAIM
+ab    wp-front-c32   rps                          10.871       10.314    -5.11     [-6.85, -3.38]   2.64    8/8  CLAIM

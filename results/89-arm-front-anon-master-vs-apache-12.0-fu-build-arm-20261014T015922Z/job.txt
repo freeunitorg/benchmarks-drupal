@@ -1,0 +1,21 @@
+# Drupal 12 against master on the A1 host, same caveat as 88.
+JOB=89-arm-front-anon-master-vs-apache-12.0
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-master
+RUNTIME_B=apache
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="mod_php costs more per request than the alternative"
+FALSIFY="a delta inside the null band, or Apache cheaper"

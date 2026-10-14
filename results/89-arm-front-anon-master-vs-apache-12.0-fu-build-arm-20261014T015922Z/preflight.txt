@@ -1,0 +1,840 @@
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=7166 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=7230 unit: controller                                            
+  pid=7231 unit: router                                                
+  pid=7232 unit: "drupal" prototype                                    
+  pid=7233 unit: "drupal" application                                  
+  pid=7234 unit: "drupal" application                                  
+  pid=7235 unit: "drupal" application                                  
+  pid=7236 unit: "drupal" application                                  
+  pid=7237 unit: "drupal" application                                  
+  pid=7238 unit: "drupal" application                                  
+  pid=7239 unit: "drupal" application                                  
+  pid=7240 unit: "drupal" application                                  
+  pid=7241 unit: "drupal" application                                  
+  pid=7242 unit: "drupal" application                                  
+  pid=7243 unit: "drupal" application                                  
+  pid=7244 unit: "drupal" application                                  
+  pid=7245 unit: "drupal" application                                  
+  pid=7246 unit: "drupal" application                                  
+  pid=7247 unit: "drupal" application                                  
+  pid=7248 unit: "drupal" application                                  
+  pid=7249 unit: "drupal" application                                  
+  pid=7250 unit: "drupal" application                                  
+  pid=7251 unit: "drupal" application                                  
+  pid=7252 unit: "drupal" application                                  
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=7533 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=7598 unit: controller                                            
+  pid=7599 unit: router                                                
+  pid=7600 unit: "drupal" prototype                                    
+  pid=7601 unit: "drupal" application                                  
+  pid=7602 unit: "drupal" application                                  
+  pid=7603 unit: "drupal" application                                  
+  pid=7604 unit: "drupal" application                                  
+  pid=7605 unit: "drupal" application                                  
+  pid=7606 unit: "drupal" application                                  
+  pid=7607 unit: "drupal" application                                  
+  pid=7608 unit: "drupal" application                                  
+  pid=7609 unit: "drupal" application                                  
+  pid=7610 unit: "drupal" application                                  
+  pid=7611 unit: "drupal" application                                  
+  pid=7612 unit: "drupal" application                                  
+  pid=7613 unit: "drupal" application                                  
+  pid=7614 unit: "drupal" application                                  
+  pid=7615 unit: "drupal" application                                  
+  pid=7616 unit: "drupal" application                                  
+  pid=7617 unit: "drupal" application                                  
+  pid=7618 unit: "drupal" application                                  
+  pid=7619 unit: "drupal" application                                  
+  pid=7620 unit: "drupal" application                                  
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=7883 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=7945 unit: controller                                            
+  pid=7946 unit: router                                                
+  pid=7947 unit: "drupal" prototype                                    
+  pid=7948 unit: "drupal" application                                  
+  pid=7949 unit: "drupal" application                                  
+  pid=7950 unit: "drupal" application                                  
+  pid=7951 unit: "drupal" application                                  
+  pid=7952 unit: "drupal" application                                  
+  pid=7953 unit: "drupal" application                                  
+  pid=7954 unit: "drupal" application                                  
+  pid=7955 unit: "drupal" application                                  
+  pid=7956 unit: "drupal" application                                  
+  pid=7957 unit: "drupal" application                                  
+  pid=7958 unit: "drupal" application                                  
+  pid=7959 unit: "drupal" application                                  
+  pid=7960 unit: "drupal" application                                  
+  pid=7961 unit: "drupal" application                                  
+  pid=7962 unit: "drupal" application                                  
+  pid=7963 unit: "drupal" application                                  
+  pid=7964 unit: "drupal" application                                  
+  pid=7965 unit: "drupal" application                                  
+  pid=7966 unit: "drupal" application                                  
+  pid=7967 unit: "drupal" application                                  
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=8227 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=8288 unit: controller                                            
+  pid=8289 unit: router                                                
+  pid=8291 unit: "drupal" prototype                                    
+  pid=8292 unit: "drupal" application                                  
+  pid=8293 unit: "drupal" application                                  
+  pid=8294 unit: "drupal" application                                  
+  pid=8295 unit: "drupal" application                                  
+  pid=8296 unit: "drupal" application                                  
+  pid=8297 unit: "drupal" application                                  
+  pid=8298 unit: "drupal" application                                  
+  pid=8299 unit: "drupal" application                                  
+  pid=8300 unit: "drupal" application                                  
+  pid=8301 unit: "drupal" application                                  
+  pid=8302 unit: "drupal" application                                  
+  pid=8303 unit: "drupal" application                                  
+  pid=8304 unit: "drupal" application                                  
+  pid=8305 unit: "drupal" application                                  
+  pid=8306 unit: "drupal" application                                  
+  pid=8307 unit: "drupal" application                                  
+  pid=8308 unit: "drupal" application                                  
+  pid=8309 unit: "drupal" application                                  
+  pid=8310 unit: "drupal" application                                  
+  pid=8311 unit: "drupal" application                                  
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=8579 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=8643 unit: controller                                            
+  pid=8644 unit: router                                                
+  pid=8645 unit: "drupal" prototype                                    
+  pid=8646 unit: "drupal" application                                  
+  pid=8647 unit: "drupal" application                                  
+  pid=8648 unit: "drupal" application                                  
+  pid=8649 unit: "drupal" application                                  
+  pid=8650 unit: "drupal" application                                  
+  pid=8651 unit: "drupal" application                                  
+  pid=8652 unit: "drupal" application                                  
+  pid=8653 unit: "drupal" application                                  
+  pid=8654 unit: "drupal" application                                  
+  pid=8655 unit: "drupal" application                                  
+  pid=8656 unit: "drupal" application                                  
+  pid=8657 unit: "drupal" application                                  
+  pid=8658 unit: "drupal" application                                  
+  pid=8659 unit: "drupal" application                                  
+  pid=8660 unit: "drupal" application                                  
+  pid=8661 unit: "drupal" application                                  
+  pid=8662 unit: "drupal" application                                  
+  pid=8663 unit: "drupal" application                                  
+  pid=8664 unit: "drupal" application                                  
+  pid=8665 unit: "drupal" application                                  
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=8930 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=8991 unit: controller                                            
+  pid=8993 unit: router                                                
+  pid=8994 unit: "drupal" prototype                                    
+  pid=8995 unit: "drupal" application                                  
+  pid=8996 unit: "drupal" application                                  
+  pid=8997 unit: "drupal" application                                  
+  pid=8998 unit: "drupal" application                                  
+  pid=8999 unit: "drupal" application                                  
+  pid=9000 unit: "drupal" application                                  
+  pid=9001 unit: "drupal" application                                  
+  pid=9002 unit: "drupal" application                                  
+  pid=9003 unit: "drupal" application                                  
+  pid=9004 unit: "drupal" application                                  
+  pid=9005 unit: "drupal" application                                  
+  pid=9006 unit: "drupal" application                                  
+  pid=9007 unit: "drupal" application                                  
+  pid=9008 unit: "drupal" application                                  
+  pid=9009 unit: "drupal" application                                  
+  pid=9010 unit: "drupal" application                                  
+  pid=9011 unit: "drupal" application                                  
+  pid=9012 unit: "drupal" application                                  
+  pid=9013 unit: "drupal" application                                  
+  pid=9014 unit: "drupal" application                                  
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=9279 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=9340 unit: controller                                            
+  pid=9341 unit: router                                                
+  pid=9343 unit: "drupal" prototype                                    
+  pid=9344 unit: "drupal" application                                  
+  pid=9345 unit: "drupal" application                                  
+  pid=9346 unit: "drupal" application                                  
+  pid=9347 unit: "drupal" application                                  
+  pid=9348 unit: "drupal" application                                  
+  pid=9349 unit: "drupal" application                                  
+  pid=9350 unit: "drupal" application                                  
+  pid=9351 unit: "drupal" application                                  
+  pid=9352 unit: "drupal" application                                  
+  pid=9353 unit: "drupal" application                                  
+  pid=9354 unit: "drupal" application                                  
+  pid=9355 unit: "drupal" application                                  
+  pid=9356 unit: "drupal" application                                  
+  pid=9357 unit: "drupal" application                                  
+  pid=9358 unit: "drupal" application                                  
+  pid=9359 unit: "drupal" application                                  
+  pid=9360 unit: "drupal" application                                  
+  pid=9361 unit: "drupal" application                                  
+  pid=9362 unit: "drupal" application                                  
+  pid=9363 unit: "drupal" application                                  
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=9626 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=9691 unit: controller                                            
+  pid=9692 unit: router                                                
+  pid=9693 unit: "drupal" prototype                                    
+  pid=9694 unit: "drupal" application                                  
+  pid=9695 unit: "drupal" application                                  
+  pid=9696 unit: "drupal" application                                  
+  pid=9697 unit: "drupal" application                                  
+  pid=9698 unit: "drupal" application                                  
+  pid=9699 unit: "drupal" application                                  
+  pid=9700 unit: "drupal" application                                  
+  pid=9701 unit: "drupal" application                                  
+  pid=9702 unit: "drupal" application                                  
+  pid=9703 unit: "drupal" application                                  
+  pid=9704 unit: "drupal" application                                  
+  pid=9705 unit: "drupal" application                                  
+  pid=9706 unit: "drupal" application                                  
+  pid=9707 unit: "drupal" application                                  
+  pid=9708 unit: "drupal" application                                  
+  pid=9709 unit: "drupal" application                                  
+  pid=9710 unit: "drupal" application                                  
+  pid=9711 unit: "drupal" application                                  
+  pid=9712 unit: "drupal" application                                  
+  pid=9713 unit: "drupal" application                                  
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=9973 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=10035 unit: controller                                            
+  pid=10036 unit: router                                                
+  pid=10037 unit: "drupal" prototype                                    
+  pid=10038 unit: "drupal" application                                  
+  pid=10039 unit: "drupal" application                                  
+  pid=10040 unit: "drupal" application                                  
+  pid=10041 unit: "drupal" application                                  
+  pid=10042 unit: "drupal" application                                  
+  pid=10043 unit: "drupal" application                                  
+  pid=10044 unit: "drupal" application                                  
+  pid=10045 unit: "drupal" application                                  
+  pid=10046 unit: "drupal" application                                  
+  pid=10047 unit: "drupal" application                                  
+  pid=10048 unit: "drupal" application                                  
+  pid=10049 unit: "drupal" application                                  
+  pid=10050 unit: "drupal" application                                  
+  pid=10051 unit: "drupal" application                                  
+  pid=10052 unit: "drupal" application                                  
+  pid=10053 unit: "drupal" application                                  
+  pid=10054 unit: "drupal" application                                  
+  pid=10055 unit: "drupal" application                                  
+  pid=10056 unit: "drupal" application                                  
+  pid=10057 unit: "drupal" application                                  
+runtime=rt-6847-apache url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=10335 apache2 -DFOREGROUND 
+  pid=10405 apache2 -DFOREGROUND 
+  pid=10406 apache2 -DFOREGROUND 
+  pid=10407 apache2 -DFOREGROUND 
+  pid=10408 apache2 -DFOREGROUND 
+  pid=10409 apache2 -DFOREGROUND 
+  pid=10410 apache2 -DFOREGROUND 
+  pid=10411 apache2 -DFOREGROUND 
+  pid=10412 apache2 -DFOREGROUND 
+  pid=10413 apache2 -DFOREGROUND 
+  pid=10414 apache2 -DFOREGROUND 
+  pid=10415 apache2 -DFOREGROUND 
+  pid=10416 apache2 -DFOREGROUND 
+  pid=10417 apache2 -DFOREGROUND 
+  pid=10418 apache2 -DFOREGROUND 
+  pid=10419 apache2 -DFOREGROUND 
+  pid=10420 apache2 -DFOREGROUND 
+  pid=10421 apache2 -DFOREGROUND 
+  pid=10422 apache2 -DFOREGROUND 
+  pid=10423 apache2 -DFOREGROUND 
+  pid=10424 apache2 -DFOREGROUND 
+runtime=rt-6847-apache url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=10676 apache2 -DFOREGROUND 
+  pid=10748 apache2 -DFOREGROUND 
+  pid=10749 apache2 -DFOREGROUND 
+  pid=10750 apache2 -DFOREGROUND 
+  pid=10751 apache2 -DFOREGROUND 
+  pid=10752 apache2 -DFOREGROUND 
+  pid=10753 apache2 -DFOREGROUND 
+  pid=10754 apache2 -DFOREGROUND 
+  pid=10755 apache2 -DFOREGROUND 
+  pid=10756 apache2 -DFOREGROUND 
+  pid=10757 apache2 -DFOREGROUND 
+  pid=10758 apache2 -DFOREGROUND 
+  pid=10759 apache2 -DFOREGROUND 
+  pid=10760 apache2 -DFOREGROUND 
+  pid=10761 apache2 -DFOREGROUND 
+  pid=10762 apache2 -DFOREGROUND 
+  pid=10763 apache2 -DFOREGROUND 
+  pid=10764 apache2 -DFOREGROUND 
+  pid=10765 apache2 -DFOREGROUND 
+  pid=10766 apache2 -DFOREGROUND 
+  pid=10767 apache2 -DFOREGROUND 
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=11022 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=11083 unit: controller                                            
+  pid=11084 unit: router                                                
+  pid=11087 unit: "drupal" prototype                                    
+  pid=11088 unit: "drupal" application                                  
+  pid=11089 unit: "drupal" application                                  
+  pid=11090 unit: "drupal" application                                  
+  pid=11091 unit: "drupal" application                                  
+  pid=11092 unit: "drupal" application                                  
+  pid=11093 unit: "drupal" application                                  
+  pid=11094 unit: "drupal" application                                  
+  pid=11095 unit: "drupal" application                                  
+  pid=11096 unit: "drupal" application                                  
+  pid=11097 unit: "drupal" application                                  
+  pid=11098 unit: "drupal" application                                  
+  pid=11099 unit: "drupal" application                                  
+  pid=11101 unit: "drupal" application                                  
+  pid=11102 unit: "drupal" application                                  
+  pid=11103 unit: "drupal" application                                  
+  pid=11104 unit: "drupal" application                                  
+  pid=11105 unit: "drupal" application                                  
+  pid=11106 unit: "drupal" application                                  
+  pid=11107 unit: "drupal" application                                  
+  pid=11108 unit: "drupal" application                                  
+runtime=rt-6847-apache url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=11365 apache2 -DFOREGROUND 
+  pid=11435 apache2 -DFOREGROUND 
+  pid=11436 apache2 -DFOREGROUND 
+  pid=11437 apache2 -DFOREGROUND 
+  pid=11438 apache2 -DFOREGROUND 
+  pid=11439 apache2 -DFOREGROUND 
+  pid=11440 apache2 -DFOREGROUND 
+  pid=11441 apache2 -DFOREGROUND 
+  pid=11442 apache2 -DFOREGROUND 
+  pid=11443 apache2 -DFOREGROUND 
+  pid=11444 apache2 -DFOREGROUND 
+  pid=11445 apache2 -DFOREGROUND 
+  pid=11446 apache2 -DFOREGROUND 
+  pid=11447 apache2 -DFOREGROUND 
+  pid=11448 apache2 -DFOREGROUND 
+  pid=11449 apache2 -DFOREGROUND 
+  pid=11450 apache2 -DFOREGROUND 
+  pid=11451 apache2 -DFOREGROUND 
+  pid=11452 apache2 -DFOREGROUND 
+  pid=11453 apache2 -DFOREGROUND 
+  pid=11454 apache2 -DFOREGROUND 
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=11711 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=11773 unit: controller                                            
+  pid=11774 unit: router                                                
+  pid=11775 unit: "drupal" prototype                                    
+  pid=11776 unit: "drupal" application                                  
+  pid=11777 unit: "drupal" application                                  
+  pid=11778 unit: "drupal" application                                  
+  pid=11779 unit: "drupal" application                                  
+  pid=11780 unit: "drupal" application                                  
+  pid=11781 unit: "drupal" application                                  
+  pid=11782 unit: "drupal" application                                  
+  pid=11783 unit: "drupal" application                                  
+  pid=11784 unit: "drupal" application                                  
+  pid=11785 unit: "drupal" application                                  
+  pid=11786 unit: "drupal" application                                  
+  pid=11787 unit: "drupal" application                                  
+  pid=11788 unit: "drupal" application                                  
+  pid=11789 unit: "drupal" application                                  
+  pid=11790 unit: "drupal" application                                  
+  pid=11791 unit: "drupal" application                                  
+  pid=11792 unit: "drupal" application                                  
+  pid=11793 unit: "drupal" application                                  
+  pid=11794 unit: "drupal" application                                  
+  pid=11795 unit: "drupal" application                                  
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=12055 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=12122 unit: controller                                            
+  pid=12123 unit: router                                                
+  pid=12124 unit: "drupal" prototype                                    
+  pid=12125 unit: "drupal" application                                  
+  pid=12126 unit: "drupal" application                                  
+  pid=12127 unit: "drupal" application                                  
+  pid=12128 unit: "drupal" application                                  
+  pid=12129 unit: "drupal" application                                  
+  pid=12130 unit: "drupal" application                                  
+  pid=12131 unit: "drupal" application                                  
+  pid=12132 unit: "drupal" application                                  
+  pid=12133 unit: "drupal" application                                  
+  pid=12134 unit: "drupal" application                                  
+  pid=12135 unit: "drupal" application                                  
+  pid=12136 unit: "drupal" application                                  
+  pid=12137 unit: "drupal" application                                  
+  pid=12138 unit: "drupal" application                                  
+  pid=12139 unit: "drupal" application                                  
+  pid=12140 unit: "drupal" application                                  
+  pid=12141 unit: "drupal" application                                  
+  pid=12142 unit: "drupal" application                                  
+  pid=12143 unit: "drupal" application                                  
+  pid=12144 unit: "drupal" application                                  
+runtime=rt-6847-apache url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=12405 apache2 -DFOREGROUND 
+  pid=12479 apache2 -DFOREGROUND 
+  pid=12480 apache2 -DFOREGROUND 
+  pid=12481 apache2 -DFOREGROUND 
+  pid=12482 apache2 -DFOREGROUND 
+  pid=12483 apache2 -DFOREGROUND 
+  pid=12484 apache2 -DFOREGROUND 
+  pid=12485 apache2 -DFOREGROUND 
+  pid=12486 apache2 -DFOREGROUND 
+  pid=12487 apache2 -DFOREGROUND 
+  pid=12488 apache2 -DFOREGROUND 
+  pid=12489 apache2 -DFOREGROUND 
+  pid=12490 apache2 -DFOREGROUND 
+  pid=12491 apache2 -DFOREGROUND 
+  pid=12492 apache2 -DFOREGROUND 
+  pid=12493 apache2 -DFOREGROUND 
+  pid=12494 apache2 -DFOREGROUND 
+  pid=12495 apache2 -DFOREGROUND 
+  pid=12496 apache2 -DFOREGROUND 
+  pid=12497 apache2 -DFOREGROUND 
+  pid=12498 apache2 -DFOREGROUND 
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=12753 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=12816 unit: controller                                            
+  pid=12817 unit: router                                                
+  pid=12819 unit: "drupal" prototype                                    
+  pid=12820 unit: "drupal" application                                  
+  pid=12821 unit: "drupal" application                                  
+  pid=12822 unit: "drupal" application                                  
+  pid=12823 unit: "drupal" application                                  
+  pid=12824 unit: "drupal" application                                  
+  pid=12825 unit: "drupal" application                                  
+  pid=12826 unit: "drupal" application                                  
+  pid=12827 unit: "drupal" application                                  
+  pid=12828 unit: "drupal" application                                  
+  pid=12829 unit: "drupal" application                                  
+  pid=12830 unit: "drupal" application                                  
+  pid=12831 unit: "drupal" application                                  
+  pid=12832 unit: "drupal" application                                  
+  pid=12833 unit: "drupal" application                                  
+  pid=12834 unit: "drupal" application                                  
+  pid=12835 unit: "drupal" application                                  
+  pid=12836 unit: "drupal" application                                  
+  pid=12837 unit: "drupal" application                                  
+  pid=12838 unit: "drupal" application                                  
+  pid=12839 unit: "drupal" application                                  
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=13102 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=13164 unit: controller                                            
+  pid=13165 unit: router                                                
+  pid=13166 unit: "drupal" prototype                                    
+  pid=13167 unit: "drupal" application                                  
+  pid=13168 unit: "drupal" application                                  
+  pid=13169 unit: "drupal" application                                  
+  pid=13170 unit: "drupal" application                                  
+  pid=13171 unit: "drupal" application                                  
+  pid=13172 unit: "drupal" application                                  
+  pid=13173 unit: "drupal" application                                  
+  pid=13174 unit: "drupal" application                                  
+  pid=13175 unit: "drupal" application                                  
+  pid=13176 unit: "drupal" application                                  
+  pid=13177 unit: "drupal" application                                  
+  pid=13178 unit: "drupal" application                                  
+  pid=13179 unit: "drupal" application                                  
+  pid=13180 unit: "drupal" application                                  
+  pid=13181 unit: "drupal" application                                  
+  pid=13182 unit: "drupal" application                                  
+  pid=13183 unit: "drupal" application                                  
+  pid=13184 unit: "drupal" application                                  
+  pid=13185 unit: "drupal" application                                  
+  pid=13186 unit: "drupal" application                                  
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=13453 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=13517 unit: controller                                            
+  pid=13518 unit: router                                                
+  pid=13519 unit: "drupal" prototype                                    
+  pid=13520 unit: "drupal" application                                  
+  pid=13521 unit: "drupal" application                                  
+  pid=13522 unit: "drupal" application                                  
+  pid=13523 unit: "drupal" application                                  
+  pid=13524 unit: "drupal" application                                  
+  pid=13525 unit: "drupal" application                                  
+  pid=13526 unit: "drupal" application                                  
+  pid=13527 unit: "drupal" application                                  
+  pid=13528 unit: "drupal" application                                  
+  pid=13529 unit: "drupal" application                                  
+  pid=13530 unit: "drupal" application                                  
+  pid=13531 unit: "drupal" application                                  
+  pid=13532 unit: "drupal" application                                  
+  pid=13533 unit: "drupal" application                                  
+  pid=13534 unit: "drupal" application                                  
+  pid=13535 unit: "drupal" application                                  
+  pid=13536 unit: "drupal" application                                  
+  pid=13537 unit: "drupal" application                                  
+  pid=13538 unit: "drupal" application                                  
+  pid=13539 unit: "drupal" application                                  
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=13802 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=13867 unit: controller                                            
+  pid=13868 unit: router                                                
+  pid=13869 unit: "drupal" prototype                                    
+  pid=13870 unit: "drupal" application                                  
+  pid=13871 unit: "drupal" application                                  
+  pid=13872 unit: "drupal" application                                  
+  pid=13873 unit: "drupal" application                                  
+  pid=13874 unit: "drupal" application                                  
+  pid=13875 unit: "drupal" application                                  
+  pid=13876 unit: "drupal" application                                  
+  pid=13877 unit: "drupal" application                                  
+  pid=13878 unit: "drupal" application                                  
+  pid=13879 unit: "drupal" application                                  
+  pid=13880 unit: "drupal" application                                  
+  pid=13881 unit: "drupal" application                                  
+  pid=13882 unit: "drupal" application                                  
+  pid=13883 unit: "drupal" application                                  
+  pid=13884 unit: "drupal" application                                  
+  pid=13885 unit: "drupal" application                                  
+  pid=13886 unit: "drupal" application                                  
+  pid=13887 unit: "drupal" application                                  
+  pid=13888 unit: "drupal" application                                  
+  pid=13889 unit: "drupal" application                                  
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=14152 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=14214 unit: controller                                            
+  pid=14216 unit: router                                                
+  pid=14217 unit: "drupal" prototype                                    
+  pid=14218 unit: "drupal" application                                  
+  pid=14219 unit: "drupal" application                                  
+  pid=14220 unit: "drupal" application                                  
+  pid=14221 unit: "drupal" application                                  
+  pid=14222 unit: "drupal" application                                  
+  pid=14223 unit: "drupal" application                                  
+  pid=14224 unit: "drupal" application                                  
+  pid=14225 unit: "drupal" application                                  
+  pid=14226 unit: "drupal" application                                  
+  pid=14227 unit: "drupal" application                                  
+  pid=14228 unit: "drupal" application                                  
+  pid=14229 unit: "drupal" application                                  
+  pid=14230 unit: "drupal" application                                  
+  pid=14231 unit: "drupal" application                                  
+  pid=14232 unit: "drupal" application                                  
+  pid=14233 unit: "drupal" application                                  
+  pid=14234 unit: "drupal" application                                  
+  pid=14235 unit: "drupal" application                                  
+  pid=14236 unit: "drupal" application                                  
+  pid=14237 unit: "drupal" application                                  
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=14498 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=14561 unit: controller                                            
+  pid=14562 unit: router                                                
+  pid=14563 unit: "drupal" prototype                                    
+  pid=14564 unit: "drupal" application                                  
+  pid=14565 unit: "drupal" application                                  
+  pid=14566 unit: "drupal" application                                  
+  pid=14567 unit: "drupal" application                                  
+  pid=14568 unit: "drupal" application                                  
+  pid=14569 unit: "drupal" application                                  
+  pid=14570 unit: "drupal" application                                  
+  pid=14571 unit: "drupal" application                                  
+  pid=14572 unit: "drupal" application                                  
+  pid=14573 unit: "drupal" application                                  
+  pid=14574 unit: "drupal" application                                  
+  pid=14575 unit: "drupal" application                                  
+  pid=14576 unit: "drupal" application                                  
+  pid=14577 unit: "drupal" application                                  
+  pid=14578 unit: "drupal" application                                  
+  pid=14579 unit: "drupal" application                                  
+  pid=14580 unit: "drupal" application                                  
+  pid=14581 unit: "drupal" application                                  
+  pid=14582 unit: "drupal" application                                  
+  pid=14583 unit: "drupal" application                                  
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=14845 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=14909 unit: controller                                            
+  pid=14910 unit: router                                                
+  pid=14911 unit: "drupal" prototype                                    
+  pid=14912 unit: "drupal" application                                  
+  pid=14913 unit: "drupal" application                                  
+  pid=14914 unit: "drupal" application                                  
+  pid=14915 unit: "drupal" application                                  
+  pid=14916 unit: "drupal" application                                  
+  pid=14917 unit: "drupal" application                                  
+  pid=14918 unit: "drupal" application                                  
+  pid=14919 unit: "drupal" application                                  
+  pid=14920 unit: "drupal" application                                  
+  pid=14921 unit: "drupal" application                                  
+  pid=14922 unit: "drupal" application                                  
+  pid=14923 unit: "drupal" application                                  
+  pid=14924 unit: "drupal" application                                  
+  pid=14925 unit: "drupal" application                                  
+  pid=14926 unit: "drupal" application                                  
+  pid=14927 unit: "drupal" application                                  
+  pid=14928 unit: "drupal" application                                  
+  pid=14929 unit: "drupal" application                                  
+  pid=14930 unit: "drupal" application                                  
+  pid=14931 unit: "drupal" application                                  
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=15193 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=15253 unit: controller                                            
+  pid=15254 unit: router                                                
+  pid=15256 unit: "drupal" prototype                                    
+  pid=15257 unit: "drupal" application                                  
+  pid=15258 unit: "drupal" application                                  
+  pid=15259 unit: "drupal" application                                  
+  pid=15260 unit: "drupal" application                                  
+  pid=15261 unit: "drupal" application                                  
+  pid=15262 unit: "drupal" application                                  
+  pid=15263 unit: "drupal" application                                  
+  pid=15264 unit: "drupal" application                                  
+  pid=15265 unit: "drupal" application                                  
+  pid=15266 unit: "drupal" application                                  
+  pid=15267 unit: "drupal" application                                  
+  pid=15268 unit: "drupal" application                                  
+  pid=15269 unit: "drupal" application                                  
+  pid=15270 unit: "drupal" application                                  
+  pid=15271 unit: "drupal" application                                  
+  pid=15272 unit: "drupal" application                                  
+  pid=15273 unit: "drupal" application                                  
+  pid=15274 unit: "drupal" application                                  
+  pid=15275 unit: "drupal" application                                  
+  pid=15276 unit: "drupal" application                                  
+runtime=rt-6847-apache url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=15535 apache2 -DFOREGROUND 
+  pid=15608 apache2 -DFOREGROUND 
+  pid=15609 apache2 -DFOREGROUND 
+  pid=15610 apache2 -DFOREGROUND 
+  pid=15611 apache2 -DFOREGROUND 
+  pid=15612 apache2 -DFOREGROUND 
+  pid=15613 apache2 -DFOREGROUND 
+  pid=15614 apache2 -DFOREGROUND 
+  pid=15615 apache2 -DFOREGROUND 
+  pid=15616 apache2 -DFOREGROUND 
+  pid=15617 apache2 -DFOREGROUND 
+  pid=15618 apache2 -DFOREGROUND 
+  pid=15619 apache2 -DFOREGROUND 
+  pid=15620 apache2 -DFOREGROUND 
+  pid=15621 apache2 -DFOREGROUND 
+  pid=15622 apache2 -DFOREGROUND 
+  pid=15623 apache2 -DFOREGROUND 
+  pid=15624 apache2 -DFOREGROUND 
+  pid=15625 apache2 -DFOREGROUND 
+  pid=15626 apache2 -DFOREGROUND 
+  pid=15627 apache2 -DFOREGROUND 
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=15881 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=15947 unit: controller                                            
+  pid=15948 unit: router                                                
+  pid=15949 unit: "drupal" prototype                                    
+  pid=15950 unit: "drupal" application                                  
+  pid=15951 unit: "drupal" application                                  
+  pid=15952 unit: "drupal" application                                  
+  pid=15953 unit: "drupal" application                                  
+  pid=15954 unit: "drupal" application                                  
+  pid=15955 unit: "drupal" application                                  
+  pid=15956 unit: "drupal" application                                  
+  pid=15957 unit: "drupal" application                                  
+  pid=15958 unit: "drupal" application                                  
+  pid=15959 unit: "drupal" application                                  
+  pid=15960 unit: "drupal" application                                  
+  pid=15961 unit: "drupal" application                                  
+  pid=15962 unit: "drupal" application                                  
+  pid=15963 unit: "drupal" application                                  
+  pid=15964 unit: "drupal" application                                  
+  pid=15965 unit: "drupal" application                                  
+  pid=15966 unit: "drupal" application                                  
+  pid=15967 unit: "drupal" application                                  
+  pid=15968 unit: "drupal" application                                  
+  pid=15969 unit: "drupal" application                                  
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=16232 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=16294 unit: controller                                            
+  pid=16295 unit: router                                                
+  pid=16296 unit: "drupal" prototype                                    
+  pid=16297 unit: "drupal" application                                  
+  pid=16298 unit: "drupal" application                                  
+  pid=16299 unit: "drupal" application                                  
+  pid=16300 unit: "drupal" application                                  
+  pid=16301 unit: "drupal" application                                  
+  pid=16302 unit: "drupal" application                                  
+  pid=16303 unit: "drupal" application                                  
+  pid=16304 unit: "drupal" application                                  
+  pid=16305 unit: "drupal" application                                  
+  pid=16306 unit: "drupal" application                                  
+  pid=16307 unit: "drupal" application                                  
+  pid=16308 unit: "drupal" application                                  
+  pid=16309 unit: "drupal" application                                  
+  pid=16310 unit: "drupal" application                                  
+  pid=16311 unit: "drupal" application                                  
+  pid=16312 unit: "drupal" application                                  
+  pid=16313 unit: "drupal" application                                  
+  pid=16314 unit: "drupal" application                                  
+  pid=16315 unit: "drupal" application                                  
+  pid=16316 unit: "drupal" application                                  
+runtime=rt-6847-apache url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=16579 apache2 -DFOREGROUND 
+  pid=16652 apache2 -DFOREGROUND 
+  pid=16653 apache2 -DFOREGROUND 
+  pid=16654 apache2 -DFOREGROUND 
+  pid=16655 apache2 -DFOREGROUND 
+  pid=16656 apache2 -DFOREGROUND 
+  pid=16657 apache2 -DFOREGROUND 
+  pid=16658 apache2 -DFOREGROUND 
+  pid=16659 apache2 -DFOREGROUND 
+  pid=16660 apache2 -DFOREGROUND 
+  pid=16661 apache2 -DFOREGROUND 
+  pid=16662 apache2 -DFOREGROUND 
+  pid=16663 apache2 -DFOREGROUND 
+  pid=16664 apache2 -DFOREGROUND 
+  pid=16665 apache2 -DFOREGROUND 
+  pid=16666 apache2 -DFOREGROUND 
+  pid=16667 apache2 -DFOREGROUND 
+  pid=16668 apache2 -DFOREGROUND 
+  pid=16669 apache2 -DFOREGROUND 
+  pid=16670 apache2 -DFOREGROUND 
+  pid=16671 apache2 -DFOREGROUND 
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=16927 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=16989 unit: controller                                            
+  pid=16990 unit: router                                                
+  pid=16992 unit: "drupal" prototype                                    
+  pid=16993 unit: "drupal" application                                  
+  pid=16994 unit: "drupal" application                                  
+  pid=16995 unit: "drupal" application                                  
+  pid=16996 unit: "drupal" application                                  
+  pid=16997 unit: "drupal" application                                  
+  pid=16998 unit: "drupal" application                                  
+  pid=16999 unit: "drupal" application                                  
+  pid=17000 unit: "drupal" application                                  
+  pid=17001 unit: "drupal" application                                  
+  pid=17002 unit: "drupal" application                                  
+  pid=17003 unit: "drupal" application                                  
+  pid=17004 unit: "drupal" application                                  
+  pid=17005 unit: "drupal" application                                  
+  pid=17006 unit: "drupal" application                                  
+  pid=17007 unit: "drupal" application                                  
+  pid=17008 unit: "drupal" application                                  
+  pid=17009 unit: "drupal" application                                  
+  pid=17010 unit: "drupal" application                                  
+  pid=17011 unit: "drupal" application                                  
+  pid=17012 unit: "drupal" application                                  
+runtime=rt-6847-apache url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=17271 apache2 -DFOREGROUND 
+  pid=17354 apache2 -DFOREGROUND 
+  pid=17355 apache2 -DFOREGROUND 
+  pid=17356 apache2 -DFOREGROUND 
+  pid=17357 apache2 -DFOREGROUND 
+  pid=17358 apache2 -DFOREGROUND 
+  pid=17359 apache2 -DFOREGROUND 
+  pid=17360 apache2 -DFOREGROUND 
+  pid=17361 apache2 -DFOREGROUND 
+  pid=17362 apache2 -DFOREGROUND 
+  pid=17363 apache2 -DFOREGROUND 
+  pid=17364 apache2 -DFOREGROUND 
+  pid=17365 apache2 -DFOREGROUND 
+  pid=17366 apache2 -DFOREGROUND 
+  pid=17367 apache2 -DFOREGROUND 
+  pid=17368 apache2 -DFOREGROUND 
+  pid=17369 apache2 -DFOREGROUND 
+  pid=17370 apache2 -DFOREGROUND 
+  pid=17371 apache2 -DFOREGROUND 
+  pid=17372 apache2 -DFOREGROUND 
+  pid=17373 apache2 -DFOREGROUND 
+runtime=rt-6847-apache url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=17632 apache2 -DFOREGROUND 
+  pid=17703 apache2 -DFOREGROUND 
+  pid=17704 apache2 -DFOREGROUND 
+  pid=17705 apache2 -DFOREGROUND 
+  pid=17706 apache2 -DFOREGROUND 
+  pid=17707 apache2 -DFOREGROUND 
+  pid=17708 apache2 -DFOREGROUND 
+  pid=17709 apache2 -DFOREGROUND 
+  pid=17710 apache2 -DFOREGROUND 
+  pid=17711 apache2 -DFOREGROUND 
+  pid=17712 apache2 -DFOREGROUND 
+  pid=17713 apache2 -DFOREGROUND 
+  pid=17714 apache2 -DFOREGROUND 
+  pid=17715 apache2 -DFOREGROUND 
+  pid=17716 apache2 -DFOREGROUND 
+  pid=17717 apache2 -DFOREGROUND 
+  pid=17718 apache2 -DFOREGROUND 
+  pid=17719 apache2 -DFOREGROUND 
+  pid=17720 apache2 -DFOREGROUND 
+  pid=17721 apache2 -DFOREGROUND 
+  pid=17722 apache2 -DFOREGROUND 
+runtime=rt-6847-freeunit-master url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=17982 unit: main v1.37.0 [unitd --no-daemon --control unix:/var/run/control.unit.sock] 
+  pid=18044 unit: controller                                            
+  pid=18045 unit: router                                                
+  pid=18047 unit: "drupal" prototype                                    
+  pid=18048 unit: "drupal" application                                  
+  pid=18049 unit: "drupal" application                                  
+  pid=18050 unit: "drupal" application                                  
+  pid=18051 unit: "drupal" application                                  
+  pid=18052 unit: "drupal" application                                  
+  pid=18053 unit: "drupal" application                                  
+  pid=18054 unit: "drupal" application                                  
+  pid=18055 unit: "drupal" application                                  
+  pid=18056 unit: "drupal" application                                  
+  pid=18057 unit: "drupal" application                                  
+  pid=18058 unit: "drupal" application                                  
+  pid=18059 unit: "drupal" application                                  
+  pid=18060 unit: "drupal" application                                  
+  pid=18061 unit: "drupal" application                                  
+  pid=18062 unit: "drupal" application                                  
+  pid=18063 unit: "drupal" application                                  
+  pid=18064 unit: "drupal" application                                  
+  pid=18065 unit: "drupal" application                                  
+  pid=18066 unit: "drupal" application                                  
+  pid=18067 unit: "drupal" application                                  

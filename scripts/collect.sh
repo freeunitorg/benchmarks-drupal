@@ -25,7 +25,9 @@ trap 'rm -rf "$TMP"' EXIT
 COLLECT_ONLY=${COLLECT_ONLY:-}
 
 echo "collect: listing runs on $HOST${COLLECT_ONLY:+ (only: $COLLECT_ONLY)}"
-ssh "$HOST" "find $REMOTE_ROOT/run -maxdepth 1 -mindepth 1 -type d -printf '%f\n'" 2>/dev/null | grep -E '^[0-9]' > "$TMP/runs" || true
+# ls, not find -printf: the A1 box is Alpine, whose busybox find has no -printf, so
+# every collection from there silently found zero runs.
+ssh "$HOST" "ls -1 $REMOTE_ROOT/run" 2>/dev/null | grep -E '^[0-9]' > "$TMP/runs" || true
 if [ -n "$COLLECT_ONLY" ]; then
     : > "$TMP/keep"
     while read -r run; do

@@ -1,0 +1,23 @@
+# WordPress against Apache+mod_php on the Ampere A1 host.  No PMU in that guest, so
+# PERF=0 and the primary metric is the server's own CPU time per request; one core for
+# the server and one for the load generator.
+JOB=83-arm-wp-front-freeunit-vs-apache
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=wp-front
+RUNTIME_A=freeunit
+RUNTIME_B=apache
+SITE=wp
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="mod_php costs more per request than the alternative"
+FALSIFY="a delta inside the null band, or Apache cheaper"

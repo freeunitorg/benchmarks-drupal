@@ -1,0 +1,864 @@
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=16083 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=16146 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=16147 nginx: master process nginx -g daemon off; 
+  pid=16149 nginx: worker process 
+  pid=16150 nginx: worker process 
+  pid=16151 php-fpm: pool www                                              
+  pid=16152 php-fpm: pool www                                              
+  pid=16153 php-fpm: pool www                                              
+  pid=16154 php-fpm: pool www                                              
+  pid=16155 php-fpm: pool www                                              
+  pid=16156 php-fpm: pool www                                              
+  pid=16157 php-fpm: pool www                                              
+  pid=16158 php-fpm: pool www                                              
+  pid=16159 php-fpm: pool www                                              
+  pid=16160 php-fpm: pool www                                              
+  pid=16161 php-fpm: pool www                                              
+  pid=16162 php-fpm: pool www                                              
+  pid=16163 php-fpm: pool www                                              
+  pid=16164 php-fpm: pool www                                              
+  pid=16165 php-fpm: pool www                                              
+  pid=16166 php-fpm: pool www                                              
+  pid=16167 php-fpm: pool www                                              
+  pid=16168 php-fpm: pool www                                              
+  pid=16169 php-fpm: pool www                                              
+  pid=16170 php-fpm: pool www                                              
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=16456 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=16511 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=16512 nginx: master process nginx -g daemon off; 
+  pid=16515 nginx: worker process 
+  pid=16518 nginx: worker process 
+  pid=16520 php-fpm: pool www                                              
+  pid=16521 php-fpm: pool www                                              
+  pid=16522 php-fpm: pool www                                              
+  pid=16523 php-fpm: pool www                                              
+  pid=16524 php-fpm: pool www                                              
+  pid=16525 php-fpm: pool www                                              
+  pid=16526 php-fpm: pool www                                              
+  pid=16527 php-fpm: pool www                                              
+  pid=16528 php-fpm: pool www                                              
+  pid=16529 php-fpm: pool www                                              
+  pid=16530 php-fpm: pool www                                              
+  pid=16531 php-fpm: pool www                                              
+  pid=16532 php-fpm: pool www                                              
+  pid=16533 php-fpm: pool www                                              
+  pid=16534 php-fpm: pool www                                              
+  pid=16535 php-fpm: pool www                                              
+  pid=16536 php-fpm: pool www                                              
+  pid=16537 php-fpm: pool www                                              
+  pid=16538 php-fpm: pool www                                              
+  pid=16539 php-fpm: pool www                                              
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=16803 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=16860 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=16861 nginx: master process nginx -g daemon off; 
+  pid=16867 nginx: worker process 
+  pid=16868 nginx: worker process 
+  pid=16870 php-fpm: pool www                                              
+  pid=16871 php-fpm: pool www                                              
+  pid=16872 php-fpm: pool www                                              
+  pid=16873 php-fpm: pool www                                              
+  pid=16874 php-fpm: pool www                                              
+  pid=16875 php-fpm: pool www                                              
+  pid=16876 php-fpm: pool www                                              
+  pid=16877 php-fpm: pool www                                              
+  pid=16878 php-fpm: pool www                                              
+  pid=16879 php-fpm: pool www                                              
+  pid=16880 php-fpm: pool www                                              
+  pid=16881 php-fpm: pool www                                              
+  pid=16882 php-fpm: pool www                                              
+  pid=16883 php-fpm: pool www                                              
+  pid=16884 php-fpm: pool www                                              
+  pid=16885 php-fpm: pool www                                              
+  pid=16886 php-fpm: pool www                                              
+  pid=16887 php-fpm: pool www                                              
+  pid=16888 php-fpm: pool www                                              
+  pid=16889 php-fpm: pool www                                              
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=17156 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=17213 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=17214 nginx: master process nginx -g daemon off; 
+  pid=17220 nginx: worker process 
+  pid=17221 nginx: worker process 
+  pid=17222 php-fpm: pool www                                              
+  pid=17223 php-fpm: pool www                                              
+  pid=17224 php-fpm: pool www                                              
+  pid=17225 php-fpm: pool www                                              
+  pid=17226 php-fpm: pool www                                              
+  pid=17227 php-fpm: pool www                                              
+  pid=17228 php-fpm: pool www                                              
+  pid=17229 php-fpm: pool www                                              
+  pid=17230 php-fpm: pool www                                              
+  pid=17231 php-fpm: pool www                                              
+  pid=17232 php-fpm: pool www                                              
+  pid=17233 php-fpm: pool www                                              
+  pid=17234 php-fpm: pool www                                              
+  pid=17235 php-fpm: pool www                                              
+  pid=17236 php-fpm: pool www                                              
+  pid=17237 php-fpm: pool www                                              
+  pid=17238 php-fpm: pool www                                              
+  pid=17239 php-fpm: pool www                                              
+  pid=17240 php-fpm: pool www                                              
+  pid=17241 php-fpm: pool www                                              
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=17513 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=17568 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=17569 nginx: master process nginx -g daemon off; 
+  pid=17574 nginx: worker process 
+  pid=17575 nginx: worker process 
+  pid=17577 php-fpm: pool www                                              
+  pid=17578 php-fpm: pool www                                              
+  pid=17579 php-fpm: pool www                                              
+  pid=17580 php-fpm: pool www                                              
+  pid=17581 php-fpm: pool www                                              
+  pid=17582 php-fpm: pool www                                              
+  pid=17583 php-fpm: pool www                                              
+  pid=17584 php-fpm: pool www                                              
+  pid=17585 php-fpm: pool www                                              
+  pid=17586 php-fpm: pool www                                              
+  pid=17587 php-fpm: pool www                                              
+  pid=17588 php-fpm: pool www                                              
+  pid=17589 php-fpm: pool www                                              
+  pid=17590 php-fpm: pool www                                              
+  pid=17591 php-fpm: pool www                                              
+  pid=17592 php-fpm: pool www                                              
+  pid=17593 php-fpm: pool www                                              
+  pid=17594 php-fpm: pool www                                              
+  pid=17595 php-fpm: pool www                                              
+  pid=17596 php-fpm: pool www                                              
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=17865 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=17922 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=17923 nginx: master process nginx -g daemon off; 
+  pid=17929 nginx: worker process 
+  pid=17930 nginx: worker process 
+  pid=17932 php-fpm: pool www                                              
+  pid=17933 php-fpm: pool www                                              
+  pid=17934 php-fpm: pool www                                              
+  pid=17935 php-fpm: pool www                                              
+  pid=17936 php-fpm: pool www                                              
+  pid=17937 php-fpm: pool www                                              
+  pid=17938 php-fpm: pool www                                              
+  pid=17939 php-fpm: pool www                                              
+  pid=17940 php-fpm: pool www                                              
+  pid=17941 php-fpm: pool www                                              
+  pid=17942 php-fpm: pool www                                              
+  pid=17943 php-fpm: pool www                                              
+  pid=17944 php-fpm: pool www                                              
+  pid=17945 php-fpm: pool www                                              
+  pid=17946 php-fpm: pool www                                              
+  pid=17947 php-fpm: pool www                                              
+  pid=17948 php-fpm: pool www                                              
+  pid=17949 php-fpm: pool www                                              
+  pid=17950 php-fpm: pool www                                              
+  pid=17951 php-fpm: pool www                                              
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=18212 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=18268 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=18269 nginx: master process nginx -g daemon off; 
+  pid=18274 nginx: worker process 
+  pid=18276 nginx: worker process 
+  pid=18277 php-fpm: pool www                                              
+  pid=18278 php-fpm: pool www                                              
+  pid=18279 php-fpm: pool www                                              
+  pid=18280 php-fpm: pool www                                              
+  pid=18281 php-fpm: pool www                                              
+  pid=18282 php-fpm: pool www                                              
+  pid=18283 php-fpm: pool www                                              
+  pid=18284 php-fpm: pool www                                              
+  pid=18285 php-fpm: pool www                                              
+  pid=18286 php-fpm: pool www                                              
+  pid=18287 php-fpm: pool www                                              
+  pid=18288 php-fpm: pool www                                              
+  pid=18289 php-fpm: pool www                                              
+  pid=18290 php-fpm: pool www                                              
+  pid=18291 php-fpm: pool www                                              
+  pid=18292 php-fpm: pool www                                              
+  pid=18293 php-fpm: pool www                                              
+  pid=18294 php-fpm: pool www                                              
+  pid=18295 php-fpm: pool www                                              
+  pid=18296 php-fpm: pool www                                              
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=18559 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=18614 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=18615 nginx: master process nginx -g daemon off; 
+  pid=18621 nginx: worker process 
+  pid=18622 nginx: worker process 
+  pid=18624 php-fpm: pool www                                              
+  pid=18625 php-fpm: pool www                                              
+  pid=18626 php-fpm: pool www                                              
+  pid=18627 php-fpm: pool www                                              
+  pid=18628 php-fpm: pool www                                              
+  pid=18629 php-fpm: pool www                                              
+  pid=18630 php-fpm: pool www                                              
+  pid=18631 php-fpm: pool www                                              
+  pid=18632 php-fpm: pool www                                              
+  pid=18633 php-fpm: pool www                                              
+  pid=18634 php-fpm: pool www                                              
+  pid=18635 php-fpm: pool www                                              
+  pid=18636 php-fpm: pool www                                              
+  pid=18637 php-fpm: pool www                                              
+  pid=18638 php-fpm: pool www                                              
+  pid=18639 php-fpm: pool www                                              
+  pid=18640 php-fpm: pool www                                              
+  pid=18641 php-fpm: pool www                                              
+  pid=18642 php-fpm: pool www                                              
+  pid=18643 php-fpm: pool www                                              
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=18908 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=18962 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=18963 nginx: master process nginx -g daemon off; 
+  pid=18968 nginx: worker process 
+  pid=18970 nginx: worker process 
+  pid=18972 php-fpm: pool www                                              
+  pid=18973 php-fpm: pool www                                              
+  pid=18974 php-fpm: pool www                                              
+  pid=18975 php-fpm: pool www                                              
+  pid=18976 php-fpm: pool www                                              
+  pid=18977 php-fpm: pool www                                              
+  pid=18978 php-fpm: pool www                                              
+  pid=18979 php-fpm: pool www                                              
+  pid=18980 php-fpm: pool www                                              
+  pid=18981 php-fpm: pool www                                              
+  pid=18982 php-fpm: pool www                                              
+  pid=18983 php-fpm: pool www                                              
+  pid=18984 php-fpm: pool www                                              
+  pid=18985 php-fpm: pool www                                              
+  pid=18986 php-fpm: pool www                                              
+  pid=18987 php-fpm: pool www                                              
+  pid=18988 php-fpm: pool www                                              
+  pid=18989 php-fpm: pool www                                              
+  pid=18990 php-fpm: pool www                                              
+  pid=18991 php-fpm: pool www                                              
+runtime=rt-15769-apache url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=19276 apache2 -DFOREGROUND 
+  pid=19349 apache2 -DFOREGROUND 
+  pid=19350 apache2 -DFOREGROUND 
+  pid=19351 apache2 -DFOREGROUND 
+  pid=19352 apache2 -DFOREGROUND 
+  pid=19353 apache2 -DFOREGROUND 
+  pid=19354 apache2 -DFOREGROUND 
+  pid=19355 apache2 -DFOREGROUND 
+  pid=19356 apache2 -DFOREGROUND 
+  pid=19357 apache2 -DFOREGROUND 
+  pid=19358 apache2 -DFOREGROUND 
+  pid=19359 apache2 -DFOREGROUND 
+  pid=19360 apache2 -DFOREGROUND 
+  pid=19361 apache2 -DFOREGROUND 
+  pid=19362 apache2 -DFOREGROUND 
+  pid=19363 apache2 -DFOREGROUND 
+  pid=19364 apache2 -DFOREGROUND 
+  pid=19365 apache2 -DFOREGROUND 
+  pid=19366 apache2 -DFOREGROUND 
+  pid=19367 apache2 -DFOREGROUND 
+  pid=19368 apache2 -DFOREGROUND 
+runtime=rt-15769-apache url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=19624 apache2 -DFOREGROUND 
+  pid=19693 apache2 -DFOREGROUND 
+  pid=19694 apache2 -DFOREGROUND 
+  pid=19695 apache2 -DFOREGROUND 
+  pid=19696 apache2 -DFOREGROUND 
+  pid=19697 apache2 -DFOREGROUND 
+  pid=19698 apache2 -DFOREGROUND 
+  pid=19699 apache2 -DFOREGROUND 
+  pid=19700 apache2 -DFOREGROUND 
+  pid=19701 apache2 -DFOREGROUND 
+  pid=19702 apache2 -DFOREGROUND 
+  pid=19703 apache2 -DFOREGROUND 
+  pid=19704 apache2 -DFOREGROUND 
+  pid=19705 apache2 -DFOREGROUND 
+  pid=19706 apache2 -DFOREGROUND 
+  pid=19707 apache2 -DFOREGROUND 
+  pid=19708 apache2 -DFOREGROUND 
+  pid=19709 apache2 -DFOREGROUND 
+  pid=19710 apache2 -DFOREGROUND 
+  pid=19711 apache2 -DFOREGROUND 
+  pid=19712 apache2 -DFOREGROUND 
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=19961 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=20021 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=20022 nginx: master process nginx -g daemon off; 
+  pid=20027 nginx: worker process 
+  pid=20028 nginx: worker process 
+  pid=20030 php-fpm: pool www                                              
+  pid=20031 php-fpm: pool www                                              
+  pid=20032 php-fpm: pool www                                              
+  pid=20033 php-fpm: pool www                                              
+  pid=20034 php-fpm: pool www                                              
+  pid=20035 php-fpm: pool www                                              
+  pid=20036 php-fpm: pool www                                              
+  pid=20037 php-fpm: pool www                                              
+  pid=20038 php-fpm: pool www                                              
+  pid=20039 php-fpm: pool www                                              
+  pid=20040 php-fpm: pool www                                              
+  pid=20041 php-fpm: pool www                                              
+  pid=20042 php-fpm: pool www                                              
+  pid=20043 php-fpm: pool www                                              
+  pid=20044 php-fpm: pool www                                              
+  pid=20045 php-fpm: pool www                                              
+  pid=20046 php-fpm: pool www                                              
+  pid=20047 php-fpm: pool www                                              
+  pid=20048 php-fpm: pool www                                              
+  pid=20049 php-fpm: pool www                                              
+runtime=rt-15769-apache url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=20314 apache2 -DFOREGROUND 
+  pid=20387 apache2 -DFOREGROUND 
+  pid=20388 apache2 -DFOREGROUND 
+  pid=20389 apache2 -DFOREGROUND 
+  pid=20390 apache2 -DFOREGROUND 
+  pid=20391 apache2 -DFOREGROUND 
+  pid=20392 apache2 -DFOREGROUND 
+  pid=20393 apache2 -DFOREGROUND 
+  pid=20394 apache2 -DFOREGROUND 
+  pid=20395 apache2 -DFOREGROUND 
+  pid=20396 apache2 -DFOREGROUND 
+  pid=20397 apache2 -DFOREGROUND 
+  pid=20398 apache2 -DFOREGROUND 
+  pid=20399 apache2 -DFOREGROUND 
+  pid=20400 apache2 -DFOREGROUND 
+  pid=20401 apache2 -DFOREGROUND 
+  pid=20402 apache2 -DFOREGROUND 
+  pid=20403 apache2 -DFOREGROUND 
+  pid=20404 apache2 -DFOREGROUND 
+  pid=20405 apache2 -DFOREGROUND 
+  pid=20406 apache2 -DFOREGROUND 
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=20665 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=20721 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=20722 nginx: master process nginx -g daemon off; 
+  pid=20727 nginx: worker process 
+  pid=20728 nginx: worker process 
+  pid=20730 php-fpm: pool www                                              
+  pid=20731 php-fpm: pool www                                              
+  pid=20732 php-fpm: pool www                                              
+  pid=20733 php-fpm: pool www                                              
+  pid=20734 php-fpm: pool www                                              
+  pid=20735 php-fpm: pool www                                              
+  pid=20736 php-fpm: pool www                                              
+  pid=20737 php-fpm: pool www                                              
+  pid=20738 php-fpm: pool www                                              
+  pid=20739 php-fpm: pool www                                              
+  pid=20740 php-fpm: pool www                                              
+  pid=20741 php-fpm: pool www                                              
+  pid=20742 php-fpm: pool www                                              
+  pid=20743 php-fpm: pool www                                              
+  pid=20744 php-fpm: pool www                                              
+  pid=20745 php-fpm: pool www                                              
+  pid=20746 php-fpm: pool www                                              
+  pid=20747 php-fpm: pool www                                              
+  pid=20748 php-fpm: pool www                                              
+  pid=20749 php-fpm: pool www                                              
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=21012 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=21068 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=21069 nginx: master process nginx -g daemon off; 
+  pid=21075 nginx: worker process 
+  pid=21076 nginx: worker process 
+  pid=21079 php-fpm: pool www                                              
+  pid=21080 php-fpm: pool www                                              
+  pid=21081 php-fpm: pool www                                              
+  pid=21082 php-fpm: pool www                                              
+  pid=21083 php-fpm: pool www                                              
+  pid=21084 php-fpm: pool www                                              
+  pid=21085 php-fpm: pool www                                              
+  pid=21086 php-fpm: pool www                                              
+  pid=21087 php-fpm: pool www                                              
+  pid=21088 php-fpm: pool www                                              
+  pid=21089 php-fpm: pool www                                              
+  pid=21090 php-fpm: pool www                                              
+  pid=21091 php-fpm: pool www                                              
+  pid=21092 php-fpm: pool www                                              
+  pid=21093 php-fpm: pool www                                              
+  pid=21094 php-fpm: pool www                                              
+  pid=21095 php-fpm: pool www                                              
+  pid=21096 php-fpm: pool www                                              
+  pid=21097 php-fpm: pool www                                              
+  pid=21098 php-fpm: pool www                                              
+runtime=rt-15769-apache url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=21359 apache2 -DFOREGROUND 
+  pid=21428 apache2 -DFOREGROUND 
+  pid=21429 apache2 -DFOREGROUND 
+  pid=21430 apache2 -DFOREGROUND 
+  pid=21431 apache2 -DFOREGROUND 
+  pid=21432 apache2 -DFOREGROUND 
+  pid=21433 apache2 -DFOREGROUND 
+  pid=21434 apache2 -DFOREGROUND 
+  pid=21435 apache2 -DFOREGROUND 
+  pid=21436 apache2 -DFOREGROUND 
+  pid=21437 apache2 -DFOREGROUND 
+  pid=21438 apache2 -DFOREGROUND 
+  pid=21439 apache2 -DFOREGROUND 
+  pid=21440 apache2 -DFOREGROUND 
+  pid=21441 apache2 -DFOREGROUND 
+  pid=21442 apache2 -DFOREGROUND 
+  pid=21443 apache2 -DFOREGROUND 
+  pid=21444 apache2 -DFOREGROUND 
+  pid=21445 apache2 -DFOREGROUND 
+  pid=21446 apache2 -DFOREGROUND 
+  pid=21447 apache2 -DFOREGROUND 
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=21708 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=21763 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=21764 nginx: master process nginx -g daemon off; 
+  pid=21767 nginx: worker process 
+  pid=21768 nginx: worker process 
+  pid=21772 php-fpm: pool www                                              
+  pid=21773 php-fpm: pool www                                              
+  pid=21774 php-fpm: pool www                                              
+  pid=21775 php-fpm: pool www                                              
+  pid=21776 php-fpm: pool www                                              
+  pid=21777 php-fpm: pool www                                              
+  pid=21778 php-fpm: pool www                                              
+  pid=21779 php-fpm: pool www                                              
+  pid=21780 php-fpm: pool www                                              
+  pid=21781 php-fpm: pool www                                              
+  pid=21782 php-fpm: pool www                                              
+  pid=21783 php-fpm: pool www                                              
+  pid=21784 php-fpm: pool www                                              
+  pid=21785 php-fpm: pool www                                              
+  pid=21786 php-fpm: pool www                                              
+  pid=21787 php-fpm: pool www                                              
+  pid=21788 php-fpm: pool www                                              
+  pid=21789 php-fpm: pool www                                              
+  pid=21790 php-fpm: pool www                                              
+  pid=21791 php-fpm: pool www                                              
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=22055 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=22111 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=22112 nginx: master process nginx -g daemon off; 
+  pid=22117 nginx: worker process 
+  pid=22118 nginx: worker process 
+  pid=22120 php-fpm: pool www                                              
+  pid=22121 php-fpm: pool www                                              
+  pid=22122 php-fpm: pool www                                              
+  pid=22123 php-fpm: pool www                                              
+  pid=22124 php-fpm: pool www                                              
+  pid=22125 php-fpm: pool www                                              
+  pid=22126 php-fpm: pool www                                              
+  pid=22127 php-fpm: pool www                                              
+  pid=22128 php-fpm: pool www                                              
+  pid=22129 php-fpm: pool www                                              
+  pid=22130 php-fpm: pool www                                              
+  pid=22131 php-fpm: pool www                                              
+  pid=22132 php-fpm: pool www                                              
+  pid=22133 php-fpm: pool www                                              
+  pid=22134 php-fpm: pool www                                              
+  pid=22135 php-fpm: pool www                                              
+  pid=22136 php-fpm: pool www                                              
+  pid=22137 php-fpm: pool www                                              
+  pid=22138 php-fpm: pool www                                              
+  pid=22139 php-fpm: pool www                                              
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=22401 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=22457 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=22458 nginx: master process nginx -g daemon off; 
+  pid=22463 nginx: worker process 
+  pid=22464 nginx: worker process 
+  pid=22466 php-fpm: pool www                                              
+  pid=22467 php-fpm: pool www                                              
+  pid=22468 php-fpm: pool www                                              
+  pid=22469 php-fpm: pool www                                              
+  pid=22470 php-fpm: pool www                                              
+  pid=22471 php-fpm: pool www                                              
+  pid=22472 php-fpm: pool www                                              
+  pid=22473 php-fpm: pool www                                              
+  pid=22474 php-fpm: pool www                                              
+  pid=22475 php-fpm: pool www                                              
+  pid=22476 php-fpm: pool www                                              
+  pid=22477 php-fpm: pool www                                              
+  pid=22478 php-fpm: pool www                                              
+  pid=22479 php-fpm: pool www                                              
+  pid=22480 php-fpm: pool www                                              
+  pid=22481 php-fpm: pool www                                              
+  pid=22482 php-fpm: pool www                                              
+  pid=22483 php-fpm: pool www                                              
+  pid=22484 php-fpm: pool www                                              
+  pid=22485 php-fpm: pool www                                              
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=22754 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=22811 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=22812 nginx: master process nginx -g daemon off; 
+  pid=22817 nginx: worker process 
+  pid=22818 nginx: worker process 
+  pid=22821 php-fpm: pool www                                              
+  pid=22822 php-fpm: pool www                                              
+  pid=22824 php-fpm: pool www                                              
+  pid=22825 php-fpm: pool www                                              
+  pid=22826 php-fpm: pool www                                              
+  pid=22827 php-fpm: pool www                                              
+  pid=22828 php-fpm: pool www                                              
+  pid=22830 php-fpm: pool www                                              
+  pid=22831 php-fpm: pool www                                              
+  pid=22832 php-fpm: pool www                                              
+  pid=22833 php-fpm: pool www                                              
+  pid=22834 php-fpm: pool www                                              
+  pid=22835 php-fpm: pool www                                              
+  pid=22836 php-fpm: pool www                                              
+  pid=22837 php-fpm: pool www                                              
+  pid=22838 php-fpm: pool www                                              
+  pid=22839 php-fpm: pool www                                              
+  pid=22840 php-fpm: pool www                                              
+  pid=22841 php-fpm: pool www                                              
+  pid=22842 php-fpm: pool www                                              
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=23105 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=23162 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=23163 nginx: master process nginx -g daemon off; 
+  pid=23168 nginx: worker process 
+  pid=23169 nginx: worker process 
+  pid=23171 php-fpm: pool www                                              
+  pid=23172 php-fpm: pool www                                              
+  pid=23173 php-fpm: pool www                                              
+  pid=23174 php-fpm: pool www                                              
+  pid=23175 php-fpm: pool www                                              
+  pid=23176 php-fpm: pool www                                              
+  pid=23177 php-fpm: pool www                                              
+  pid=23178 php-fpm: pool www                                              
+  pid=23179 php-fpm: pool www                                              
+  pid=23180 php-fpm: pool www                                              
+  pid=23181 php-fpm: pool www                                              
+  pid=23182 php-fpm: pool www                                              
+  pid=23183 php-fpm: pool www                                              
+  pid=23184 php-fpm: pool www                                              
+  pid=23185 php-fpm: pool www                                              
+  pid=23186 php-fpm: pool www                                              
+  pid=23187 php-fpm: pool www                                              
+  pid=23188 php-fpm: pool www                                              
+  pid=23189 php-fpm: pool www                                              
+  pid=23190 php-fpm: pool www                                              
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=23453 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=23509 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=23510 nginx: master process nginx -g daemon off; 
+  pid=23515 nginx: worker process 
+  pid=23516 nginx: worker process 
+  pid=23518 php-fpm: pool www                                              
+  pid=23519 php-fpm: pool www                                              
+  pid=23520 php-fpm: pool www                                              
+  pid=23521 php-fpm: pool www                                              
+  pid=23522 php-fpm: pool www                                              
+  pid=23523 php-fpm: pool www                                              
+  pid=23524 php-fpm: pool www                                              
+  pid=23525 php-fpm: pool www                                              
+  pid=23526 php-fpm: pool www                                              
+  pid=23527 php-fpm: pool www                                              
+  pid=23528 php-fpm: pool www                                              
+  pid=23529 php-fpm: pool www                                              
+  pid=23530 php-fpm: pool www                                              
+  pid=23531 php-fpm: pool www                                              
+  pid=23532 php-fpm: pool www                                              
+  pid=23533 php-fpm: pool www                                              
+  pid=23534 php-fpm: pool www                                              
+  pid=23535 php-fpm: pool www                                              
+  pid=23536 php-fpm: pool www                                              
+  pid=23537 php-fpm: pool www                                              
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=23801 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=23859 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=23860 nginx: master process nginx -g daemon off; 
+  pid=23867 nginx: worker process 
+  pid=23868 nginx: worker process 
+  pid=23870 php-fpm: pool www                                              
+  pid=23871 php-fpm: pool www                                              
+  pid=23872 php-fpm: pool www                                              
+  pid=23873 php-fpm: pool www                                              
+  pid=23874 php-fpm: pool www                                              
+  pid=23875 php-fpm: pool www                                              
+  pid=23876 php-fpm: pool www                                              
+  pid=23877 php-fpm: pool www                                              
+  pid=23878 php-fpm: pool www                                              
+  pid=23879 php-fpm: pool www                                              
+  pid=23880 php-fpm: pool www                                              
+  pid=23881 php-fpm: pool www                                              
+  pid=23882 php-fpm: pool www                                              
+  pid=23883 php-fpm: pool www                                              
+  pid=23884 php-fpm: pool www                                              
+  pid=23885 php-fpm: pool www                                              
+  pid=23886 php-fpm: pool www                                              
+  pid=23887 php-fpm: pool www                                              
+  pid=23888 php-fpm: pool www                                              
+  pid=23889 php-fpm: pool www                                              
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=24149 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=24209 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=24210 nginx: master process nginx -g daemon off; 
+  pid=24215 nginx: worker process 
+  pid=24216 nginx: worker process 
+  pid=24218 php-fpm: pool www                                              
+  pid=24219 php-fpm: pool www                                              
+  pid=24220 php-fpm: pool www                                              
+  pid=24221 php-fpm: pool www                                              
+  pid=24222 php-fpm: pool www                                              
+  pid=24223 php-fpm: pool www                                              
+  pid=24224 php-fpm: pool www                                              
+  pid=24225 php-fpm: pool www                                              
+  pid=24226 php-fpm: pool www                                              
+  pid=24227 php-fpm: pool www                                              
+  pid=24228 php-fpm: pool www                                              
+  pid=24229 php-fpm: pool www                                              
+  pid=24230 php-fpm: pool www                                              
+  pid=24231 php-fpm: pool www                                              
+  pid=24232 php-fpm: pool www                                              
+  pid=24233 php-fpm: pool www                                              
+  pid=24234 php-fpm: pool www                                              
+  pid=24235 php-fpm: pool www                                              
+  pid=24236 php-fpm: pool www                                              
+  pid=24237 php-fpm: pool www                                              
+runtime=rt-15769-apache url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=24505 apache2 -DFOREGROUND 
+  pid=24575 apache2 -DFOREGROUND 
+  pid=24576 apache2 -DFOREGROUND 
+  pid=24577 apache2 -DFOREGROUND 
+  pid=24578 apache2 -DFOREGROUND 
+  pid=24579 apache2 -DFOREGROUND 
+  pid=24580 apache2 -DFOREGROUND 
+  pid=24581 apache2 -DFOREGROUND 
+  pid=24582 apache2 -DFOREGROUND 
+  pid=24583 apache2 -DFOREGROUND 
+  pid=24584 apache2 -DFOREGROUND 
+  pid=24585 apache2 -DFOREGROUND 
+  pid=24586 apache2 -DFOREGROUND 
+  pid=24587 apache2 -DFOREGROUND 
+  pid=24588 apache2 -DFOREGROUND 
+  pid=24589 apache2 -DFOREGROUND 
+  pid=24590 apache2 -DFOREGROUND 
+  pid=24591 apache2 -DFOREGROUND 
+  pid=24592 apache2 -DFOREGROUND 
+  pid=24593 apache2 -DFOREGROUND 
+  pid=24594 apache2 -DFOREGROUND 
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=24855 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=24911 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=24912 nginx: master process nginx -g daemon off; 
+  pid=24917 nginx: worker process 
+  pid=24918 nginx: worker process 
+  pid=24920 php-fpm: pool www                                              
+  pid=24921 php-fpm: pool www                                              
+  pid=24922 php-fpm: pool www                                              
+  pid=24923 php-fpm: pool www                                              
+  pid=24924 php-fpm: pool www                                              
+  pid=24925 php-fpm: pool www                                              
+  pid=24926 php-fpm: pool www                                              
+  pid=24927 php-fpm: pool www                                              
+  pid=24928 php-fpm: pool www                                              
+  pid=24929 php-fpm: pool www                                              
+  pid=24930 php-fpm: pool www                                              
+  pid=24931 php-fpm: pool www                                              
+  pid=24932 php-fpm: pool www                                              
+  pid=24933 php-fpm: pool www                                              
+  pid=24934 php-fpm: pool www                                              
+  pid=24935 php-fpm: pool www                                              
+  pid=24936 php-fpm: pool www                                              
+  pid=24937 php-fpm: pool www                                              
+  pid=24938 php-fpm: pool www                                              
+  pid=24939 php-fpm: pool www                                              
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=25203 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=25259 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=25260 nginx: master process nginx -g daemon off; 
+  pid=25266 nginx: worker process 
+  pid=25267 nginx: worker process 
+  pid=25268 php-fpm: pool www                                              
+  pid=25269 php-fpm: pool www                                              
+  pid=25270 php-fpm: pool www                                              
+  pid=25271 php-fpm: pool www                                              
+  pid=25272 php-fpm: pool www                                              
+  pid=25273 php-fpm: pool www                                              
+  pid=25274 php-fpm: pool www                                              
+  pid=25275 php-fpm: pool www                                              
+  pid=25276 php-fpm: pool www                                              
+  pid=25277 php-fpm: pool www                                              
+  pid=25278 php-fpm: pool www                                              
+  pid=25279 php-fpm: pool www                                              
+  pid=25280 php-fpm: pool www                                              
+  pid=25281 php-fpm: pool www                                              
+  pid=25282 php-fpm: pool www                                              
+  pid=25283 php-fpm: pool www                                              
+  pid=25284 php-fpm: pool www                                              
+  pid=25285 php-fpm: pool www                                              
+  pid=25286 php-fpm: pool www                                              
+  pid=25287 php-fpm: pool www                                              
+runtime=rt-15769-apache url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=25553 apache2 -DFOREGROUND 
+  pid=25625 apache2 -DFOREGROUND 
+  pid=25626 apache2 -DFOREGROUND 
+  pid=25627 apache2 -DFOREGROUND 
+  pid=25628 apache2 -DFOREGROUND 
+  pid=25629 apache2 -DFOREGROUND 
+  pid=25630 apache2 -DFOREGROUND 
+  pid=25631 apache2 -DFOREGROUND 
+  pid=25632 apache2 -DFOREGROUND 
+  pid=25633 apache2 -DFOREGROUND 
+  pid=25634 apache2 -DFOREGROUND 
+  pid=25635 apache2 -DFOREGROUND 
+  pid=25636 apache2 -DFOREGROUND 
+  pid=25637 apache2 -DFOREGROUND 
+  pid=25638 apache2 -DFOREGROUND 
+  pid=25639 apache2 -DFOREGROUND 
+  pid=25640 apache2 -DFOREGROUND 
+  pid=25641 apache2 -DFOREGROUND 
+  pid=25642 apache2 -DFOREGROUND 
+  pid=25644 apache2 -DFOREGROUND 
+  pid=25645 apache2 -DFOREGROUND 
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=25901 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=25956 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=25957 nginx: master process nginx -g daemon off; 
+  pid=25964 nginx: worker process 
+  pid=25965 nginx: worker process 
+  pid=25966 php-fpm: pool www                                              
+  pid=25967 php-fpm: pool www                                              
+  pid=25968 php-fpm: pool www                                              
+  pid=25969 php-fpm: pool www                                              
+  pid=25970 php-fpm: pool www                                              
+  pid=25971 php-fpm: pool www                                              
+  pid=25972 php-fpm: pool www                                              
+  pid=25973 php-fpm: pool www                                              
+  pid=25974 php-fpm: pool www                                              
+  pid=25975 php-fpm: pool www                                              
+  pid=25976 php-fpm: pool www                                              
+  pid=25977 php-fpm: pool www                                              
+  pid=25978 php-fpm: pool www                                              
+  pid=25979 php-fpm: pool www                                              
+  pid=25980 php-fpm: pool www                                              
+  pid=25981 php-fpm: pool www                                              
+  pid=25982 php-fpm: pool www                                              
+  pid=25983 php-fpm: pool www                                              
+  pid=25984 php-fpm: pool www                                              
+  pid=25985 php-fpm: pool www                                              
+runtime=rt-15769-apache url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=26251 apache2 -DFOREGROUND 
+  pid=26324 apache2 -DFOREGROUND 
+  pid=26325 apache2 -DFOREGROUND 
+  pid=26326 apache2 -DFOREGROUND 
+  pid=26327 apache2 -DFOREGROUND 
+  pid=26328 apache2 -DFOREGROUND 
+  pid=26329 apache2 -DFOREGROUND 
+  pid=26330 apache2 -DFOREGROUND 
+  pid=26331 apache2 -DFOREGROUND 
+  pid=26332 apache2 -DFOREGROUND 
+  pid=26333 apache2 -DFOREGROUND 
+  pid=26334 apache2 -DFOREGROUND 
+  pid=26335 apache2 -DFOREGROUND 
+  pid=26336 apache2 -DFOREGROUND 
+  pid=26337 apache2 -DFOREGROUND 
+  pid=26338 apache2 -DFOREGROUND 
+  pid=26339 apache2 -DFOREGROUND 
+  pid=26340 apache2 -DFOREGROUND 
+  pid=26341 apache2 -DFOREGROUND 
+  pid=26342 apache2 -DFOREGROUND 
+  pid=26343 apache2 -DFOREGROUND 
+runtime=rt-15769-apache url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=26604 apache2 -DFOREGROUND 
+  pid=26677 apache2 -DFOREGROUND 
+  pid=26678 apache2 -DFOREGROUND 
+  pid=26679 apache2 -DFOREGROUND 
+  pid=26680 apache2 -DFOREGROUND 
+  pid=26681 apache2 -DFOREGROUND 
+  pid=26682 apache2 -DFOREGROUND 
+  pid=26683 apache2 -DFOREGROUND 
+  pid=26684 apache2 -DFOREGROUND 
+  pid=26685 apache2 -DFOREGROUND 
+  pid=26686 apache2 -DFOREGROUND 
+  pid=26687 apache2 -DFOREGROUND 
+  pid=26688 apache2 -DFOREGROUND 
+  pid=26689 apache2 -DFOREGROUND 
+  pid=26690 apache2 -DFOREGROUND 
+  pid=26691 apache2 -DFOREGROUND 
+  pid=26692 apache2 -DFOREGROUND 
+  pid=26693 apache2 -DFOREGROUND 
+  pid=26694 apache2 -DFOREGROUND 
+  pid=26695 apache2 -DFOREGROUND 
+  pid=26696 apache2 -DFOREGROUND 
+runtime=rt-15769-nginx-fpm url=http://127.0.0.1:8091/ workload=drupal-front http=200 bytes=36705
+X-Drupal-Dynamic-Cache: MISS
+X-Drupal-Cache: HIT
+  pid=26948 bash /usr/local/bin/entrypoint-nginx-fpm.sh 
+  pid=27004 php-fpm: master process (/usr/local/etc/php-fpm.conf)          
+  pid=27005 nginx: master process nginx -g daemon off; 
+  pid=27010 nginx: worker process 
+  pid=27011 nginx: worker process 
+  pid=27013 php-fpm: pool www                                              
+  pid=27014 php-fpm: pool www                                              
+  pid=27015 php-fpm: pool www                                              
+  pid=27016 php-fpm: pool www                                              
+  pid=27017 php-fpm: pool www                                              
+  pid=27018 php-fpm: pool www                                              
+  pid=27019 php-fpm: pool www                                              
+  pid=27020 php-fpm: pool www                                              
+  pid=27021 php-fpm: pool www                                              
+  pid=27022 php-fpm: pool www                                              
+  pid=27023 php-fpm: pool www                                              
+  pid=27024 php-fpm: pool www                                              
+  pid=27025 php-fpm: pool www                                              
+  pid=27026 php-fpm: pool www                                              
+  pid=27027 php-fpm: pool www                                              
+  pid=27028 php-fpm: pool www                                              
+  pid=27029 php-fpm: pool www                                              
+  pid=27030 php-fpm: pool www                                              
+  pid=27031 php-fpm: pool www                                              
+  pid=27032 php-fpm: pool www                                              
