@@ -1,7 +1,7 @@
 # One image that can be any of the three benchmark database servers.
 #
 # OPT-IN. The default in the harness stays one official image per server
-# (mariadb:10.11, postgres:17, and nothing for sqlite), because a single image
+# (mariadb:10.11, postgres:18, and nothing for sqlite), because a single image
 # cannot hold both exact versions: mariadb:10.11 is Ubuntu 22.04-based, whose
 # archive has PostgreSQL 14, and Debian trixie pairs PostgreSQL 17 with MariaDB
 # 11.8. This image takes the trixie pair, which is current and self-consistent;

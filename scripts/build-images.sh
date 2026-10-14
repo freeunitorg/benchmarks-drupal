@@ -49,7 +49,7 @@ docker build -f docker/Dockerfile.php --target nginx-src -t drupal-bench-nginx-s
 docker build -f docker/Dockerfile.php --target angie-fpm -t drupal-bench-angie:8.5 .
 docker build -f docker/Dockerfile.php --target freenginx-fpm -t drupal-bench-freenginx:8.5 .
 docker pull mariadb:10.11
-docker pull postgres:17
+docker pull postgres:18
 
 # The version each webserver image actually carries, so a published run can name
 # it without inspecting the image later.

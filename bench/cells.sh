@@ -213,7 +213,7 @@ start_db() {  # side
             --label "bench-run=${RUN_ID:-manual}" --label bench-role=db \
             -v "$DBCVOL:/var/lib/postgresql/data" \
             --network-alias db -e POSTGRES_DB=drupal -e POSTGRES_HOST_AUTH_METHOD=trust \
-            "${PG_IMAGE:-postgres:17}" >/dev/null || die "cannot start postgres"
+            "${PG_IMAGE:-postgres:18}" >/dev/null || die "cannot start postgres"
         for i in $(seq 60); do
             docker exec "$cname" pg_isready -U postgres -d drupal >/dev/null 2>&1 && return 0
             sleep 1

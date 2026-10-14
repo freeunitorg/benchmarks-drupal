@@ -135,7 +135,7 @@ elif [ "${DB}" = pgsql ]; then
     docker run -d --name "$DBC" --network "$NET" --network-alias db \
         -v "$DBCVOL:/var/lib/postgresql/data" \
         -e POSTGRES_DB=drupal -e POSTGRES_HOST_AUTH_METHOD=trust \
-        "${PG_IMAGE:-postgres:17}" >/dev/null
+        "${PG_IMAGE:-postgres:18}" >/dev/null
     for _ in $(seq 60); do
         docker exec "$DBC" pg_isready -U postgres -d drupal >/dev/null 2>&1 && break
         sleep 1
