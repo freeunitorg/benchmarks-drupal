@@ -1,0 +1,13 @@
+# Fresh master (cc94deb2, which is the merge of "mp: keep freed pool clusters in each
+# thread for reuse" on top of "libunit, port, http: pin the shared layouts and pack
+# request structs"), on the two workloads the page shows FreeUnit behind on, plus the
+# release-versus-master pair on Drupal 12.  The master image is rebuilt at the top of
+# each pass by wait-idle.sh from FREEUNIT_MASTER_REF, and run/freeunit-master-sha
+# records the commit so the published run names it.
+site:12.0
+site:wp
+job:bench/jobs/06-front-anon-master-vs-1370-12.0.job
+job:bench/jobs/07-front-auth-master-vs-1370-12.0.job
+job:bench/jobs/87-front-anon-master-vs-apache-12.0.job
+job:bench/jobs/43-wp-front-freeunit-master-vs-nginx-fpm.job
+job:bench/jobs/86-wp-front-master-vs-apache.job
