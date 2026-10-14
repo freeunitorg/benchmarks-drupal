@@ -185,5 +185,26 @@ else
 fi
 docker rm -f "$RTC" >/dev/null 2>&1 || true
 
+# WordPress on Apache needs the pretty-URL rewrite in .htaccess, which a drush-free
+# install never writes: the nginx arms route /wp-json/ and /wp-admin/ with try_files,
+# but Apache has to read this file (apache.conf sets AllowOverride All and the image
+# enables mod_rewrite).  Without it every REST cell 404s on the Apache arm and only
+# that arm -- the rest of the run is fine, which is the shape that would otherwise be
+# published as a huge, fake win.
+cat > "$SITEDIR/web/.htaccess" <<'HTACCESS'
+# BEGIN WordPress
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+# END WordPress
+HTACCESS
+echo "site-build-wp: wrote web/.htaccess (Apache pretty URLs)"
+
 echo "site-build-wp: done -> $SITEDIR"
 cat "$SITEDIR/meta.txt"
