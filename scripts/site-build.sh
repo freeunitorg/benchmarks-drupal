@@ -133,7 +133,7 @@ elif [ -n "${DBC_IMAGE:-}" ]; then
 elif [ "${DB}" = pgsql ]; then
     DB_URL="pgsql://postgres@db/drupal"
     docker run -d --name "$DBC" --network "$NET" --network-alias db \
-        -v "$DBCVOL:/var/lib/postgresql/data" \
+        -v "$DBCVOL:/var/lib/postgresql" \
         -e POSTGRES_DB=drupal -e POSTGRES_HOST_AUTH_METHOD=trust \
         "${PG_IMAGE:-postgres:18}" >/dev/null
     for _ in $(seq 60); do
@@ -339,4 +339,16 @@ runroot=$RUNROOT
 installed=$(date -u +%FT%TZ)
 user=$BENCH_USER
 EOF
+# Drupal's sqlite database is a file in web/sites/default/files, and the runtime
+# drops privileges (www-data in the Debian images, nobody in the Alpine one).  The
+# install runs as root inside the tool container, so the directory and the .sqlite
+# file are left root/host-owned and the app cannot write its own cache database:
+# every request then answers 500 and the whole run goes INVALID.  A direct write test
+# as the app user returned DENIED before this.  The server-backed databases never
+# show it because their writes go to a container, not to this directory.
+if [ "$DB" = sqlite ]; then
+    docker run --rm -v "$RUNROOT:/run" alpine:3 sh -c \
+        "chmod -R a+rwX /run/site/$SITEKEY/web/sites/default/files" >/dev/null
+    echo "site-build: made web/sites/default/files writable (sqlite database lives there)"
+fi
 echo "site-build: done -> $SITEDIR"

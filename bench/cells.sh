@@ -27,6 +27,10 @@ R=$(mktemp -d /tmp/drupal-bench.XXXXXX)
 OHA=${OHA:-oha}
 PERF_IMAGE=${PERF_IMAGE:-freeunit-perf-lab:1}
 PERF_EVENTS=${PERF_EVENTS:-cycles,instructions,context-switches,cpu-migrations}
+# PERF_RECORD=1 (job-set, exported by run.sh) additionally perf-records the s and,
+# with DECOMPOSE=1, sf/sw pid groups on ab cells; each side's last ab cell is
+# kept in $OUTDIR as perf.rec.<side>-<group>.data. Default off.
+PERF_RECORD=${PERF_RECORD:-0}
 TAG=${IMAGE_TAG:-8.5}
 PORT=${BASE_PORT:-8081}
 # A synthetic cookie of a chosen size tests whether the per-request overhead tracks
@@ -174,6 +178,26 @@ perf_stop() {  # name
     docker rm -f "perf-$$-$1" >/dev/null 2>&1 || true
 }
 
+# Optional sampling attribution (hot-path audit): PERF_RECORD=1 records the same
+# pid groups perf stat watches, on ab cells only, into $R/perf.rec.<name>.data.
+# Default off; a plain job file never sets it, so nothing changes unless asked.
+rec_start() {  # name pids
+    [ "${PERF_RECORD:-0}" = 1 ] || return 0
+    [ -n "$2" ] || return 0
+    docker rm -f "recrec-$$-$1" >/dev/null 2>&1 || true
+    docker run -d --name "recrec-$$-$1" --rm --label "bench-run=${RUN_ID:-manual}" --label bench-role=perf \
+        --cap-add PERFMON --pid=host \
+        -v "$R:/out" "$PERF_IMAGE" \
+        perf record -F 999 --call-graph dwarf,8192 -o "/out/perf.rec.$1" -p "$2" >/dev/null || return 0
+}
+rec_stop() {  # name
+    [ "${PERF_RECORD:-0}" = 1 ] || return 0
+    docker kill -s INT "recrec-$$-$1" >/dev/null 2>&1 || true
+    local i
+    for i in $(seq 60); do docker ps -q -f "name=recrec-$$-$1" | grep -q . || break; sleep 0.1; done
+    docker rm -f "recrec-$$-$1" >/dev/null 2>&1 || true
+}
+
 # ---------------------------------------------------------------- database
 start_db() {  # side
     local side=${1:-A} i
@@ -211,7 +235,7 @@ start_db() {  # side
     pgsql)
         docker run -d --name "$cname" --network "$net" --cpuset-cpus "${DB_CPUS:-$SERVER_CPUS}" \
             --label "bench-run=${RUN_ID:-manual}" --label bench-role=db \
-            -v "$DBCVOL:/var/lib/postgresql/data" \
+            -v "$DBCVOL:/var/lib/postgresql" \
             --network-alias db -e POSTGRES_DB=drupal -e POSTGRES_HOST_AUTH_METHOD=trust \
             "${PG_IMAGE:-postgres:18}" >/dev/null || die "cannot start postgres"
         for i in $(seq 60); do
@@ -439,6 +463,10 @@ timed_cell() {  # phase side cell conns block slot runtime
         perf_start sf "$(echo $fpids | tr ' ' ',')"
         perf_start sw "$(echo $wpids | tr ' ' ',')"
     fi
+    if [ "${PERF_RECORD:-0}" = 1 ] && [ "$ph" = ab ]; then
+        rec_start s "$(echo $pids | tr ' ' ',')"
+        [ "${DECOMPOSE:-0}" = 1 ] && { rec_start sf "$(echo $fpids | tr ' ' ',')"; rec_start sw "$(echo $wpids | tr ' ' ',')"; }
+    fi
     sleep 0.2
     local a0 a1 d0 d1 f0 f1 w0 w1
     a0=$(oncpu_ns $pids); d0=$(oncpu_ns $rpids); f0=0; w0=0
@@ -450,6 +478,16 @@ timed_cell() {  # phase side cell conns block slot runtime
     perf_stop db
     perf_stop sf
     perf_stop sw
+    if [ "${PERF_RECORD:-0}" = 1 ] && [ "$ph" = ab ]; then
+        rec_stop s
+        rec_stop sf
+        rec_stop sw
+        # keep only each side's LAST ab cell: stable names, later cells overwrite
+        local g
+        for g in s sf sw; do
+            [ -f "$R/perf.rec.$g.data" ] && cp "$R/perf.rec.$g.data" "$OUTDIR/perf.rec.$side-$g.data" 2>/dev/null
+        done
+    fi
     python3 - "$R/oha.json" > "$R/oha.txt" <<'PY' || die "cannot read oha json"
 import json, sys
 d = json.load(open(sys.argv[1]))

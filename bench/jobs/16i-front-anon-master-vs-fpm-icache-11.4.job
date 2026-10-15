@@ -1,0 +1,24 @@
+# drupal-front, FreeUnit master (A) vs nginx-fpm (B), Drupal 11.4, with extended
+# PMU diagnostics for the hot-path audit: Intel icache/iTLB events added to the
+# default set (validated inside freeunit-perf-lab:1 on pro4s-2, Skylake).
+# PRIMARY stays s_instructions; the extra events are diagnostic attribution only.
+JOB=16i-front-anon-master-vs-fpm-icache-11.4
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-master
+RUNTIME_B=nginx-fpm
+SITE=11.4
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+PERF_EVENTS="cycles,instructions,branch-misses,context-switches,cpu-migrations,L1-icache-load-misses,itlb_misses.miss_causes_a_walk"
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="master keeps the FreeUnit advantage measured on 1.37.0; icache/iTLB deltas are diagnostic"
+FALSIFY="NO CLAIM, or master loses to nginx-fpm"

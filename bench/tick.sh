@@ -68,8 +68,8 @@ elif [ -n "${DBC_IMAGE:-}" ]; then
     done
 elif [ "${DB:-mysql}" = pgsql ]; then
     docker run -d --name "$DBC" --network "$NET" --cpuset-cpus "${DB_CPUS:-4,5}" --label bench-run=tick \
-        -v "$DBCVOL:/var/lib/postgresql/data" \
-        --network-alias db -e POSTGRES_DB=drupal -e POSTGRES_HOST_AUTH_METHOD=trust "${PG_IMAGE:-postgres:17}" >/dev/null
+        -v "$DBCVOL:/var/lib/postgresql" \
+        --network-alias db -e POSTGRES_DB=drupal -e POSTGRES_HOST_AUTH_METHOD=trust "${PG_IMAGE:-postgres:18}" >/dev/null
     for _ in $(seq 60); do docker exec "$DBC" pg_isready -U postgres -d drupal >/dev/null 2>&1 && break; sleep 1; done
 else
     docker run -d --name "$DBC" --network "$NET" --cpuset-cpus "${DB_CPUS:-4,5}" --label bench-run=tick \
