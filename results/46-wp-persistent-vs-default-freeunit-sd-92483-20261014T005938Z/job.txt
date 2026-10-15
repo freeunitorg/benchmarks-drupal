@@ -1,0 +1,24 @@
+# A and B are two sites with the same WordPress, same plugins and same database
+# schema; the only difference is wp-content/db.php, which opens the mysqli handle
+# with the persistent prefix. Both sides run FreeUnit, so the runtime is held still.
+JOB=46-wp-persistent-vs-default-freeunit
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=wp-front
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit
+SITE=wp
+SITE_B=wp-persistent
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the persistent handle removes a measurable share of the per-request cost on FreeUnit"
+FALSIFY="NO CLAIM: the connection setup is not a measurable share at this cell"
