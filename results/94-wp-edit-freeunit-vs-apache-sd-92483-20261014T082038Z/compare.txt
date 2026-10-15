@@ -1,0 +1,29 @@
+CLAIM wp-edit-c32: B is 9.4 percent more server instructions per request, outside the null band of 1.6, 12 of 12 cells agree
+job 94-wp-edit-freeunit-vs-apache  run 94-wp-edit-freeunit-vs-apache-sd-92483-20261014T082038Z  A None ()  B None ()  governor powersave/balance_power  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  wp-edit-c32    s_instructions         713485166.636 713448947.157    +0.03     [-1.50, +1.55]   1.55   5/12  INVALID
+null  wp-edit-c32    db_cs                        63.691       63.703    +0.02     [-0.85, +0.89]   0.89   6/12  INVALID
+null  wp-edit-c32    db_cycles              40171455.822 39904644.645    -0.57     [-4.91, +3.77]   4.91   8/12  INVALID
+null  wp-edit-c32    db_instructions        15925567.154 15944635.912    +0.13     [-0.89, +1.16]   1.16   7/12  INVALID
+null  wp-edit-c32    db_migrations                 8.841        8.979    +1.74    [-6.77, +10.24]  10.24   7/12  INVALID
+null  wp-edit-c32    db_us                     15974.199    15832.963    -0.88     [-4.75, +2.98]   4.75   7/12  INVALID
+null  wp-edit-c32    p50_ms                     2734.841     2674.518    -2.20     [-6.41, +2.00]   6.41   8/12  INVALID
+null  wp-edit-c32    p99_ms                     4130.754     3972.735    -3.78    [-12.89, +5.32]  12.89   6/12  INVALID
+null  wp-edit-c32    rps                          10.919       11.023    +0.96     [-2.94, +4.87]   4.87   8/12  INVALID
+null  wp-edit-c32    s_cs                        148.688      146.721    -1.22     [-5.00, +2.56]   5.00   7/12  INVALID
+null  wp-edit-c32    s_cycles               514202339.990 512396638.446    -0.31     [-2.45, +1.84]   2.45   6/12  INVALID
+null  wp-edit-c32    s_migrations                  2.649        2.705   +11.25   [-21.06, +43.56]  43.56   6/12  INVALID
+null  wp-edit-c32    server_us                176695.502   176141.255    -0.30     [-1.90, +1.29]   1.90   8/12  INVALID
+ab    wp-edit-c32    s_instructions         706752842.970 773341986.736    +9.43    [+6.57, +12.29]   1.55  12/12  CLAIM
+ab    wp-edit-c32    db_cs                        63.283       63.404    +0.19     [-0.87, +1.26]   0.89   6/12  NO CLAIM
+ab    wp-edit-c32    db_cycles              39896919.745 38478935.541    -3.55     [-7.33, +0.23]   4.91   7/12  NO CLAIM
+ab    wp-edit-c32    db_instructions        15842685.446 15811402.657    -0.19     [-1.49, +1.11]   1.16   7/12  NO CLAIM
+ab    wp-edit-c32    db_migrations                 8.575        9.600   +11.93    [+4.09, +19.78]  10.24   9/12  NOISY
+ab    wp-edit-c32    db_us                     15976.683    15532.428    -2.78     [-6.72, +1.16]   4.75   7/12  NO CLAIM
+ab    wp-edit-c32    p50_ms                     2723.246     2006.037   -26.32   [-32.02, -20.61]   6.41  12/12  NOISY
+ab    wp-edit-c32    p99_ms                     4186.540    10260.802  +145.10 [+135.14, +155.07]  12.89  12/12  NOISY
+ab    wp-edit-c32    rps                          10.891       10.257    -5.82     [-9.47, -2.17]   4.87   8/12  NO CLAIM
+ab    wp-edit-c32    s_cs                        148.307      123.985   -16.35   [-19.58, -13.12]   5.00  12/12  NOISY
+ab    wp-edit-c32    s_cycles               509073079.152 544228078.766    +6.92    [+3.66, +10.18]   2.45  11/12  CLAIM
+ab    wp-edit-c32    s_migrations                  2.618        0.843   -67.32   [-93.24, -41.41]  43.56  12/12  NOISY
+ab    wp-edit-c32    server_us                177006.312   189106.837    +6.84     [+5.58, +8.09]   1.90  12/12  CLAIM
