@@ -81,7 +81,14 @@ unitd total .text: 407,550 B / 1,563 functions.
 
 -Os and LTO shrink the hot set ~22-25%; -O2/-O3 grow it. A sequential laptop
 smoke was thermally confounded and is discarded as evidence. The headroom must be
-measured on the perf box (harness jobs 07-13 pattern extended to drupal-front).
+measured on the perf box (harness jobs 07-13 pattern extended to drupal-front;
+those perf-lab jobs were prepared but never run — the box perf-lab run dir is
+empty, so jobs 40/41 here are the first real measurement of this lever).
+
+Per-request fetch stalls (local router, hello PHP, exploratory): -O1 101,019
+ic-stall cycles/req vs -O2 81,101 (-19.7%); LTO ≈ -O2 on stalls and a further
+-2.2% on instructions (matched-request back-to-back runs). Direction: -O2
+relieves the front-end bottleneck the profile shows; the box A/B decides.
 
 ## 4. Ranked optimization candidates (pre-attribution)
 

@@ -12,6 +12,15 @@ on:
 permissions:
   contents: write
 
+# collect-commit.sh makes one push per collected run, so several of these runs
+# start together and each one force-pushes gh-pages.  Without a group the losers
+# die with "cannot lock ref 'refs/heads/gh-pages'": the deploy that finishes last
+# is the correct one (it renders every result in the repository), so queue them and
+# keep the newest rather than letting the pushes race.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
 jobs:
   render:
     runs-on: ubuntu-latest
