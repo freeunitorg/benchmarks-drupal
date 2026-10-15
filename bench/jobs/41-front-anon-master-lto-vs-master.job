@@ -1,0 +1,24 @@
+# drupal-front, FreeUnit master built -O2 with fat LTO (A) vs the same commit at
+# the default -O (B), Drupal 11.4: within-commit A/B of link-time optimization.
+# LTO shrank the router hot set ~25% locally (67 KB -> 50 KB); this measures
+# whether that converts to instructions per request on the real workload.
+JOB=41-front-anon-master-lto-vs-master
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-master-lto
+RUNTIME_B=freeunit-master
+SITE=11.4
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+PERF_EVENTS="cycles,instructions,branch-misses,context-switches,cpu-migrations,L1-icache-load-misses,itlb_misses.miss_causes_a_walk"
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="LTO is fewer server instructions per request than -O at the same commit"
+FALSIFY="NO CLAIM, or LTO higher"

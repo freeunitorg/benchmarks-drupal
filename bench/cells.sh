@@ -102,6 +102,10 @@ image_for() {  # runtime family -> image
     freeunit-master) echo "drupal-bench-freeunit:master" ;;
     freeunit-master-old) echo "drupal-bench-freeunit:master-old" ;;
     freeunit-master-mid) echo "drupal-bench-freeunit:master-mid" ;;
+    # Flag-variant images of the same master commit (Dockerfile CC_OPT build-arg),
+    # for the hot-path audit's within-commit optimization A/Bs.
+    freeunit-master-o2) echo "drupal-bench-freeunit:master-o2" ;;
+    freeunit-master-lto) echo "drupal-bench-freeunit:master-lto" ;;
     # The same 1.37.0 tree built against musl, for the C-library comparison.
     freeunit-musl) echo "drupal-bench-freeunit:musl" ;;
     freeunit-direct) echo "drupal-bench-freeunit:${FREEUNIT_TAG:-1.37.0}" ;;
@@ -438,8 +442,11 @@ emit() {  # phase side cell block slot metric value
 
 perf_parse() {  # file prefix ok
     awk -F, -v p="$2" -v n="$3" '
-        $3 ~ /^(cycles|instructions|context-switches|cpu-migrations)/ && $1 ~ /^[0-9.]+$/ {
+        $3 ~ /^(cycles|instructions|context-switches|cpu-migrations|branch-misses|L1-icache-load-misses|itlb_misses\.miss_causes_a_walk)/ && $1 ~ /^[0-9.]+$/ {
             e = $3; sub(/:.*/, "", e); sub(/^context-switches$/, "cs", e); sub(/^cpu-migrations$/, "migrations", e)
+            sub(/^branch-misses$/, "branch_misses", e)
+            sub(/^L1-icache-load-misses$/, "l1_icache_misses", e)
+            sub(/^itlb_misses\.miss_causes_a_walk$/, "itlb_miss_walks", e)
             printf "%s_%s %.4f\n", p, e, (n > 0 ? $1 / n : 0)
         }' "$1"
 }
@@ -520,12 +527,21 @@ PY
         perf_parse "$R/perf.s" s "$ok" | while read -r m v; do emit "$ph" "$side" "$cell" "$k" "$s" "$m" "$v"; done
         [ -s "$R/perf.db" ] && perf_parse "$R/perf.db" db "$ok" | while read -r m v; do emit "$ph" "$side" "$cell" "$k" "$s" "$m" "$v"; done
     fi
-    local alerts=0
+    local alerts=0 alog=
     [ "$pre" = 1 ] && alerts=$((alerts + 1))
     case "$rt" in
-    freeunit|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-direct) docker logs "$name" 2>&1 | grep -qE '\[(alert|crit|emerg)\]' && alerts=$((alerts + 1)) ;;
-    *) docker logs "$name" 2>&1 | grep -qE '\[(crit|emerg|alert)\]|worker process is shutting down unexpectedly' && alerts=$((alerts + 1)) ;;
+    freeunit|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-direct)
+        alog=$(docker logs "$name" 2>&1 | grep -E '\[(alert|crit|emerg)\]' || true) ;;
+    *)
+        alog=$(docker logs "$name" 2>&1 | grep -E '\[(crit|emerg|alert)\]|worker process is shutting down unexpectedly' || true) ;;
     esac
+    if [ -n "$alog" ]; then
+        alerts=$((alerts + 1))
+        # Read the text here: the container is removed a few lines down, so the
+        # counter alone leaves an INVALID cell with no cause to chase, which is
+        # exactly how one alert made a whole run unpublishable.
+        printf '%s\n' "$alog" | sed "s|^|  $ph $side $cell block $k slot $s ($rt) alert: |" >&2
+    fi
     emit "$ph" "$side" "$cell" "$k" "$s" alerts "$alerts"
     echo "  $ph $side $cell block $k slot $s ($rt): ok=$ok bad=$(awk '$1=="bad"{print $2}' "$R/oha.txt") server_us=$su db_us=$du alerts=$alerts"
     stop_rt "$name"

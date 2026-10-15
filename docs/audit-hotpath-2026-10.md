@@ -7,14 +7,17 @@ PERF_RECORD). Nothing in section 1-3 is a published result.
 Primary metric (unchanged): retired instructions per request (`s_instructions`),
 headline workload `drupal-front` (Drupal 11.4 page-cache hit, c=32).
 
-## 1. Baseline being challenged
+## 1. Baseline (claim-grade, reproduced on pro4s-2, 2026-10-15)
 
-Published: nginx+PHP-FPM 8.5.11 serves the cached Drupal front page with **+7.7%
-fewer** instructions per request than FreeUnit 1.37.0 and than master (11.4
-umami); bisect attributes master's whole response-path win to freeunit#638
-(-10.06%), #670 flat. So even after the regression fix, FreeUnit's per-request
-server cost stays above nginx-fpm, and the target of this audit is to find where
-those instructions go and shrink them.
+Published direction confirmed and sharpened: on drupal-front c32 (Drupal 11.4),
+**FreeUnit master spends fewer server instructions per request than nginx+PHP-FPM**
+— job 16 rerun on master (run
+16-front-anon-master-vs-fpm-11.4-sd-91675-20261015T211042Z): A (freeunit-master)
+4,708,061 vs B (nginx-fpm) 5,097,075 s_instructions per request, **B is +8.26%
+[95% CI +8.14, +8.38], 12/12 cells agree, null band 0.18%** (job 01 null gate
+PASS at ±0.1%). FreeUnit also leads rps (+7.4%), server_us (−7.2%),
+s_cycles (−2.5%). The audit's goal is therefore not catching up but **widening
+the margin**: fewer instructions per request on the same workload.
 
 ## 2. Local exploratory evidence (laptop, hello PHP, c=32 — ranks candidates only)
 
@@ -100,11 +103,23 @@ measured on the perf box (harness jobs 07-13 pattern extended to drupal-front).
 - **C5. nxt_http_static.c range init fix**: correctness-adjacent enabler for
   -Os; trivial.
 
-## 5. Pending (perf box, in order)
+## 5. Perf-box status and pending (phase 2 running in tmux `hotpath-p2`)
 
-1. tmux `hotpath-audit` loop: 01 (null) → 16i (icache PERF_EVENTS) → 16 → 34.
-2. 16r (PERF_RECORD + DECOMPOSE): kernel/user + front/worker attribution for
-   both sides; nginx-side hot-function table for 3.1's ground truth.
-3. Then implement C1 (branch in /home/andy/www/unit), gates (strict/style/
-   pytest), A/B at drupal-front with a branch-built runtime image; C4/C5 folded
-   if -Os or the static fix is touched.
+Done and pulled to harness `run/phpprof/box/`:
+- 01 null gate PASS (band 0.1-0.2%) — the box resolves <1% deltas today.
+- 16 master-vs-fpm: **CLAIM, FreeUnit ahead by 8.26% s_instructions** (above).
+- 16i with icache PMU events: CLAIM confirmed (8.23%), but `perf_parse` dropped
+  the icache/iTLB rows; the parse is fixed and 16i is re-queued.
+- 34 hello-master-vs-fpm: not yet run (gate).
+
+In flight (script `run/hotpath-p2.log` on the box): 16r (PERF_RECORD
+attribution) → docker build master-o2 / master-lto images (Dockerfile `CC_OPT`
+build-arg, default empty = unchanged) → jobs 40 (-O2 vs -O, within-commit A/B),
+41 (-O2+fat-LTO vs -O), 34, 16i-rerun. Each bench step re-passes the idle gate.
+
+Local code state: C5 fix (nxt_http_static.c range init, -Os-clean) sits
+uncommitted in worktree `/home/andy/www/unit/.kimi-hotpath` (branch
+`perf/hotpath-audit`, -Os and default builds clean, check-style OK). C1 (the
+-O2/LTO decision) is deliberately **not** a source change yet: jobs 40/41 measure
+the effect at drupal level first; landing a default-flag change is a maintainer
+call on top of those numbers.
