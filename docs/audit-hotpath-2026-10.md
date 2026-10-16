@@ -90,12 +90,38 @@ ic-stall cycles/req vs -O2 81,101 (-19.7%); LTO ≈ -O2 on stalls and a further
 -2.2% on instructions (matched-request back-to-back runs). Direction: -O2
 relieves the front-end bottleneck the profile shows; the box A/B decides.
 
+## 3.3b Front-end counters at drupal level (16i rerun, fixed parse, 2026-10-16)
+
+The icache rows the first 16i dropped now resolve, and they invert the laptop
+hypothesis: FreeUnit master (A) vs nginx-fpm (B) - **s_l1_icache_misses B is
++6.11% [+5.56, +6.65], 12/12 CLAIM** (B misses MORE in L1I), s_branch_misses B
+-7.04% (nginx's genuine win), s_itlb noisy. So on the real workload FreeUnit's
+instruction advantage comes WITH fewer i-cache misses: the identical libphp
+footprint dominates both sides, nginx's smaller server binary buys nothing
+measurable here, and the laptop's 67 KB-hot-set story was an artifact of the
+tiny hello workload where the server layer dominates. Machine-code size is not
+the drupal-level lever; php-hello (jobs 34/42/43) is where it could matter.
+
+## 3.4 Flag lever at drupal level: measured null (job 40, 2026-10-16)
+
+-O2 vs default -O at the SAME commit on drupal-front c32: A 4,703,964 vs
+B 4,699,003 s_instructions/req, delta -0.11% [CI -0.30, +0.09], null band 0.33,
+NO CLAIM. The PMU diagnostics agree: s_l1_icache_misses +0.23%, itlb +0.57%,
+branch_misses +1.18% - all inside noise. The -O2 lever that cut fetch stalls
+~20%/req in the local hello profile does not translate to the real workload:
+drupal's 4.7M instructions/request are dominated by PHP, and the quiet Skylake
+box does not show the front-end pressure of the shared laptop. Job 41 (LTO vs -O) repeats the null at drupal level: +0.12% [+0.01, +0.22],
+NO CLAIM, PMU flat. Consequence: a project-wide default-flag change is not
+justified by drupal-level data; the lever only matters where the server layer
+dominates (framework-free PHP). Jobs 42/43 measure exactly that (php-hello,
+-O2/LTO vs -O), queued in p5 after the 16r record rerun.
+
 ## 4. Ranked optimization candidates (pre-attribution)
 
-- **C1. Build unitd with -O2 (or -O2+flto).** Hot-set −25% with LTO; fewer
-  executed instructions measured on workers in the (confounded) smoke. Verify:
-  perf-lab hello/capp A/B, then a drupal-front job with a branch-built image.
-  Risk: strict-aliasing history (guarded), binary size, build-time cost of LTO.
+- **C1. Build unitd with -O2 (or -O2+flto).** REFUTED at drupal level by job 40
+  (NO CLAIM, band 0.33%); survives only if jobs 42/43 (php-hello) show the lever
+  where the server layer dominates - then it is a php-workload story, not a
+  project-wide default-flag change. Risk: strict-aliasing history (guarded).
 - **C2. Source-level cold/hot split** in nxt_router_process_http_request and
   nxt_router_response_ready_handler (move error/exception branches to noinline
   cold helpers); composes with C1. Effect small alone; measure via 16r records

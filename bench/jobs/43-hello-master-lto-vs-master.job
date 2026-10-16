@@ -1,0 +1,24 @@
+# php-hello, FreeUnit master built -O2 with fat LTO (A) vs the same commit at the
+# default -O (B): the LTO lever at the server-layer-dominated workload. Local
+# sizes: LTO shrinks the router hot set ~25%; job 40 showed the drupal-front
+# level cannot see flag effects, so this is where a difference would show.
+JOB=43-hello-master-lto-vs-master
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-master-lto
+RUNTIME_B=freeunit-master
+SITE=hello
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+PERF_EVENTS="cycles,instructions,branch-misses,context-switches,cpu-migrations,L1-icache-load-misses,itlb_misses.miss_causes_a_walk"
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="LTO is fewer server instructions per request than -O where the server layer dominates"
+FALSIFY="NO CLAIM, or LTO higher"
