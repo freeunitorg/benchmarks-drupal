@@ -57,6 +57,7 @@ case "$SITE" in
 11.5)          DRUPAL_TAG=drupal/recommended-project:11.5.x-dev;    PROFILE=demo_umami; DRUPAL_STABILITY="--stability=dev" ;;
 11.5-standard) DRUPAL_TAG=drupal/recommended-project:11.5.x-dev;    PROFILE=standard; DRUPAL_STABILITY="--stability=dev" ;;
 12.0)          DRUPAL_TAG=drupal/recommended-project:12.0.0-beta1; PROFILE=demo_umami ;;
+12.0-beta2)    DRUPAL_TAG=drupal/recommended-project:12.0.0-beta2; PROFILE=demo_umami ;;
 # 12.0-standard is deliberately absent: Drupal 12's standard profile installs no
 # content types, node view displays or frontpage view (only the demo_umami profile
 # carries them), so the install has no page to serve. Use 12.0, or a recipe.

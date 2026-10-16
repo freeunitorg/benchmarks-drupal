@@ -1,0 +1,13 @@
+# Drupal 12.0.0-beta2 (released 2026-10-14).  A separate site key, so the published
+# beta1 cells stay as they are and the two betas can be compared side by side on the
+# Drupal 12 page (the renderer files every 12.0* key under drupal-12.0).
+#
+# The site is built by scripts/site-build.sh from drupal/recommended-project:12.0.0-beta2
+# with the demo_umami profile: Drupal 12's standard profile ships no content types and
+# an admin-only front page, so only demo_umami has a page to serve.
+site:12.0-beta2
+job:bench/jobs/105-front-anon-freeunit-vs-nginx-fpm-12.0-beta2.job
+job:bench/jobs/106-front-auth-freeunit-vs-nginx-fpm-12.0-beta2.job
+job:bench/jobs/107-front-anon-freeunit-vs-apache-12.0-beta2.job
+job:bench/jobs/108-front-anon-master-vs-1370-12.0-beta2.job
+job:bench/jobs/109-front-auth-master-vs-1370-12.0-beta2.job

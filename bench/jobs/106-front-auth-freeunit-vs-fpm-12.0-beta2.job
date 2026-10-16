@@ -1,0 +1,20 @@
+# front-auth, FreeUnit vs nginx + PHP-FPM, Drupal 12.0.0-beta1.
+JOB=106-front-auth-freeunit-vs-fpm-12.0-beta2
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-auth
+RUNTIME_A=freeunit
+RUNTIME_B=nginx-fpm
+SITE=12.0-beta2
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="render-bound, near the band"
+FALSIFY="a CLAIM either way"
