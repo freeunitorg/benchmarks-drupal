@@ -183,8 +183,9 @@ perf_stop() {  # name
 }
 
 # Optional sampling attribution (hot-path audit): PERF_RECORD=1 records the same
-# pid groups perf stat watches, on ab cells only, into $R/perf.rec.<name>.data.
-# Default off; a plain job file never sets it, so nothing changes unless asked.
+# pid groups perf stat watches, on ab cells only, into $R/perf.rec.<name> (perf
+# writes the -o path verbatim). Default off; a plain job file never sets it, so
+# nothing changes unless asked.
 rec_start() {  # name pids
     [ "${PERF_RECORD:-0}" = 1 ] || return 0
     [ -n "$2" ] || return 0
@@ -192,7 +193,7 @@ rec_start() {  # name pids
     docker run -d --name "recrec-$$-$1" --rm --label "bench-run=${RUN_ID:-manual}" --label bench-role=perf \
         --cap-add PERFMON --pid=host \
         -v "$R:/out" "$PERF_IMAGE" \
-        perf record -F 999 --call-graph dwarf,8192 -o "/out/perf.rec.$1" -p "$2" >/dev/null || return 0
+        perf record -F 999 --call-graph dwarf,4096 -o "/out/perf.rec.$1" -p "$2" >>"$OUTDIR/rec.err" 2>&1 || { log "perf record failed for $1 (see rec.err)"; return 0; }
 }
 rec_stop() {  # name
     [ "${PERF_RECORD:-0}" = 1 ] || return 0
@@ -492,7 +493,7 @@ timed_cell() {  # phase side cell conns block slot runtime
         # keep only each side's LAST ab cell: stable names, later cells overwrite
         local g
         for g in s sf sw; do
-            [ -f "$R/perf.rec.$g.data" ] && cp "$R/perf.rec.$g.data" "$OUTDIR/perf.rec.$side-$g.data" 2>/dev/null
+            [ -f "$R/perf.rec.$g" ] && cp "$R/perf.rec.$g" "$OUTDIR/perf.rec.$side-$g" 2>/dev/null
         done
     fi
     python3 - "$R/oha.json" > "$R/oha.txt" <<'PY' || die "cannot read oha json"
