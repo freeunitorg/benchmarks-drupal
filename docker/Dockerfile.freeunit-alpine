@@ -14,10 +14,10 @@
 #
 #   docker build -f docker/Dockerfile.freeunit-alpine -t drupal-bench-freeunit:musl .
 ARG FREEUNIT_REF=1.37.0
-ARG FREEUNIT_SHA256=
+ARG FREEUNIT_SHA256=8ae237d5a32d77bb8a7426d844ce75aeb18583a4e47318f55e17839d865fad8c
 # Extra compiler options for a profiling build (e.g. -g for perf's DWARF-based
 # attribution; no effect on codegen, so such a build can be profiled and compared).
-ARG CC_OPT_EXTRA=8ae237d5a32d77bb8a7426d844ce75aeb18583a4e47318f55e17839d865fad8c
+ARG CC_OPT_EXTRA=
 
 FROM alpine:3.24 AS freeunit-build
 ARG FREEUNIT_REF
