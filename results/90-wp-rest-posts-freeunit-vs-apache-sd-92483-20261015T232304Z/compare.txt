@@ -1,0 +1,29 @@
+NO CLAIM wp-rest-posts-c32: inside the noise, no claim (B is 0.4 percent more server instructions per request, null band 0.8, 7 of 12 cells agree)
+job 90-wp-rest-posts-freeunit-vs-apache  run 90-wp-rest-posts-freeunit-vs-apache-sd-92483-20261015T232304Z  A None ()  B None ()  governor powersave/balance_power  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  wp-rest-posts-c32 s_instructions         124735835.275 124153697.189    -0.46     [-0.75, -0.18]   0.75   8/12  INVALID
+null  wp-rest-posts-c32 db_cs                        33.274       33.274    -0.00     [-0.43, +0.43]   0.43   5/12  INVALID
+null  wp-rest-posts-c32 db_cycles              17240558.154 17409833.727    +0.99     [-2.37, +4.35]   4.35   8/12  INVALID
+null  wp-rest-posts-c32 db_instructions         8318658.445  8320983.413    +0.03     [-0.28, +0.33]   0.33   7/12  INVALID
+null  wp-rest-posts-c32 db_migrations                 5.178        5.276    +1.89     [-0.90, +4.68]   4.68   9/12  INVALID
+null  wp-rest-posts-c32 db_us                      7228.343     7314.681    +1.20     [-2.15, +4.55]   4.55  10/12  INVALID
+null  wp-rest-posts-c32 p50_ms                      723.963      732.843    +1.24     [-1.31, +3.78]   3.78   7/12  INVALID
+null  wp-rest-posts-c32 p99_ms                     1234.757     1332.327    +8.49   [-17.08, +34.05]  34.05   7/12  INVALID
+null  wp-rest-posts-c32 rps                          43.112       42.460    -1.51     [-5.30, +2.28]   5.30  10/12  INVALID
+null  wp-rest-posts-c32 s_cs                         41.399       41.408    +0.03     [-2.38, +2.44]   2.44   7/12  INVALID
+null  wp-rest-posts-c32 s_cycles               110757106.774 110668162.701    -0.07     [-1.44, +1.30]   1.44   6/12  INVALID
+null  wp-rest-posts-c32 s_migrations                  0.492        0.550   +10.62   [-19.74, +40.98]  40.98   7/12  INVALID
+null  wp-rest-posts-c32 server_us                 44914.521    45287.102    +0.83     [-0.33, +2.00]   2.00   9/12  INVALID
+ab    wp-rest-posts-c32 s_instructions         124694711.707 125151101.480    +0.37     [-0.28, +1.01]   0.75   7/12  NO CLAIM
+ab    wp-rest-posts-c32 db_cs                        33.268       33.225    -0.13     [-0.48, +0.22]   0.43   6/12  NO CLAIM
+ab    wp-rest-posts-c32 db_cycles              17043487.526 17321556.697    +1.64     [-1.97, +5.26]   4.35   7/12  NO CLAIM
+ab    wp-rest-posts-c32 db_instructions         8322080.309  8319954.134    -0.03     [-0.31, +0.26]   0.33   4/12  NO CLAIM
+ab    wp-rest-posts-c32 db_migrations                 5.224        5.256    +0.69     [-2.53, +3.91]   4.68   6/12  NO CLAIM
+ab    wp-rest-posts-c32 db_us                      7153.388     7252.446    +1.40     [-1.93, +4.73]   4.55   7/12  NO CLAIM
+ab    wp-rest-posts-c32 p50_ms                      727.139      455.403   -37.37   [-39.56, -35.18]   3.78  12/12  CLAIM
+ab    wp-rest-posts-c32 p99_ms                     1143.994     8501.571  +644.16 [+627.65, +660.67]  34.05  12/12  NOISY
+ab    wp-rest-posts-c32 rps                          43.638       42.844    -1.80     [-5.52, +1.91]   5.30   8/12  NOISY
+ab    wp-rest-posts-c32 s_cs                         40.859       38.081    -6.79     [-9.08, -4.50]   2.44  11/12  CLAIM
+ab    wp-rest-posts-c32 s_cycles               110524433.077 111872683.482    +1.22     [-0.22, +2.66]   1.44   8/12  NO CLAIM
+ab    wp-rest-posts-c32 s_migrations                  0.543        0.244   -53.16   [-80.48, -25.84]  40.98  11/12  NOISY
+ab    wp-rest-posts-c32 server_us                 44852.314    45071.274    +0.50     [-0.32, +1.31]   2.00   6/12  NO CLAIM
