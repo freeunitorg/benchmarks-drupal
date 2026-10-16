@@ -119,10 +119,19 @@ Done and pulled to harness `run/phpprof/box/`:
   the icache/iTLB rows; the parse is fixed and 16i is re-queued.
 - 34 hello-master-vs-fpm: not yet run (gate).
 
-In flight (script `run/hotpath-p2.log` on the box): 16r (PERF_RECORD
-attribution) → docker build master-o2 / master-lto images (Dockerfile `CC_OPT`
-build-arg, default empty = unchanged) → jobs 40 (-O2 vs -O, within-commit A/B),
-41 (-O2+fat-LTO vs -O), 34, 16i-rerun. Each bench step re-passes the idle gate.
+Infra traps found in this stretch: (a) `perf record -o path` writes `path`
+verbatim — no `.data` suffix (first 16r lost its records to that assumption);
+(b) `--call-graph dwarf,8192` exceeds the box's perf mlock budget — dwarf,4096
+works; (c) `run.sh` exits non-zero on INVALID/NO-CLAIM, so a retry wrapper must
+treat "a fresh run dir with summary.json" as completion, not the exit code;
+(d) `cells.sh start_rt` switches on runtime names explicitly — a new
+`freeunit-master-o2`/`--lto` name must be added to the freeunit case or the
+container starts with the nginx path and serves nothing (job 40's first INVALID
+runs; fixed, images verified healthy).
+
+In flight (script `run/hotpath-p3.log` on the box, supersedes p2): jobs 40 (-O2 vs -O) and
+41 (-O2+fat-LTO vs -O) with the pre-built master-o2/master-lto images, then the
+16r rerun (records), 34, 16i-rerun. Each bench step re-passes the idle gate.
 
 Local code state: C5 fix (nxt_http_static.c range init, -Os-clean) sits
 uncommitted in worktree `/home/andy/www/unit/.kimi-hotpath` (branch
