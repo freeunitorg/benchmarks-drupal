@@ -186,14 +186,17 @@ perf_stop() {  # name
 # pid groups perf stat watches, on ab cells only, into $R/perf.rec.<name> (perf
 # writes the -o path verbatim). Default off; a plain job file never sets it, so
 # nothing changes unless asked.
-rec_start() {  # name pids
+rec_start() {  # name (pids ignored: records the whole SERVER_CPUS set)
     [ "${PERF_RECORD:-0}" = 1 ] || return 0
-    [ -n "$2" ] || return 0
     docker rm -f "recrec-$$-$1" >/dev/null 2>&1 || true
+    # pid-targeted record fails from a sibling container ("Couldn't create
+    # thread/CPU maps: No such process" - the target lives in another pid
+    # namespace); the runtimes are pinned to SERVER_CPUS, so record the set.
     docker run -d --name "recrec-$$-$1" --rm --label "bench-run=${RUN_ID:-manual}" --label bench-role=perf \
         --cap-add PERFMON --pid=host \
         -v "$R:/out" "$PERF_IMAGE" \
-        perf record -F 999 --call-graph dwarf,4096 -o "/out/perf.rec.$1" -p "$2" >>"$OUTDIR/rec.err" 2>&1 || { log "perf record failed for $1 (see rec.err)"; return 0; }
+        perf record -F 999 --call-graph dwarf,4096 -a -C "$SERVER_CPUS" \
+        -o "/out/perf.rec.$1" >>"$OUTDIR/rec.err" 2>&1 || { log "perf record failed for $1 (see rec.err)"; return 0; }
 }
 rec_stop() {  # name
     [ "${PERF_RECORD:-0}" = 1 ] || return 0
@@ -472,8 +475,7 @@ timed_cell() {  # phase side cell conns block slot runtime
         perf_start sw "$(echo $wpids | tr ' ' ',')"
     fi
     if [ "${PERF_RECORD:-0}" = 1 ] && [ "$ph" = ab ]; then
-        rec_start s "$(echo $pids | tr ' ' ',')"
-        [ "${DECOMPOSE:-0}" = 1 ] && { rec_start sf "$(echo $fpids | tr ' ' ',')"; rec_start sw "$(echo $wpids | tr ' ' ',')"; }
+        rec_start "$side"
     fi
     sleep 0.2
     local a0 a1 d0 d1 f0 f1 w0 w1
@@ -487,14 +489,9 @@ timed_cell() {  # phase side cell conns block slot runtime
     perf_stop sf
     perf_stop sw
     if [ "${PERF_RECORD:-0}" = 1 ] && [ "$ph" = ab ]; then
-        rec_stop s
-        rec_stop sf
-        rec_stop sw
-        # keep only each side's LAST ab cell: stable names, later cells overwrite
-        local g
-        for g in s sf sw; do
-            [ -f "$R/perf.rec.$g" ] && cp "$R/perf.rec.$g" "$OUTDIR/perf.rec.$side-$g" 2>/dev/null
-        done
+        rec_stop "$side"
+        # keep only each side's LAST ab cell: stable name, later cells overwrite
+        [ -f "$R/perf.rec.$side" ] && cp "$R/perf.rec.$side" "$OUTDIR/perf.rec.$side" 2>/dev/null
     fi
     python3 - "$R/oha.json" > "$R/oha.txt" <<'PY' || die "cannot read oha json"
 import json, sys
