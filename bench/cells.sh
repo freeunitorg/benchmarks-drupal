@@ -108,6 +108,10 @@ image_for() {  # runtime family -> image
     freeunit-master-lto) echo "drupal-bench-freeunit:master-lto" ;;
     # The same 1.37.0 tree built against musl, for the C-library comparison.
     freeunit-musl) echo "drupal-bench-freeunit:musl" ;;
+    # PR #742: the same tree with the mixed atomic/plain accesses finished, and its
+    # base (master at ff694772), so the atomic cost can be measured on its own.
+    freeunit-742-base) echo "drupal-bench-freeunit:742-base" ;;
+    freeunit-742-head) echo "drupal-bench-freeunit:742-head" ;;
     freeunit-direct) echo "drupal-bench-freeunit:${FREEUNIT_TAG:-1.37.0}" ;;
     nginx-fpm) echo "drupal-bench-fpm:${TAG}" ;;
     nginx-src) echo "drupal-bench-nginx-src:${TAG}" ;;
@@ -301,7 +305,7 @@ start_rt() {  # runtime side -> name
     local preload_vol=()
     [ -f "$sitedir/preload.ini" ] && preload_vol=(-v "$sitedir/preload.ini:/usr/local/etc/php/conf.d/zz-preload.ini:ro")
     case "$rt" in
-    freeunit|freeunit-direct|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-master-o2|freeunit-master-lto)
+    freeunit|freeunit-direct|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head)
         local cfg="$RESROOT/runtimes/$rt.json"
         [ -f "$cfg" ] || cfg="$RESROOT/runtimes/freeunit.json"
         docker run -d --name "$name" --network "$net" --cpuset-cpus "$SERVER_CPUS" \
@@ -528,7 +532,7 @@ PY
     local alerts=0 alog=
     [ "$pre" = 1 ] && alerts=$((alerts + 1))
     case "$rt" in
-    freeunit|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-direct|freeunit-master-o2|freeunit-master-lto)
+    freeunit|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-direct|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head)
         alog=$(docker logs "$name" 2>&1 | grep -E '\[(alert|crit|emerg)\]' || true) ;;
     *)
         alog=$(docker logs "$name" 2>&1 | grep -E '\[(crit|emerg|alert)\]|worker process is shutting down unexpectedly' || true) ;;

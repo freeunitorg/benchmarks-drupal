@@ -1,0 +1,21 @@
+# PR #742 against its base ff694772, on the Drupal 12 anonymous front page: the IPC-heavy case, where the port path #742 touches is exercised per request.
+JOB=116-742-front-anon-atomic
+ISSUE="https://github.com/freeunitorg/freeunit/issues/742"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-742-base
+RUNTIME_B=freeunit-742-head
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="finishing the atomic/plain sweep does not cost measurable instructions on the request path"
+FALSIFY="a delta inside the null band, or the head measurably slower: then the fix has a price worth recording"
