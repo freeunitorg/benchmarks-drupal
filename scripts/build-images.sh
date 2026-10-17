@@ -14,7 +14,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-MASTER_REF=${FREEUNIT_MASTER_REF:-7c54e301e62c69dab588941723d30a52f74731bd}
+MASTER_REF=${FREEUNIT_MASTER_REF:-df8b9ccb0d05ae28ed650f91d63e2659a4b3cb52}
 # The previous master pin, for a within-run A/B of the commits merged since it.
 MASTER_OLD_REF=${FREEUNIT_MASTER_OLD_REF:-8492d5ee43a99a8f1504598ed44d046b61d85131}
 # The point between the two, so a gain can be attributed to the commit that caused it.
