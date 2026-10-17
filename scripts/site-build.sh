@@ -57,6 +57,12 @@ case "$SITE" in
 11.5)          DRUPAL_TAG=drupal/recommended-project:11.5.x-dev;    PROFILE=demo_umami; DRUPAL_STABILITY="--stability=dev" ;;
 11.5-standard) DRUPAL_TAG=drupal/recommended-project:11.5.x-dev;    PROFILE=standard; DRUPAL_STABILITY="--stability=dev" ;;
 12.0)          DRUPAL_TAG=drupal/recommended-project:12.0.0-beta1; PROFILE=demo_umami ;;
+# 12.0-beta2 is a security release (SA-CORE-2026-014, -015, -016), so the beta1 and
+# beta2 rows on the Drupal 12 page are not a like-for-like version comparison: the
+# delta between them carries the security hardening, including the removal of the
+# Navigation Top Bar module and of query serialization.  Keep beta1 as the
+# historical baseline, and do not read its rows as a recommendation: 12.0-beta1 has
+# the vulnerabilities this release fixes.
 12.0-beta2)    DRUPAL_TAG=drupal/recommended-project:12.0.0-beta2; PROFILE=demo_umami ;;
 # 12.0-standard is deliberately absent: Drupal 12's standard profile installs no
 # content types, node view displays or frontpage view (only the demo_umami profile
