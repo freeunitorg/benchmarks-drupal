@@ -1,0 +1,27 @@
+# front-anon, current master measured by commit rather than by the :master tag,
+# against the pinned 1.37.0 tarball, Drupal 12.0.
+#
+# An image named for the commit, not a moved :master: the hot-path audit compares
+# :master with :master-o2/:master-lto images built from one master commit (42, 43,
+# 16r), and retagging :master under those pairs would silently void them. Same cell
+# as 06, so the two runs answer the same question on two master commits.
+JOB=118-front-anon-master-33896f7-vs-1370-12.0
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-master-33896f7
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="master at 33896f7e matches or beats 1.37.0 on a page-cache-hit Drupal 12 cell"
+FALSIFY="master above 1.37.0 by more than the null band: a post-release regression the page should show"
