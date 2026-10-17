@@ -39,7 +39,9 @@ SITE_TITLE = {
     "11.4-pgsql": "Drupal 11.4 on PostgreSQL",
     "11.4-sqlite": "Drupal 11.4 on SQLite",
     "12.0": "Drupal 12.0.0-beta1, demo_umami profile",
-    "12.0-beta2": "Drupal 12.0.0-beta2, demo_umami profile",
+    # A security release: beta1 has the vulnerabilities this fixes (SA-CORE-2026-014,
+    # -015, -016), so its rows are the historical baseline, not a recommendation.
+    "12.0-beta2": "Drupal 12.0.0-beta2 (security release), demo_umami profile",
     "symfony": "Symfony 7.4",
     "hello": "Framework-free PHP",
     "wp": "WordPress",
