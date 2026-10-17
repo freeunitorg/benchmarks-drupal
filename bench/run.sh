@@ -54,6 +54,29 @@ DB_B=${DB_B:-$DB}
 # The idle gate runs before the cell port is computed, so keep the default here.
 PORT=${PORT:-$BASE_PORT}
 
+# The three CPU sets must not share a core. A load generator on a server core
+# steals the CPU it is trying to measure, and the cost lands in the null band
+# rather than in the delta, so the run still looks valid and is void: a generator
+# with more threads than the cores it owns, pinned to one of them, measured a
+# null band of 30-42% and resolved no point of a concurrency sweep. Refuse here
+# rather than publish that.
+cpus_overlap() {  # two comma lists -> 0 when they share a cpu
+    local x y
+    for x in ${1//,/ }; do
+        for y in ${2//,/ }; do
+            [ "$x" = "$y" ] && return 0
+        done
+    done
+    return 1
+}
+for _pair in "SERVER_CPUS:LOAD_CPUS" "SERVER_CPUS:DB_CPUS" "LOAD_CPUS:DB_CPUS"; do
+    _a=${_pair%%:*}; _b=${_pair#*:}
+    if cpus_overlap "${!_a}" "${!_b}"; then
+        echo "run.sh: $_a=${!_a} and $_b=${!_b} share a cpu; the measurement is void" >&2
+        exit 1
+    fi
+done
+
 # The host is part of the identity: absolute means from two boxes must never be
 # pooled, and the page groups by it.
 BENCH_HOST=${BENCH_HOST:-$(hostname -s)}

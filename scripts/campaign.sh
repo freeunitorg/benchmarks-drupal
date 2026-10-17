@@ -14,6 +14,11 @@
 # $RUNROOT/campaign-health.log. Nothing here is parallel: the box is claimed by
 # one step at a time, and bench/run.sh refuses a busy box.
 # Numeric output must not follow the caller locale (awk/printf would use ",").
+#
+# Order the steps file with the cell you most want answered first. The idle gate
+# needs N consecutive quiet samples, so on a box shared with another session's
+# containers it may not open for hours, and two gate-waiting campaigns on one box
+# starve each other. A step that never starts is a step with no result.
 export LC_ALL=C
 set -u
 
@@ -26,13 +31,27 @@ touch "$DONE"
 
 say() { printf '%s %s\n' "$(date -u +%FT%TZ)" "$*" | tee -a "$RUNROOT/campaign.log"; }
 
-# Hard stop: the box is granted until DEADLINE_UTC (default 13:00Z = 15:00 CEST).
-# A step that would start after it is recorded as skipped, so a rerun resumes.
-DEADLINE_UTC=${DEADLINE_UTC:-2026-10-10T13:00:00Z}
+# Hard stop: the box is granted until DEADLINE_UTC.  The default is six hours from now,
+# not a fixed date: a fixed date becomes a past date, and a past deadline skips every
+# step (the check below makes that a fatal error instead).  DEADLINE_UTC=none runs
+# without a bound, and a step that would start after it is recorded as skipped, so a
+# rerun resumes.
+DEADLINE_UTC=${DEADLINE_UTC:-$(date -u -d '+6 hours' +%FT%TZ)}
 past_deadline() {
     case "${DEADLINE_UTC}" in ""|none) return 1 ;; esac
     [ "$(date -u +%s)" -ge "$(date -u -d "$DEADLINE_UTC" +%s 2>/dev/null || echo 0)" ]
 }
+
+# A deadline that has already passed stops the loop at the very first step, and
+# the log then reads like a steps file that ran out -- which is how a relaunch
+# after a night's work measures nothing at all and reports nothing wrong. The
+# default above is a fixed date, so this is the normal case, not a rare one. Say
+# so loudly, and name the fix. DEADLINE_UTC=none means no deadline.
+if past_deadline; then
+    say "FATAL DEADLINE_UTC=$DEADLINE_UTC is already past: every step would be skipped"
+    say "  relaunch with DEADLINE_UTC=$(date -u -d '+6 hours' +%FT%TZ), or DEADLINE_UTC=none"
+    exit 2
+fi
 
 # The runtime configs cells.sh mounts live in $RUNROOT/runtimes; refresh them from
 # the repository every run so a config fix (e.g. the opcache string bug) cannot be

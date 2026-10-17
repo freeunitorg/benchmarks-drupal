@@ -4,7 +4,7 @@
 |---|---|---|---|
 | `mysql` (default) | `mysql` (PDO) | `Drupal\mysql\Driver\Database\mysql` / `core/modules/mysql/src/Driver/Database/mysql/` | MariaDB 10.11 |
 | `mysqli` | `mysqli` (experimental core driver) | `Drupal\mysqli\Driver\Database\mysqli` / `core/modules/mysqli/src/Driver/Database/mysqli/` | MariaDB 10.11, same server, different PHP extension |
-| `pgsql` | `pgsql` | `Drupal\pgsql\Driver\Database\pgsql` / `core/modules/pgsql/src/Driver/Database/pgsql/` | PostgreSQL 17, `trust` auth, `drupal` DB |
+| `pgsql` | `pgsql` | `Drupal\pgsql\Driver\Database\pgsql` / `core/modules/pgsql/src/Driver/Database/pgsql/` | PostgreSQL 18, `trust` auth, `drupal` DB |
 | `sqlite` | `sqlite` | `Drupal\sqlite\Driver\Database\sqlite` / `core/modules/sqlite/src/Driver/Database/sqlite/` | a file under `sites/default/files/.sqlite`, no server |
 
 `mysql` and `mysqli` hit the same MariaDB data; only the PHP extension and the
@@ -15,6 +15,12 @@ its own site directory (`site/<line>-<profile>-<db>`) and its own `meta.txt` lin
 
 The images carry `pdo_mysql`, `mysqli`, `pdo_pgsql` and `pdo_sqlite`, so one PHP
 build serves every backend.
+
+18, not 17: Drupal 12's installer refuses an older server with `server version
+17.11 is less than the minimum required 18`, and the refusal happens during the
+install, so a whole 12.0 pgsql arm is dead while the mysql arms measure fine.
+11.4 accepts 17, which is why the trap only appears once the matrix grows a
+Drupal 12 column.
 
 Why this axis matters for FreeUnit: `mysqli` keeps a native connection that the
 experimental driver reuses, and a PHP worker target (issue 596) would let a

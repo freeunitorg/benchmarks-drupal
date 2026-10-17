@@ -10,7 +10,9 @@
 # reader knows the server is MariaDB 11.8 rather than the pinned 10.11.
 #
 #   docker build -f docker/Dockerfile.db -t drupal-bench-db:1 .
-#   docker run -e DB=pgsql   drupal-bench-db:1     # PostgreSQL 17 on :5432
+#   docker run -e DB=pgsql   drupal-bench-db:1     # PostgreSQL 17 on :5432, which is too
+#                                                       old for a Drupal 12 site; those
+#                                                       need postgres:18 instead
 #   docker run -e DB=mysql   drupal-bench-db:1     # MariaDB 11.8 on :3306
 #   docker run -e DB=sqlite  drupal-bench-db:1     # nothing to serve; stays up
 #

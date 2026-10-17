@@ -51,6 +51,26 @@ docker build -f docker/Dockerfile.php --target freenginx-fpm -t drupal-bench-fre
 docker pull mariadb:10.11
 docker pull postgres:18
 
+# Drupal 12 refuses an older server ("server version 17.11 is less than the
+# minimum required 18"), and it refuses during the install, so a matrix pinned to
+# 17 builds every mysql arm and fails every pgsql one with no shared cause. Read
+# the major version out of the image that is actually here rather than trusting the
+# tag: a job or a site step may still set PG_IMAGE to something else. A site that
+# dies here costs a whole idle window.
+PG_IMAGE=${PG_IMAGE:-postgres:18}
+PG_MAJOR=$(docker run --rm --entrypoint postgres "$PG_IMAGE" --version 2>/dev/null \
+    | awk '{for (i = 1; i <= NF; i++) if ($i == "(PostgreSQL)") { split($(i + 1), a, "."); print a[1]; exit }}')
+if [ -z "$PG_MAJOR" ]; then
+    echo "build-images: cannot read a version out of $PG_IMAGE; refusing to continue" >&2
+    exit 1
+fi
+if [ "$PG_MAJOR" -lt 18 ]; then
+    echo "build-images: $PG_IMAGE is PostgreSQL $PG_MAJOR and Drupal 12 needs 18 or newer" >&2
+    echo "  (the installer answers \"server version $PG_MAJOR is less than the minimum required 18\")" >&2
+    exit 1
+fi
+echo "postgres image $PG_IMAGE is major $PG_MAJOR"
+
 # The version each webserver image actually carries, so a published run can name
 # it without inspecting the image later.
 {

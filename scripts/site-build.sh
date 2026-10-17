@@ -133,14 +133,34 @@ elif [ -n "${DBC_IMAGE:-}" ]; then
     fi
 elif [ "${DB}" = pgsql ]; then
     DB_URL="pgsql://postgres@db/drupal"
+    # postgres:18 keeps its cluster under /var/lib/postgresql/18/docker, so the
+    # volume belongs at /var/lib/postgresql and never at .../postgresql/data: that
+    # path is the pre-18 layout and is simply unused here, which reads as a slow
+    # first start rather than a misconfiguration. A volume that already holds a
+    # version-17 cluster makes the 18 server exit at once ("database files are
+    # incompatible with server"), and the only error the next step reports is
+    # "could not translate host name db" -- a DNS complaint about a container that
+    # is gone. So wait for readiness, and when it never comes, print the log and
+    # name the volume to remove instead of letting the install fail on DNS.
     docker run -d --name "$DBC" --network "$NET" --network-alias db \
         -v "$DBCVOL:/var/lib/postgresql" \
         -e POSTGRES_DB=drupal -e POSTGRES_HOST_AUTH_METHOD=trust \
         "${PG_IMAGE:-postgres:18}" >/dev/null
+    pg_ok=0
     for _ in $(seq 60); do
-        docker exec "$DBC" pg_isready -U postgres -d drupal >/dev/null 2>&1 && break
+        if docker exec "$DBC" pg_isready -U postgres -d drupal >/dev/null 2>&1; then
+            pg_ok=1; break
+        fi
+        [ "$(docker inspect -f '{{.State.Running}}' "$DBC" 2>/dev/null || echo false)" = true ] || break
         sleep 1
     done
+    if [ "$pg_ok" != 1 ]; then
+        echo "site-build: $DBC never answered pg_isready; its log follows" >&2
+        docker logs "$DBC" 2>&1 | tail -n 20 >&2 || true
+        echo "  if it exited at once, $DBCVOL holds a cluster this server cannot use:" >&2
+        echo "  remove it (docker volume rm $DBCVOL) and rebuild with --force." >&2
+        exit 1
+    fi
 elif [ "${DB}" = mysql ] || [ "${DB}" = mysqli ]; then
     DB_URL="mysql://root@db/drupal"
     docker run -d --name "$DBC" --network "$NET" --network-alias db \
