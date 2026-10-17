@@ -1,0 +1,35 @@
+job=105-front-anon-freeunit-vs-nginx-fpm-12.0-beta2
+run_id=105-front-anon-freeunit-vs-nginx-fpm-12.0-beta2-sd-92483-20261016T230632Z
+host=sd-92483
+date=2026-10-16T23:19:32Z
+workload=drupal-front
+runtime_a=freeunit
+runtime_b=nginx-fpm
+site=12.0-beta2
+db=mysql
+phases=null ab conns=32 dur=8 warm=2 reps=3 rate=
+server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=4,5
+governor=powersave
+epp=balance_power
+kernel=6.8.0-136-generic
+oha=oha 1.16.0
+perf_image=1ec7891af56e
+freeunit_image=6be9c9d16d72
+freeunit_master_sha=b09815f1721b439bbd7aa91160c96a40e8ff2328
+freeunit_master_image=225ed7aa133a
+freeunit_master_old_sha=8492d5ee43a99a8f1504598ed44d046b61d85131
+freeunit_master_old_image=3c823b13d0c6
+freeunit_master_mid_sha=dc30c8a7e76fe86f8063ce7eafcefc285137629a
+freeunit_master_mid_image=1601acfcbc37
+fpm_image=2cda8bbb907f
+apache_image=28621247a0e0
+mariadb_image=7db29378d4fd
+issue=https://github.com/freeunitorg/benchmarks-drupal
+expect=the Debian nginx package and FreeUnit are compared
+falsify=a delta inside the null band, or the fork ahead of its own baseline
+tag=drupal/recommended-project:12.0.0-beta2 drupal=12.0.0-beta2 php=8.5.11 profile=demo_umami drush=0 composer_opt=1 preload=0
+site-build: auth cookie verified (session cookie plus dynamic cache header)
+site=12.0-beta2
+runroot=/data/projects/benchmarks-drupal/run
+installed=2026-10-16T21:23:30Z
+user=bench-user
