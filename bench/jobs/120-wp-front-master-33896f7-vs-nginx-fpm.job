@@ -1,0 +1,23 @@
+# Same cell as 43 with current master (33896f7e), so a change between the release
+# and today's master shows up on a framework that is not Drupal. The master commit
+# is recorded in site-meta.txt/meta.txt of the run.
+JOB=120-wp-front-master-33896f7-vs-nginx-fpm
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=wp-front
+RUNTIME_A=freeunit-master-33896f7
+RUNTIME_B=nginx-fpm
+SITE=wp
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="current master behaves like the release on a full WordPress render"
+FALSIFY="NO CLAIM, or master above the classic stack"

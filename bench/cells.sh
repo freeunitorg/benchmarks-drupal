@@ -23,7 +23,21 @@ set -u
 RESROOT="${RESROOT:-${RUNROOT:-/data/projects/benchmarks-drupal/run}}"
 OUT="${OUT:-$RESROOT}/results.tsv"
 OUTDIR=$(dirname "$OUT")
-R=$(mktemp -d /tmp/drupal-bench.XXXXXX)
+# Scratch goes beside the run, not into /tmp: on the perf boxes /tmp is on the
+# 40 GB root, and a PERF_RECORD job writes its recordings here. A 27 GB leftover
+# perf file filled / on pro4s-4 on 2026-10-17, which broke docker builds and made
+# the idle gate refuse every run; the scratch dirs were never removed either.
+TMPBASE=${BENCH_TMPDIR:-$RESROOT/tmp}
+mkdir -p "$TMPBASE" 2>/dev/null || TMPBASE=/tmp
+R=$(mktemp -d "$TMPBASE/drupal-bench.XXXXXX")
+# Keep the scratch of a failed run for diagnosis (rec.err, perf.rec.*), drop it
+# when the cells completed.
+scratch_cleanup() {
+    rc=$?
+    [ "$rc" = 0 ] && rm -rf "$R"
+    return "$rc"
+}
+trap scratch_cleanup EXIT
 OHA=${OHA:-oha}
 PERF_IMAGE=${PERF_IMAGE:-freeunit-perf-lab:1}
 PERF_EVENTS=${PERF_EVENTS:-cycles,instructions,context-switches,cpu-migrations}
@@ -112,6 +126,10 @@ image_for() {  # runtime family -> image
     # base (master at ff694772), so the atomic cost can be measured on its own.
     freeunit-742-base) echo "drupal-bench-freeunit:742-base" ;;
     freeunit-742-head) echo "drupal-bench-freeunit:742-head" ;;
+    # A master commit named in the tag, so a newer master can be measured without
+    # moving :master: the hot-path audit compares :master with :master-o2 and
+    # :master-lto images built from one commit (42, 43, 16r).
+    freeunit-master-33896f7) echo "drupal-bench-freeunit:master-33896f7" ;;
     freeunit-direct) echo "drupal-bench-freeunit:${FREEUNIT_TAG:-1.37.0}" ;;
     nginx-fpm) echo "drupal-bench-fpm:${TAG}" ;;
     nginx-src) echo "drupal-bench-nginx-src:${TAG}" ;;
@@ -205,8 +223,17 @@ rec_start() {  # name (pids ignored: records the whole SERVER_CPUS set)
 rec_stop() {  # name
     [ "${PERF_RECORD:-0}" = 1 ] || return 0
     docker kill -s INT "recrec-$$-$1" >/dev/null 2>&1 || true
-    local i
-    for i in $(seq 60); do docker ps -q -f "name=recrec-$$-$1" | grep -q . || break; sleep 0.1; done
+    # perf flushes its data file on SIGINT; on a loaded box that flush takes
+    # seconds, and each docker ps here is itself slow. Wait up to 60 s before
+    # the forced removal, and record the exit code for diagnosis: a killed
+    # recorder (no perf.rec file) shows up here as exit=137.
+    local i rc
+    for i in $(seq 120); do docker ps -q -f "name=recrec-$$-$1" | grep -q . || break; sleep 0.5; done
+    rc=$(docker inspect -f '{{.State.ExitCode}}' "recrec-$$-$1" 2>/dev/null || echo gone)
+    {
+        echo "rec_stop $1 exit=$rc"
+        docker logs "recrec-$$-$1" 2>&1 | tail -8
+    } >>"$OUTDIR/rec.err" 2>/dev/null || true
     docker rm -f "recrec-$$-$1" >/dev/null 2>&1 || true
 }
 
@@ -305,7 +332,7 @@ start_rt() {  # runtime side -> name
     local preload_vol=()
     [ -f "$sitedir/preload.ini" ] && preload_vol=(-v "$sitedir/preload.ini:/usr/local/etc/php/conf.d/zz-preload.ini:ro")
     case "$rt" in
-    freeunit|freeunit-direct|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head)
+    freeunit|freeunit-direct|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head|freeunit-master-33896f7)
         local cfg="$RESROOT/runtimes/$rt.json"
         [ -f "$cfg" ] || cfg="$RESROOT/runtimes/freeunit.json"
         docker run -d --name "$name" --network "$net" --cpuset-cpus "$SERVER_CPUS" \
@@ -532,7 +559,7 @@ PY
     local alerts=0 alog=
     [ "$pre" = 1 ] && alerts=$((alerts + 1))
     case "$rt" in
-    freeunit|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-direct|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head)
+    freeunit|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-direct|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head|freeunit-master-33896f7)
         alog=$(docker logs "$name" 2>&1 | grep -E '\[(alert|crit|emerg)\]' || true) ;;
     *)
         alog=$(docker logs "$name" 2>&1 | grep -E '\[(crit|emerg|alert)\]|worker process is shutting down unexpectedly' || true) ;;

@@ -1,0 +1,23 @@
+# Same cell as 87 with current master (33896f7e) on Drupal 12.0: the alternative
+# against mod_php. The master image is named for the commit so the :master tag can
+# stay where the hot-path audit's flag pairs (42, 43, 16r) pinned it.
+JOB=119-front-anon-master-33896f7-vs-apache-12.0
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-master-33896f7
+RUNTIME_B=apache
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="mod_php costs more per request than current master"
+FALSIFY="a delta inside the null band, or Apache cheaper"
