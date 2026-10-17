@@ -121,7 +121,7 @@ installed site:
 |---|---|---|
 | `mysql` | `mysql` (PDO) | MariaDB 10.11 |
 | `mysqli` | the experimental core `mysqli` driver | the same MariaDB, different PHP extension |
-| `pgsql` | `pgsql` | PostgreSQL 17 (`trust`) |
+| `pgsql` | `pgsql` | PostgreSQL 18 (`trust`); Drupal 12 refuses 17 |
 | `sqlite` | `sqlite` | a file under `sites/default/files/` |
 
 The images carry `pdo_mysql`, `mysqli`, `pdo_pgsql` and `pdo_sqlite`, so one PHP
@@ -129,6 +129,13 @@ build serves every backend. [docker/db-drivers.md](docker/db-drivers.md) has the
 `mysqli` pair is interesting for a future PHP worker target (issue 596): a
 connection that survives between requests is where a persistent in-process worker
 can win.
+
+PostgreSQL is 18 for one reason: Drupal 12's installer refuses an older server
+with `server version 17.11 is less than the minimum required 18`, so a matrix
+pinned to 17 fails every `DB=pgsql` build for a 12.0 site (jobs 69-71) while the
+mysql, mysqli and sqlite arms keep measuring. Drupal 11.4 does not need 18.
+`scripts/build-images.sh` reads the major version of the image it pulled and
+refuses to go on with anything below 18, so this cannot be re-pinned by accident.
 
 ## Pins (recorded per run in `meta.txt`)
 
@@ -154,7 +161,11 @@ runtimes, null band in every job. Headlines on `s_instructions` per request:
 * No claim for FreeUnit master vs the pinned 1.37.0 on either Drupal workload or
   on Symfony, and none for the `share` probe.
 
-Drupal 12.0.0-beta1 is blocked: drush 13 needs `guzzlehttp/guzzle ^7`, every 7.x
-release is refused by the advisory policy, and the 12.0 lock pins guzzle 8, so the
-site cannot be installed; see `docs/progress.md`. Phase 1 (PHP worker mode, issue
-596) and phase 2 (schedules, PR 452) are planned but not started.
+Drupal 12.x sites install without drush: drush 13 needs `guzzlehttp/guzzle ^7`
+while core-recommended pins guzzle 8, and the two cannot be satisfied in one
+graph, so `scripts/site-build.sh` drives the 12.x sites with core's own installer
+through `apps/drupal_cli.php` and uses Drupal's own `vendor/bin/dr` for the cache
+rebuild and the login link. `12.0-standard` is refused by the builder on purpose:
+the standard profile ships no content model, so there is no front page to serve.
+Phase 1 (PHP worker mode, issue 596) and phase 2 (schedules, PR 452) are planned
+but not started.
