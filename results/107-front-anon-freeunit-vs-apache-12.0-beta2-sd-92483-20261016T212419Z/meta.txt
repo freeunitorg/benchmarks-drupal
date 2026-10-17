@@ -1,0 +1,35 @@
+job=107-front-anon-freeunit-vs-apache-12.0-beta2
+run_id=107-front-anon-freeunit-vs-apache-12.0-beta2-sd-92483-20261016T212419Z
+host=sd-92483
+date=2026-10-16T21:37:34Z
+workload=drupal-front
+runtime_a=freeunit
+runtime_b=apache
+site=12.0-beta2
+db=mysql
+phases=null ab conns=32 dur=8 warm=2 reps=3 rate=
+server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=4,5
+governor=powersave
+epp=balance_power
+kernel=6.8.0-136-generic
+oha=oha 1.16.0
+perf_image=1ec7891af56e
+freeunit_image=d035c49eb8ff
+freeunit_master_sha=b09815f1721b439bbd7aa91160c96a40e8ff2328
+freeunit_master_image=80f6aa5cda0e
+freeunit_master_old_sha=8492d5ee43a99a8f1504598ed44d046b61d85131
+freeunit_master_old_image=d2a854f62db9
+freeunit_master_mid_sha=dc30c8a7e76fe86f8063ce7eafcefc285137629a
+freeunit_master_mid_image=0b0d4934334c
+fpm_image=7808484a6bc4
+apache_image=0063dd63bb4d
+mariadb_image=7db29378d4fd
+issue=https://github.com/freeunitorg/benchmarks-drupal
+expect=mod_php costs more per request than the alternative
+falsify=a delta inside the null band, or Apache cheaper
+tag=drupal/recommended-project:12.0.0-beta2 drupal=12.0.0-beta2 php=8.5.11 profile=demo_umami drush=0 composer_opt=1 preload=0
+site-build: auth cookie verified (session cookie plus dynamic cache header)
+site=12.0-beta2
+runroot=/data/projects/benchmarks-drupal/run
+installed=2026-10-16T21:23:30Z
+user=bench-user
