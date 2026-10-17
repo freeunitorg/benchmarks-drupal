@@ -157,7 +157,14 @@ OUT="$OUTDIR"; RESROOT="$RUNROOT"
 COOKIE_FILE="$SITE_DIR/cookie.txt"; COOKIE_FILE_B="$SITE_DIR_B/cookie.txt"
 # The WordPress editor cell needs the id of the post the site build created; it is
 # in the site's meta.txt, which also tells the reader which id was measured.
-WP_POST_ID=$(awk -F= '$1 == "wp_post_id" { print $2 }' "$SITE_DIR/meta.txt" 2>/dev/null)
+# Only the Drupal and WordPress site builds write one: hello, headers and body have
+# no meta.txt, and awk exits 2 on a missing file, so reading it unconditionally
+# killed every such run right after the idle gate with no message (exit 2, empty
+# run directory, nothing in the log) from 1ed1379 until this guard.
+WP_POST_ID=
+if [ -f "$SITE_DIR/meta.txt" ]; then
+    WP_POST_ID=$(awk -F= '$1 == "wp_post_id" { print $2 }' "$SITE_DIR/meta.txt")
+fi
 export SITE_DIR SITE_DIR_A SITE_DIR_B OUT RESROOT COOKIE_FILE COOKIE_FILE_B JOB RUN_ID PHASES WORKLOAD
 export WP_POST_ID
 export RUNTIME_A RUNTIME_B SITE CONNS DUR WARM REPS RATE APP_PROCS PERF AE DECOMPOSE EXTRA_COOKIE_BYTES DB DB_A DB_B PERF_EVENTS PERF_RECORD
