@@ -1,0 +1,21 @@
+# The framework-free control with current master (33896f7e): one PHP file, no Drupal,
+# no database, so the server and worker plumbing are the whole cost. Same cell as 34.
+JOB=123-hello-master-33896f7-vs-fpm
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-master-33896f7
+RUNTIME_B=nginx-fpm
+SITE=hello
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="current master at or below nginx+FPM on a request with no framework work"
+FALSIFY="FPM below master by more than the null band"
