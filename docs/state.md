@@ -306,3 +306,23 @@ run reaches the page only when `collect-commit.sh` (not `collect.sh`) is what pu
 5. Then: Drupal 12 cron arms, the mysqli worker-mode question (issue 596), the Alpine/musl
    image, `benchmarks-drupal` naming now that WordPress lives there, and the real-NIC A/B for
    the static-`sendfile` change (#32) and kTLS (#34).
+
+## 2026-10-17 — where things stand (handoff)
+
+Full detail, including the mid-flight measurement and the PR set, is in
+`/home/andy/www/freeunit-harness/run/handoffs/2026-10-17-benchmarks-and-prs.md`; this is the
+short version.
+
+* Master pin **ff694772b**, release **1.37.0**, **79** published runs.  Pages render from committed
+  results on push.
+* Drupal 12 measured as `12.0-beta2` (a **security release**: SA-CORE-2026-014/015/016, so beta1 vs
+  beta2 is not a like-for-like comparison): FPM +11.1 %, mod_php +73.5 %, master vs 1.37.0 -0.4/-0.0 %.
+* The pgsql block works after the PostgreSQL 18 pin, the `/var/lib/postgresql` mount and the
+  `pg_isready` failure path: job 70, Angie +3.8 %.
+* `scripts/notify-new-results.sh` (cron `*/5`) puts every valid, finished, uncollected run on the
+  bus with its headline; `run/notify.state` is seeded so only new numbers are reported.
+* **PR #742** (finish the atomic sweep) is being measured: the ARM half answers **NO CLAIM**
+  (`server_us -0.70 %`, band ±3.5 %); the x86 half is pending — images built on pro4s-4, jobs
+  `115`/`116` written, run them one at a time when no loop job holds `run/.run.lock`.
+* Queues: pro4s-2 `matrix=5 apache=5 master=5 musl=3`, pro4s-4 `front=1 core=7 master=5 beta2=3`,
+  o-build idle; both x86 boxes gated by another session.
