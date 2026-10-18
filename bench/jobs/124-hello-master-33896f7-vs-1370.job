@@ -1,0 +1,25 @@
+# The server-only control at the current master commit, against the release: one PHP
+# file, no Drupal, no database, so the server layer is the whole request and a 0.4 %
+# change is visible. This is the cell where the post-release cost was measured before
+# (39700f29: +12.9 % at c32 on hello, quoted in 06's EXPECT), and the cell where the
+# master-to-master pairs 50/53/54 showed -11 % arriving at ff694772. Nothing has
+# measured master against 1.37.0 on hello since, which is the gap this fills.
+JOB=124-hello-master-33896f7-vs-1370
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-master-33896f7
+SITE=hello
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="master at 33896f7e stays at or below 1.37.0 on the server-only request (the ff694772 master measured -11 percent against master-old here)"
+FALSIFY="master above 1.37.0 by more than the band: the post-release server cost is back and the release is the faster server"

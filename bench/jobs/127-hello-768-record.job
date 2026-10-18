@@ -1,0 +1,24 @@
+# PR #768 profile: base vs head on hello with PERF_RECORD=1, so the same cell also keeps
+# a perf record with call graphs per side (perf.rec.A / perf.rec.B in the run directory).
+# The question is attribution, not the delta: does nxt_socket_msg / the cmsg walk appear
+# at all in the server's profile, and does the head change where the time goes?
+JOB=127-hello-768-record
+ISSUE="https://github.com/freeunitorg/freeunit/pull/768"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-768-base
+RUNTIME_B=freeunit-768-head
+SITE=hello
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+PERF_RECORD=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the call graph shows the port control-message walk or does not; the delta is expected inside the band"
+FALSIFY="a hot symbol that changes between sides, or a CLAIM"
