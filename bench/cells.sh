@@ -130,6 +130,7 @@ image_for() {  # runtime family -> image
     # moving :master: the hot-path audit compares :master with :master-o2 and
     # :master-lto images built from one commit (42, 43, 16r).
     freeunit-master-33896f7) echo "drupal-bench-freeunit:master-33896f7" ;;
+    freeunit-master-10e1a9bec) echo "drupal-bench-freeunit:master-10e1a9bec" ;;
     # PR #768: its base (master 10e1a9bec) and its head, so the delta is the PR.
     freeunit-768-base) echo "drupal-bench-freeunit:768-base" ;;
     freeunit-768-head) echo "drupal-bench-freeunit:768-head" ;;
@@ -169,9 +170,12 @@ oncpu_ns() {  # pids... -> summed on-CPU nanoseconds over all their threads
     echo "$s"
 }
 
-pids_role() {  # runtime role -> pids of the front proxy or the PHP workers
-    local rt=$1 role=$2 p c
-    for p in $(cg_pids "$rt"); do
+pids_role() {  # runtime, role, container name -> pids of the front proxy or the workers
+    # The container name is a separate argument: cg_pids() inspects a *container*, and
+    # passing the runtime name here meant DECOMPOSE never found a pid and reported
+    # front_us/worker_us as 0.000 (NO DATA) on every cell.
+    local rt=$1 role=$2 name=$3 p c
+    for p in $(cg_pids "$name"); do
         c=$(tr '\0' ' ' < "/proc/$p/cmdline" 2>/dev/null)
         case "$rt:$role" in
         freeunit*:front)  case "$c" in *"unit: router"*) echo "$p" ;; esac ;;
@@ -335,7 +339,7 @@ start_rt() {  # runtime side -> name
     local preload_vol=()
     [ -f "$sitedir/preload.ini" ] && preload_vol=(-v "$sitedir/preload.ini:/usr/local/etc/php/conf.d/zz-preload.ini:ro")
     case "$rt" in
-    freeunit|freeunit-direct|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head|freeunit-master-33896f7|freeunit-768-base|freeunit-768-head)
+    freeunit|freeunit-direct|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head|freeunit-master-33896f7|freeunit-768-base|freeunit-768-head|freeunit-master-10e1a9bec)
         local cfg="$RESROOT/runtimes/$rt.json"
         [ -f "$cfg" ] || cfg="$RESROOT/runtimes/freeunit.json"
         docker run -d --name "$name" --network "$net" --cpuset-cpus "$SERVER_CPUS" \
@@ -503,8 +507,8 @@ timed_cell() {  # phase side cell conns block slot runtime
     perf_start db "$(echo $rpids | tr ' ' ',')"
     local fpids wpids
     if [ "${DECOMPOSE:-0}" = 1 ]; then
-        fpids=$(pids_role "$rt" front | tr '\n' ' ')
-        wpids=$(pids_role "$rt" worker | tr '\n' ' ')
+        fpids=$(pids_role "$rt" front "$(sv "$side" CNAME)" | tr '\n' ' ')
+        wpids=$(pids_role "$rt" worker "$(sv "$side" CNAME)" | tr '\n' ' ')
         perf_start sf "$(echo $fpids | tr ' ' ',')"
         perf_start sw "$(echo $wpids | tr ' ' ',')"
     fi
@@ -562,7 +566,7 @@ PY
     local alerts=0 alog=
     [ "$pre" = 1 ] && alerts=$((alerts + 1))
     case "$rt" in
-    freeunit|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-direct|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head|freeunit-master-33896f7|freeunit-768-base|freeunit-768-head)
+    freeunit|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-direct|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head|freeunit-master-33896f7|freeunit-768-base|freeunit-768-head|freeunit-master-10e1a9bec)
         alog=$(docker logs "$name" 2>&1 | grep -E '\[(alert|crit|emerg)\]' || true) ;;
     *)
         alog=$(docker logs "$name" 2>&1 | grep -E '\[(crit|emerg|alert)\]|worker process is shutting down unexpectedly' || true) ;;
