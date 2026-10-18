@@ -1,0 +1,13 @@
+NO CLAIM wp-front-c32: inside the noise, no claim (B is 1.8 percent less server CPU per request (us), null band 3.0, 7 of 8 cells agree)
+job 141-arm-wp-front-master-vs-apache  run 141-arm-wp-front-master-vs-apache-fu-build-arm-20261018T145823Z  A None ()  B None ()  governor unknown/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  wp-front-c32   server_us                 93168.422    92137.021    -1.10     [-2.98, +0.77]   2.98    5/8  PASS
+null  wp-front-c32   db_us                      4496.225     4370.442    -2.77     [-6.90, +1.36]   6.90    5/8  NOISY
+null  wp-front-c32   p50_ms                     2650.479     2623.525    -1.01     [-4.02, +2.00]   4.02    4/8  PASS
+null  wp-front-c32   p99_ms                     5041.492     4994.813    -0.93     [-2.84, +0.98]   2.84    5/8  PASS
+null  wp-front-c32   rps                          10.741       10.863    +1.13     [-0.74, +3.01]   3.01    5/8  PASS
+ab    wp-front-c32   server_us                 96754.469    95028.161    -1.78     [-3.97, +0.41]   2.98    7/8  NO CLAIM
+ab    wp-front-c32   db_us                      4828.737     4488.343    -7.05    [-10.38, -3.72]   6.90    7/8  NOISY
+ab    wp-front-c32   p50_ms                     2750.842     1528.923   -44.42   [-47.09, -41.75]   4.02    8/8  CLAIM
+ab    wp-front-c32   p99_ms                     5255.630     7586.402   +44.36   [+41.81, +46.91]   2.84    8/8  CLAIM
+ab    wp-front-c32   rps                          10.346       10.529    +1.77     [-0.47, +4.01]   3.01    7/8  NO CLAIM

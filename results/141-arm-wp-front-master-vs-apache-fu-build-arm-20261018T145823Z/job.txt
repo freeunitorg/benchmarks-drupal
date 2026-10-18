@@ -1,0 +1,23 @@
+# WordPress on the A1 host against mod_php at the current master commit. The ARM page's
+# WordPress rows (83, 88) are old-pin comparisons with mod_php only; with FPM measured at
+# 11 percent cheaper than FreeUnit on this cell (138), mod_php is the missing ranking point.
+JOB=141-arm-wp-front-master-vs-apache
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=wp-front
+RUNTIME_A=freeunit-master-10e1a9bec
+RUNTIME_B=apache
+SITE=wp
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="mod_php needs more server CPU per WordPress render than current master on aarch64"
+FALSIFY="a delta inside the band, or mod_php cheaper"
