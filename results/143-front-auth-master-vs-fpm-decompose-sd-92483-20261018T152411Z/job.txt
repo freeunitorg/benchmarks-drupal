@@ -1,0 +1,37 @@
+# x86 twin of 142: the authenticated front page with DECOMPOSE=1, which reports the
+# front proxy (unitd router, nginx) and the PHP worker CPU separately. On x86 the gap is
+# inside the noise, so this run is here to validate the DECOMPOSE fix (666ea80) and to
+# show what the split looks like where the instrument is known to work.
+# x86 twin of 142: the authenticated front page with DECOMPOSE=1, which reports the
+# front proxy (unitd router, nginx) and the PHP worker CPU separately. On x86 the gap is
+# inside the noise, so this run is here to validate the DECOMPOSE fix (666ea80) and to
+# show what the split looks like where the instrument is known to work.
+# x86 twin of 142: the authenticated front page with DECOMPOSE=1, which reports the
+# front proxy (unitd router, nginx) and the PHP worker CPU separately. On x86 the gap is
+# inside the noise, so this run is here to validate the DECOMPOSE fix (666ea80) and to
+# show what the split looks like where the instrument is known to work.
+# x86 twin of 142: the authenticated front page with DECOMPOSE=1, which reports the
+# front proxy (unitd router, nginx) and the PHP worker CPU separately. On x86 the gap is
+# inside the noise, so this run is here to validate the DECOMPOSE fix (666ea80) and to
+# show what the split looks like where the instrument is known to work.
+JOB=143-front-auth-master-vs-fpm-decompose
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-auth
+RUNTIME_A=freeunit-master-10e1a9bec
+RUNTIME_B=nginx-fpm
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+DECOMPOSE=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the auth gap sits in the worker (PHP work) or in the front (the server path), not both"
+FALSIFY="front_us explains it: then the IPC path costs on ARM; worker_us explains it: then it is the framework"
