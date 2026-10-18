@@ -1,0 +1,25 @@
+# The 6.2 percent auth gap against nginx+FPM on aarch64, split: DECOMPOSE=1 reports the
+# front proxy's CPU (unitd router, nginx) and the PHP worker's CPU (application workers,
+# php-fpm) separately from schedstat, so the gap can be attributed to the server path or
+# to the framework's own work. No PMU on this guest, so this replaces a perf record.
+JOB=142-arm-front-auth-master-vs-fpm-decompose
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-auth
+RUNTIME_A=freeunit-master-10e1a9bec
+RUNTIME_B=nginx-fpm
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+DECOMPOSE=1
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="the auth gap sits in the worker (PHP work) or in the front (the server path), not both"
+FALSIFY="front_us explains it: then the IPC path costs on ARM; worker_us explains it: then it is the framework"
