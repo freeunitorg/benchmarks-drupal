@@ -1,0 +1,22 @@
+# The same ARM front-page cell with the release, so the page has both FreeUnit rows
+# against FPM and not only against mod_php.
+JOB=136-arm-front-anon-1370-vs-fpm-12.0
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=nginx-fpm
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="the release needs less server CPU per request than nginx plus PHP-FPM on the cached Drupal 12 front page on aarch64"
+FALSIFY="a CLAIM with FPM cheaper"
