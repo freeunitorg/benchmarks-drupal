@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Symfony benchmarks</title>
+<meta name="description" content="Reproducible comparison of Drupal, Symfony, WordPress and framework-free PHP on Apache+mod_php, nginx+PHP-FPM, Angie, FreeNginx and FreeUnit, with a null band beside every comparison.">
+<style>
+ body { font: 15px/1.5 system-ui, sans-serif; max-width: 68rem; margin: 2rem auto; padding: 0 1rem; color: #222; }
+ h1 { font-size: 1.6rem; margin-bottom: .2rem; }
+ h2 { font-size: 1.15rem; margin-top: 2.5rem; border-top: 1px solid #ddd; padding-top: 1rem; }
+ h3 { font-size: 1rem; margin: 1.4rem 0 .4rem; }
+ table { border-collapse: collapse; width: 100%; margin: .5rem 0 1rem; font-size: 14px; }
+ th, td { text-align: right; padding: .3rem .5rem; border-bottom: 1px solid #eee; vertical-align: top; }
+ th:first-child, td:first-child { text-align: left; }
+ table.index td, table.index th { font-size: 13px; }
+ .meta, .data { color: #666; font-size: 13px; font-weight: normal; }
+ .headline { font-weight: 600; }
+ .note { background: #f6f8fa; border-left: 3px solid #888; padding: .6rem .9rem; }
+ tr.best td { font-weight: 600; background: #f0fbf4; }
+ code { background: #f6f8fa; padding: .1rem .3rem; }
+ .badge { font-size: 11px; font-weight: 700; padding: .1rem .45rem; border-radius: .7rem; white-space: nowrap; }
+ .badge.claim { background: #e6f4ea; color: #136a2f; }
+ .badge.noclaim { background: #eef1f4; color: #4a5568; }
+ .badge.invalid { background: #fdecea; color: #a12b20; }
+ .badge.nodata { background: #fff4e5; color: #8a5a00; }
+ .badge.pass { background: #e8f0fe; color: #1a4b8c; }
+ ul.verdicts { margin: .3rem 0 1rem; padding-left: 1.1rem; }
+ ul.verdicts li { margin: .2rem 0; }
+ details.run { border: 1px solid #e6e6e6; border-radius: .5rem; padding: .4rem .7rem; margin: .5rem 0; }
+ details.run > summary { cursor: pointer; display: block; }
+ .run-title { font-weight: 600; margin: 0 .5rem 0 .4rem; }
+ details[open].run { background: #fcfcfd; }
+ :target { scroll-margin-top: 1rem; background: #fffbe6; }
+ nav.pages { margin: .8rem 0 1.2rem; display: flex; flex-wrap: wrap; gap: .4rem; }
+ nav.pages a, nav.pages span.here { border: 1px solid #d7dbe0; border-radius: .4rem; padding: .25rem .6rem; font-size: 13px; }
+ nav.pages a { text-decoration: none; }
+ nav.pages span.here { background: #eef1f4; font-weight: 600; border-color: #c3c9d1; }
+ nav.pages a:hover { background: #f6f8fa; }
+ nav.toc ol { margin: .3rem 0 0; padding-left: 1.2rem; }
+ p.lede { color: #444; }
+ @media print { details.run { break-inside: avoid; } }
+</style></head><body>
+<h1>Symfony benchmarks</h1>
+<p class="lede">Symfony on the same runtimes.</p>
+<nav class="pages">
+<a href="index.html">Overview <span class="meta">(85)</span></a>
+<a href="drupal-11.4.html">Drupal 11.4 <span class="meta">(14)</span></a>
+<a href="drupal-12.0.html">Drupal 12.0 <span class="meta">(27)</span></a>
+<span class="here">Symfony <span class="meta">(4)</span></span>
+<a href="wordpress.html">WordPress <span class="meta">(22)</span></a>
+<a href="php.html">Framework-free PHP <span class="meta">(13)</span></a>
+<a href="arm64.html">ARM64 (Oracle A1) <span class="meta">(5)</span></a>
+</nav>
+<p class="note">Everything here is rebuilt from committed <code>results/&lt;run-id&gt;/summary.json</code> files. The <strong>null band</strong> is printed beside every comparison: it is the same job run with both sides identical (A against a copy of A), so a delta smaller than the band is noise and is reported as <em>no claim</em>. Host class, governor, PHP, Drupal tag, database and runtime versions are in each run's header.</p>
+<h2 id="short">The short version</h2>
+<p class="note">This page holds <strong>4 published comparisons</strong> across <strong>1 application sites</strong>, measured on pro4s-2. Each comparison is one job: the same cells against two runtimes, with a null phase that bounds the noise first. A <span class="badge claim">CLAIM</span> appears only when the delta is outside that band. Start with the summary tables, then open a run for its numbers; every run links to its raw <code>results/&lt;run-id&gt;/</code> directory.</p>
+<h3>CLAIM <span class="meta">(2)</span></h3>
+<ul class="verdicts">
+<li><span class="badge claim">CLAIM</span> <a href="#14-symfony-freeunit-vs-fpm-11.4-20261010T081744Z">Symfony 7.4 · Symfony front page (Twig + one SELECT) · FreeUnit 1.37.0 vs nginx + PHP-FPM</a> <span class="meta">CLAIM symfony-front-c32: B is 5.8 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#19-symfony-master-vs-fpm-20261010T133336Z">Symfony 7.4 · Symfony front page (Twig + one SELECT) · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">CLAIM symfony-front-c32: B is 5.8 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</span></li>
+</ul>
+<h3>NO CLAIM <span class="meta">(1)</span></h3>
+<ul class="verdicts">
+<li><span class="badge noclaim">no claim</span> <a href="#15-symfony-master-vs-1370-20261010T083029Z">Symfony 7.4 · Symfony front page (Twig + one SELECT) · FreeUnit 1.37.0 vs FreeUnit master</a> <span class="meta">NO CLAIM symfony-front-c32: inside the noise, no claim (B is 0.0 percent less server instructions per request, null band 0.1, 4 of 12 cells agree)</span></li>
+</ul>
+<h3>PASS <span class="meta">(1)</span></h3>
+<ul class="verdicts">
+<li><span class="badge pass">pass</span> <a href="#13-null-symfony-11.4-20261010T080927Z">Symfony 7.4 · Symfony front page (Twig + one SELECT) · FreeUnit 1.37.0 vs FreeUnit 1.37.0</a> <span class="meta">PASS symfony-front-c32: null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-0.0, 0.2], null band 0.2, limit 5.0: PASS</span></li>
+</ul>
+<h2 id="summary">Summary: the primary metric per runtime</h2>
+<p class="note">Primary metric: s instructions (lower is better), measured c32 on one host in one window. The ratio is against the best runtime in that row. Each comparison has its null band printed in the run sections below; a ratio smaller than the band is not a difference. Caveat: this table pools absolute means from runs taken hours apart under a powersave governor, so use it for the order, not for a percentage; the per-run tables are the controlled measurement.</p>
+<h3>Symfony front page (Twig + one SELECT) <span class="meta">(symfony-front-c32, mysql, pro4s-2, s instructions)</span></h3>
+<table><thead><tr><th>runtime</th><th>s instructions</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>FreeUnit 1.37.0</td><td>4,613,872</td><td>1.00x</td></tr>
+<tr><td>FreeUnit master</td><td>4,617,841</td><td>1.00x</td></tr>
+<tr><td>nginx + PHP-FPM</td><td>4,884,075</td><td>1.06x</td></tr>
+</tbody></table>
+<h2 id="runs">Every run</h2>
+<p class="note">One row per comparison. The run id is the directory name under <code>results/</code> and the anchor of its detail block below; the date is the run's own start time. Open a row to read its metrics.</p>
+<table class="index"><thead><tr><th>run</th><th>date</th><th>site</th><th>workload</th><th>runtimes</th><th>verdict</th></tr></thead><tbody>
+<tr><td><a href="#13-null-symfony-11.4-20261010T080927Z"><code>13-null-symfony-11.4-20261010T080927Z</code></a></td><td>2026-10-10T08:17</td><td>Symfony 7.4</td><td>Symfony front page (Twig + one SELECT)</td><td>FreeUnit 1.37.0 vs FreeUnit 1.37.0</td><td><span class="badge pass">pass</span></td></tr>
+<tr><td><a href="#14-symfony-freeunit-vs-fpm-11.4-20261010T081744Z"><code>14-symfony-freeunit-vs-fpm-11.4-20261010T081744Z</code></a></td><td>2026-10-10T08:30</td><td>Symfony 7.4</td><td>Symfony front page (Twig + one SELECT)</td><td>FreeUnit 1.37.0 vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#15-symfony-master-vs-1370-20261010T083029Z"><code>15-symfony-master-vs-1370-20261010T083029Z</code></a></td><td>2026-10-10T08:42</td><td>Symfony 7.4</td><td>Symfony front page (Twig + one SELECT)</td><td>FreeUnit 1.37.0 vs FreeUnit master</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#19-symfony-master-vs-fpm-20261010T133336Z"><code>19-symfony-master-vs-fpm-20261010T133336Z</code></a></td><td>2026-10-10T13:46</td><td>Symfony 7.4</td><td>Symfony front page (Twig + one SELECT)</td><td>FreeUnit master vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+</tbody></table>
+<h2 id="details">Run detail</h2>
+<p class="note">Grouped by application site. Nothing is hidden: the summary line carries the verdict, the body has the metrics, and the null-phase row that bounds the job is one click further.</p>
+<h3 id="site-symfony">Symfony 7.4 <span class="meta">(4 runs)</span></h3>
+<details class="run" id="13-null-symfony-11.4-20261010T080927Z">
+<summary><span class="badge pass">pass</span><span class="run-title">Symfony front page (Twig + one SELECT) — FreeUnit 1.37.0 vs FreeUnit 1.37.0</span><span class="meta">Symfony 7.4 · 13-null-symfony-11.4-20261010T080927Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host pro4s-2 · date 2026-10-10T08:17:43Z</p>
+<p class="headline">PASS symfony-front-c32: null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-0.0, 0.2], null band 0.2, limit 5.0: PASS</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>freeunit</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-0.0, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_cs, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_cycles, 95 percent CI [-0.3, 0.3], null band 0.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_instructions, 95 percent CI [-0.0, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.9 percent in db_migrations, 95 percent CI [-2.0, 0.2], null band 2.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in db_us, 95 percent CI [-0.8, 0.5], null band 0.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in p50 latency (ms), 95 percent CI [-0.8, 0.9], null band 0.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in p99 latency (ms), 95 percent CI [-4.1, 5.1], null band 5.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in requests per second, 95 percent CI [-1.0, 0.8], null band 1.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 2.8 percent in server cs per request, 95 percent CI [-2.2, 7.8], null band 7.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in server cycles per request, 95 percent CI [-0.4, 1.0], null band 1.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 11.6 percent in server migrations per request, 95 percent CI [-18.2, 41.3], null band 41.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in server CPU per request (us), 95 percent CI [-0.8, 1.0], null band 1.0, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>13-null-symfony-11.4-20261010T080927Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="14-symfony-freeunit-vs-fpm-11.4-20261010T081744Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Symfony front page (Twig + one SELECT) — FreeUnit 1.37.0 vs nginx + PHP-FPM</span><span class="meta">Symfony 7.4 · 14-symfony-freeunit-vs-fpm-11.4-20261010T081744Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host pro4s-2 · date 2026-10-10T08:30:28Z</p>
+<p class="headline">CLAIM symfony-front-c32: B is 5.8 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4612545.5052</td><td>4881451.0903</td><td>5.83%</td><td>[5.74, 5.92]</td><td>0.2</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>6.0188</td><td>6.0124</td><td>-0.11%</td><td>[-0.22, 0.0]</td><td>0.12</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>1599938.8997</td><td>1621253.1174</td><td>1.33%</td><td>[0.87, 1.8]</td><td>0.45</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_instructions</td><td>759357.6774</td><td>761216.3106</td><td>0.24%</td><td>[0.13, 0.36]</td><td>0.22</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.0742</td><td>1.121</td><td>4.36%</td><td>[3.37, 5.35]</td><td>2.2</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_us</td><td>650.0751</td><td>656.1817</td><td>0.95%</td><td>[-0.54, 2.44]</td><td>1.52</td><td>11/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>45.3991</td><td>47.2107</td><td>4.0%</td><td>[2.36, 5.64]</td><td>0.93</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>67.4554</td><td>66.3334</td><td>-1.63%</td><td>[-6.29, 3.03]</td><td>6.04</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>693.9683</td><td>669.605</td><td>-3.5%</td><td>[-5.11, -1.89]</td><td>1.37</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>server cs per request</td><td>8.1377</td><td>8.3288</td><td>2.35%</td><td>[-1.59, 6.29]</td><td>9.96</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>7319383.2337</td><td>7605437.2023</td><td>3.91%</td><td>[3.07, 4.75]</td><td>0.98</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.3131</td><td>0.4352</td><td>39.63%</td><td>[11.72, 67.54]</td><td>66.35</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>2877.5774</td><td>2984.5202</td><td>3.73%</td><td>[2.1, 5.35]</td><td>1.35</td><td>11/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.1 percent in server instructions per request, 95 percent CI [-0.2, 0.0], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_cs, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_cycles, 95 percent CI [-0.4, 0.2], null band 0.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_instructions, 95 percent CI [-0.2, 0.0], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.8 percent in db_migrations, 95 percent CI [-2.2, 0.5], null band 2.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in db_us, 95 percent CI [-0.4, 1.5], null band 1.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in p50 latency (ms), 95 percent CI [-0.6, 0.9], null band 0.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.8 percent in p99 latency (ms), 95 percent CI [-2.5, 6.0], null band 6.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.4 percent in requests per second, 95 percent CI [-1.4, 0.7], null band 1.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -4.9 percent in server cs per request, 95 percent CI [-10.0, 0.2], null band 10.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.3 percent in server cycles per request, 95 percent CI [-1.0, 0.5], null band 1.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 24.3 percent in server migrations per request, 95 percent CI [-17.7, 66.3], null band 66.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in server CPU per request (us), 95 percent CI [-0.7, 1.3], null band 1.3, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>14-symfony-freeunit-vs-fpm-11.4-20261010T081744Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="15-symfony-master-vs-1370-20261010T083029Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">Symfony front page (Twig + one SELECT) — FreeUnit 1.37.0 vs FreeUnit master</span><span class="meta">Symfony 7.4 · 15-symfony-master-vs-1370-20261010T083029Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host pro4s-2 · date 2026-10-10T08:42:52Z</p>
+<p class="headline">NO CLAIM symfony-front-c32: inside the noise, no claim (B is 0.0 percent less server instructions per request, null band 0.1, 4 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>freeunit-master</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4615197.6637</td><td>4614848.2178</td><td>-0.01%</td><td>[-0.15, 0.13]</td><td>0.14</td><td>4/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>6.015</td><td>6.0217</td><td>0.11%</td><td>[0.02, 0.2]</td><td>0.11</td><td>9/12</td><td>CLAIM</td></tr>
+<tr><td>db_cycles</td><td>1599723.5048</td><td>1605676.5446</td><td>0.37%</td><td>[0.06, 0.68]</td><td>0.37</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>759641.474</td><td>759896.2923</td><td>0.03%</td><td>[-0.06, 0.13]</td><td>0.12</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.0714</td><td>1.0798</td><td>0.8%</td><td>[-0.12, 1.71]</td><td>1.67</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>644.5954</td><td>649.3202</td><td>0.74%</td><td>[-0.99, 2.48]</td><td>1.27</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>45.1709</td><td>45.4013</td><td>0.52%</td><td>[-0.74, 1.77]</td><td>1.12</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>68.8957</td><td>70.9768</td><td>3.03%</td><td>[-3.48, 9.55]</td><td>4.32</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>requests per second</td><td>700.5858</td><td>694.9567</td><td>-0.79%</td><td>[-2.58, 1.0]</td><td>1.2</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>8.4987</td><td>8.5518</td><td>0.62%</td><td>[-5.97, 7.21]</td><td>7.55</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>7309730.3096</td><td>7340765.578</td><td>0.42%</td><td>[-0.46, 1.31]</td><td>0.87</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.2317</td><td>0.2247</td><td>10.75%</td><td>[-40.21, 61.7]</td><td>51.22</td><td>4/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>2851.6397</td><td>2873.5527</td><td>0.78%</td><td>[-0.97, 2.54]</td><td>1.19</td><td>8/12</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.0 percent in server instructions per request, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_cs, 95 percent CI [-0.0, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_cycles, 95 percent CI [-0.4, 0.2], null band 0.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_instructions, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.3 percent in db_migrations, 95 percent CI [-1.7, 1.1], null band 1.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_us, 95 percent CI [-1.0, 1.3], null band 1.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in p50 latency (ms), 95 percent CI [-1.0, 1.1], null band 1.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.7 percent in p99 latency (ms), 95 percent CI [-2.8, 4.3], null band 4.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in requests per second, 95 percent CI [-1.2, 1.0], null band 1.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -2.5 percent in server cs per request, 95 percent CI [-7.6, 2.6], null band 7.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server cycles per request, 95 percent CI [-0.9, 0.7], null band 0.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 11.8 percent in server migrations per request, 95 percent CI [-27.5, 51.2], null band 51.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in server CPU per request (us), 95 percent CI [-1.0, 1.2], null band 1.2, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>15-symfony-master-vs-1370-20261010T083029Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="19-symfony-master-vs-fpm-20261010T133336Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Symfony front page (Twig + one SELECT) — FreeUnit master vs nginx + PHP-FPM</span><span class="meta">Symfony 7.4 · 19-symfony-master-vs-fpm-20261010T133336Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host pro4s-2 · date 2026-10-10T13:46:28Z</p>
+<p class="headline">CLAIM symfony-front-c32: B is 5.8 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4620834.0819</td><td>4886698.51</td><td>5.75%</td><td>[5.64, 5.87]</td><td>0.21</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>6.0961</td><td>6.1228</td><td>0.43%</td><td>[-0.3, 1.17]</td><td>1.01</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>1688158.5372</td><td>1714462.3937</td><td>1.61%</td><td>[-0.44, 3.66]</td><td>2.41</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>763586.513</td><td>765315.5982</td><td>0.23%</td><td>[-0.01, 0.46]</td><td>0.32</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>0.9672</td><td>0.9723</td><td>0.53%</td><td>[-14.37, 15.42]</td><td>28.19</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>625.6843</td><td>609.7197</td><td>-2.5%</td><td>[-9.78, 4.79]</td><td>12.87</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>48.2308</td><td>48.1601</td><td>-0.12%</td><td>[-6.92, 6.69]</td><td>12.02</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>75.3862</td><td>75.1782</td><td>-0.46%</td><td>[-13.16, 12.24]</td><td>17.12</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>663.0983</td><td>654.0792</td><td>-1.35%</td><td>[-8.34, 5.64]</td><td>13.67</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>8.826</td><td>8.4512</td><td>-4.06%</td><td>[-8.79, 0.67]</td><td>8.89</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>8495983.2348</td><td>8957298.5613</td><td>5.57%</td><td>[0.44, 10.7]</td><td>7.25</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server migrations per request</td><td>0.4101</td><td>0.593</td><td>46.24%</td><td>[20.78, 71.7]</td><td>42.93</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>3029.2227</td><td>3076.4633</td><td>1.57%</td><td>[-5.58, 8.72]</td><td>11.25</td><td>6/12</td><td>NOISY</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.0 percent in server instructions per request, 95 percent CI [-0.2, 0.1], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in db_cs, 95 percent CI [-1.0, 0.6], null band 1.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in db_cycles, 95 percent CI [-1.7, 2.4], null band 2.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_instructions, 95 percent CI [-0.3, 0.3], null band 0.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 12.2 percent in db_migrations, 95 percent CI [-3.8, 28.2], null band 28.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -4.3 percent in db_us, 95 percent CI [-12.9, 4.2], null band 12.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -4.6 percent in p50 latency (ms), 95 percent CI [-12.0, 2.8], null band 12.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -5.4 percent in p99 latency (ms), 95 percent CI [-17.1, 6.2], null band 17.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 5.2 percent in requests per second, 95 percent CI [-3.4, 13.7], null band 13.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -2.2 percent in server cs per request, 95 percent CI [-8.9, 4.6], null band 8.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.6 percent in server cycles per request, 95 percent CI [-6.1, 7.3], null band 7.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -6.5 percent in server migrations per request, 95 percent CI [-42.9, 29.9], null band 42.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -4.0 percent in server CPU per request (us), 95 percent CI [-11.3, 3.2], null band 11.3, limit 5.0: NOISY</li>
+</ul></details>
+<p class="data">raw: <code>19-symfony-master-vs-fpm-20261010T133336Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<p class="data">Rendered 2026-10-18T00:18:42Z. A plain-language summary of the findings is in
+<a href="https://github.com/freeunitorg/benchmarks-drupal/blob/main/docs/report-2026-10.md">docs/report-2026-10.md</a>;
+the suite's resume note is <code>docs/state.md</code>.</p>
+</body></html>

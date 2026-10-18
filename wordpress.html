@@ -1,0 +1,944 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WordPress benchmarks</title>
+<meta name="description" content="Reproducible comparison of Drupal, Symfony, WordPress and framework-free PHP on Apache+mod_php, nginx+PHP-FPM, Angie, FreeNginx and FreeUnit, with a null band beside every comparison.">
+<style>
+ body { font: 15px/1.5 system-ui, sans-serif; max-width: 68rem; margin: 2rem auto; padding: 0 1rem; color: #222; }
+ h1 { font-size: 1.6rem; margin-bottom: .2rem; }
+ h2 { font-size: 1.15rem; margin-top: 2.5rem; border-top: 1px solid #ddd; padding-top: 1rem; }
+ h3 { font-size: 1rem; margin: 1.4rem 0 .4rem; }
+ table { border-collapse: collapse; width: 100%; margin: .5rem 0 1rem; font-size: 14px; }
+ th, td { text-align: right; padding: .3rem .5rem; border-bottom: 1px solid #eee; vertical-align: top; }
+ th:first-child, td:first-child { text-align: left; }
+ table.index td, table.index th { font-size: 13px; }
+ .meta, .data { color: #666; font-size: 13px; font-weight: normal; }
+ .headline { font-weight: 600; }
+ .note { background: #f6f8fa; border-left: 3px solid #888; padding: .6rem .9rem; }
+ tr.best td { font-weight: 600; background: #f0fbf4; }
+ code { background: #f6f8fa; padding: .1rem .3rem; }
+ .badge { font-size: 11px; font-weight: 700; padding: .1rem .45rem; border-radius: .7rem; white-space: nowrap; }
+ .badge.claim { background: #e6f4ea; color: #136a2f; }
+ .badge.noclaim { background: #eef1f4; color: #4a5568; }
+ .badge.invalid { background: #fdecea; color: #a12b20; }
+ .badge.nodata { background: #fff4e5; color: #8a5a00; }
+ .badge.pass { background: #e8f0fe; color: #1a4b8c; }
+ ul.verdicts { margin: .3rem 0 1rem; padding-left: 1.1rem; }
+ ul.verdicts li { margin: .2rem 0; }
+ details.run { border: 1px solid #e6e6e6; border-radius: .5rem; padding: .4rem .7rem; margin: .5rem 0; }
+ details.run > summary { cursor: pointer; display: block; }
+ .run-title { font-weight: 600; margin: 0 .5rem 0 .4rem; }
+ details[open].run { background: #fcfcfd; }
+ :target { scroll-margin-top: 1rem; background: #fffbe6; }
+ nav.pages { margin: .8rem 0 1.2rem; display: flex; flex-wrap: wrap; gap: .4rem; }
+ nav.pages a, nav.pages span.here { border: 1px solid #d7dbe0; border-radius: .4rem; padding: .25rem .6rem; font-size: 13px; }
+ nav.pages a { text-decoration: none; }
+ nav.pages span.here { background: #eef1f4; font-weight: 600; border-color: #c3c9d1; }
+ nav.pages a:hover { background: #f6f8fa; }
+ nav.toc ol { margin: .3rem 0 0; padding-left: 1.2rem; }
+ p.lede { color: #444; }
+ @media print { details.run { break-inside: avoid; } }
+</style></head><body>
+<h1>WordPress benchmarks</h1>
+<p class="lede">WordPress front page, the HTTP cron path, and the persistent-connection drop-in.</p>
+<nav class="pages">
+<a href="index.html">Overview <span class="meta">(85)</span></a>
+<a href="drupal-11.4.html">Drupal 11.4 <span class="meta">(14)</span></a>
+<a href="drupal-12.0.html">Drupal 12.0 <span class="meta">(27)</span></a>
+<a href="symfony.html">Symfony <span class="meta">(4)</span></a>
+<span class="here">WordPress <span class="meta">(22)</span></span>
+<a href="php.html">Framework-free PHP <span class="meta">(13)</span></a>
+<a href="arm64.html">ARM64 (Oracle A1) <span class="meta">(5)</span></a>
+</nav>
+<p class="note">Everything here is rebuilt from committed <code>results/&lt;run-id&gt;/summary.json</code> files. The <strong>null band</strong> is printed beside every comparison: it is the same job run with both sides identical (A against a copy of A), so a delta smaller than the band is noise and is reported as <em>no claim</em>. Host class, governor, PHP, Drupal tag, database and runtime versions are in each run's header.</p>
+<h2 id="short">The short version</h2>
+<p class="note">This page holds <strong>22 published comparisons</strong> across <strong>1 application sites</strong>, measured on sd-92483. Each comparison is one job: the same cells against two runtimes, with a null phase that bounds the noise first. A <span class="badge claim">CLAIM</span> appears only when the delta is outside that band. Start with the summary tables, then open a run for its numbers; every run links to its raw <code>results/&lt;run-id&gt;/</code> directory.</p>
+<h3>CLAIM <span class="meta">(14)</span></h3>
+<ul class="verdicts">
+<li><span class="badge claim">CLAIM</span> <a href="#100-wp-edit-list-master-vs-apache-sd-92483-20261014T062357Z">http://127.0.0.1:8081 · wp-edit-list · FreeUnit master vs Apache + mod_php</a> <span class="meta">CLAIM wp-edit-list-c32: B is 5.2 percent more server instructions per request, outside the null band of 2.2, 11 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#101-wp-edit-list-master-vs-nginx-fpm-sd-92483-20261014T070514Z">http://127.0.0.1:8081 · wp-edit-list · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">CLAIM wp-edit-list-c32: B is 5.6 percent less server instructions per request, outside the null band of 2.1, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#122-wp-front-master-33896f7-vs-apache-sd-92483-20261017T205342Z">http://127.0.0.1:8081 · WordPress front page (no page cache) · freeunit-master-33896f7 vs Apache + mod_php</a> <span class="meta">CLAIM wp-front-c32: B is 3.7 percent more server instructions per request, outside the null band of 1.7, 11 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#42-wp-front-freeunit-vs-nginx-fpm-sd-92483-20261013T185123Z">http://127.0.0.1:8081 · WordPress front page (no page cache) · FreeUnit 1.37.0 vs nginx + PHP-FPM</a> <span class="meta">CLAIM wp-front-c32: B is 1.9 percent less server instructions per request, outside the null band of 1.2, 10 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#43-wp-front-freeunit-master-vs-nginx-fpm-sd-92483-20261013T150324Z">http://127.0.0.1:8081 · WordPress front page (no page cache) · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">CLAIM wp-front-c32: B is 1.7 percent less server instructions per request, outside the null band of 1.5, 10 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#43-wp-front-freeunit-master-vs-nginx-fpm-sd-92483-20261016T041624Z">http://127.0.0.1:8081 · WordPress front page (no page cache) · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">CLAIM wp-front-c32: B is 2.8 percent less server instructions per request, outside the null band of 1.7, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#44-wp-front-nginx-fpm-vs-apache-sd-92483-20261013T190508Z">http://127.0.0.1:8081 · WordPress front page (no page cache) · nginx + PHP-FPM vs Apache + mod_php</a> <span class="meta">CLAIM wp-front-c32: B is 4.8 percent more server instructions per request, outside the null band of 1.2, 11 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#45-wp-cron-freeunit-vs-nginx-fpm-sd-92483-20261013T202354Z">http://127.0.0.1:8081 · WordPress /wp-cron.php (HTTP cron path) · FreeUnit 1.37.0 vs nginx + PHP-FPM</a> <span class="meta">CLAIM wp-cron-c32: B is 0.3 percent less server instructions per request, outside the null band of 0.2, 11 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#93-wp-rest-posts-master-vs-nginx-fpm-sd-92483-20261014T032050Z">http://127.0.0.1:8081 · wp-rest-posts · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">CLAIM wp-rest-posts-c32: B is 0.7 percent less server instructions per request, outside the null band of 0.7, 10 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#93-wp-rest-posts-master-vs-nginx-fpm-sd-92483-20261016T083246Z">http://127.0.0.1:8081 · wp-rest-posts · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">CLAIM wp-rest-posts-c32: B is 0.7 percent less server instructions per request, outside the null band of 0.6, 11 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#94-wp-edit-freeunit-vs-apache-sd-92483-20261014T082038Z">http://127.0.0.1:8081 · wp-edit · FreeUnit 1.37.0 vs Apache + mod_php</a> <span class="meta">CLAIM wp-edit-c32: B is 9.4 percent more server instructions per request, outside the null band of 1.6, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#96-wp-edit-master-vs-apache-sd-92483-20261014T033612Z">http://127.0.0.1:8081 · wp-edit · FreeUnit master vs Apache + mod_php</a> <span class="meta">CLAIM wp-edit-c32: B is 10.7 percent more server instructions per request, outside the null band of 2.3, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#97-wp-edit-master-vs-nginx-fpm-sd-92483-20261014T041828Z">http://127.0.0.1:8081 · wp-edit · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">CLAIM wp-edit-c32: B is 3.3 percent less server instructions per request, outside the null band of 2.1, 10 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#99-wp-edit-list-freeunit-vs-nginx-fpm-sd-92483-20261014T054209Z">http://127.0.0.1:8081 · wp-edit-list · FreeUnit 1.37.0 vs nginx + PHP-FPM</a> <span class="meta">CLAIM wp-edit-list-c32: B is 5.4 percent less server instructions per request, outside the null band of 2.5, 12 of 12 cells agree</span></li>
+</ul>
+<h3>NO CLAIM <span class="meta">(8)</span></h3>
+<ul class="verdicts">
+<li><span class="badge noclaim">no claim</span> <a href="#120-wp-front-master-33896f7-vs-nginx-fpm-sd-92483-20261017T201002Z">http://127.0.0.1:8081 · WordPress front page (no page cache) · freeunit-master-33896f7 vs nginx + PHP-FPM</a> <span class="meta">NO CLAIM wp-front-c32: inside the noise, no claim (B is 1.2 percent less server instructions per request, null band 2.3, 7 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#46-wp-persistent-vs-default-freeunit-sd-92483-20261014T005938Z">http://127.0.0.1:8081 · WordPress front page (no page cache) · FreeUnit 1.37.0 vs FreeUnit 1.37.0</a> <span class="meta">NO CLAIM wp-front-c32: inside the noise, no claim (B is 0.3 percent less server instructions per request, null band 2.3, 10 of 16 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#47-wp-persistent-vs-default-nginx-fpm-sd-92483-20261014T023148Z">http://127.0.0.1:8081 · WordPress front page (no page cache) · nginx + PHP-FPM vs nginx + PHP-FPM</a> <span class="meta">NO CLAIM wp-front-c32: inside the noise, no claim (B is 0.0 percent more server instructions per request, null band 1.2, 7 of 16 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#90-wp-rest-posts-freeunit-vs-apache-sd-92483-20261015T232304Z">http://127.0.0.1:8081 · wp-rest-posts · FreeUnit 1.37.0 vs Apache + mod_php</a> <span class="meta">NO CLAIM wp-rest-posts-c32: inside the noise, no claim (B is 0.4 percent more server instructions per request, null band 0.8, 7 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#91-wp-rest-posts-freeunit-vs-nginx-fpm-sd-92483-20261014T105328Z">http://127.0.0.1:8081 · wp-rest-posts · FreeUnit 1.37.0 vs nginx + PHP-FPM</a> <span class="meta">NO CLAIM wp-rest-posts-c32: inside the noise, no claim (B is 0.4 percent less server instructions per request, null band 1.0, 11 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#92-wp-rest-posts-master-vs-apache-sd-92483-20261016T011304Z">http://127.0.0.1:8081 · wp-rest-posts · FreeUnit master vs Apache + mod_php</a> <span class="meta">NO CLAIM wp-rest-posts-c32: inside the noise, no claim (B is 0.2 percent more server instructions per request, null band 0.7, 8 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#92-wp-rest-posts-master-vs-apache-sd-92483-20261016T045229Z">http://127.0.0.1:8081 · wp-rest-posts · FreeUnit master vs Apache + mod_php</a> <span class="meta">NO CLAIM wp-rest-posts-c32: inside the noise, no claim (B is 0.1 percent more server instructions per request, null band 0.6, 9 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#95-wp-edit-freeunit-vs-nginx-fpm-sd-92483-20261014T110748Z">http://127.0.0.1:8081 · wp-edit · FreeUnit 1.37.0 vs nginx + PHP-FPM</a> <span class="meta">NO CLAIM wp-edit-c32: inside the noise, no claim (B is 1.7 percent less server instructions per request, null band 4.1, 9 of 12 cells agree)</span></li>
+</ul>
+<h2 id="summary">Summary: the primary metric per runtime</h2>
+<p class="note">Primary metric: s instructions (lower is better), measured c32 on one host in one window. The ratio is against the best runtime in that row. Each comparison has its null band printed in the run sections below; a ratio smaller than the band is not a difference. Caveat: this table pools absolute means from runs taken hours apart under a powersave governor, so use it for the order, not for a percentage; the per-run tables are the controlled measurement.</p>
+<h3>WordPress /wp-cron.php (HTTP cron path) <span class="meta">(wp-cron-c32, wordpress, sd-92483, s instructions)</span></h3>
+<table><thead><tr><th>runtime</th><th>s instructions</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>nginx + PHP-FPM</td><td>46,284,823</td><td>1.00x</td></tr>
+<tr><td>FreeUnit 1.37.0</td><td>46,438,035</td><td>1.00x</td></tr>
+</tbody></table>
+<h3>wp-edit <span class="meta">(wp-edit-c32, wordpress, sd-92483, s instructions)</span></h3>
+<table><thead><tr><th>runtime</th><th>s instructions</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>nginx + PHP-FPM</td><td>691,080,830</td><td>1.00x</td></tr>
+<tr><td>FreeUnit 1.37.0</td><td>703,190,099</td><td>1.02x</td></tr>
+<tr><td>FreeUnit master</td><td>712,248,942</td><td>1.03x</td></tr>
+<tr><td>Apache + mod_php</td><td>777,549,129</td><td>1.13x</td></tr>
+</tbody></table>
+<h3>wp-edit-list <span class="meta">(wp-edit-list-c32, wordpress, sd-92483, s instructions)</span></h3>
+<table><thead><tr><th>runtime</th><th>s instructions</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>nginx + PHP-FPM</td><td>290,708,346</td><td>1.00x</td></tr>
+<tr><td>FreeUnit 1.37.0</td><td>306,914,263</td><td>1.06x</td></tr>
+<tr><td>FreeUnit master</td><td>307,621,155</td><td>1.06x</td></tr>
+<tr><td>Apache + mod_php</td><td>322,969,042</td><td>1.11x</td></tr>
+</tbody></table>
+<h3>WordPress front page (no page cache) <span class="meta">(wp-front-c32, wordpress, sd-92483, s instructions)</span></h3>
+<table><thead><tr><th>runtime</th><th>s instructions</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>nginx + PHP-FPM</td><td>228,000,483</td><td>1.00x</td></tr>
+<tr><td>FreeUnit 1.37.0</td><td>231,484,263</td><td>1.02x</td></tr>
+<tr><td>FreeUnit master</td><td>232,318,681</td><td>1.02x</td></tr>
+<tr><td>freeunit-master-33896f7</td><td>233,542,031</td><td>1.02x</td></tr>
+<tr><td>Apache + mod_php</td><td>241,253,814</td><td>1.06x</td></tr>
+</tbody></table>
+<h3>wp-rest-posts <span class="meta">(wp-rest-posts-c32, wordpress, sd-92483, s instructions)</span></h3>
+<table><thead><tr><th>runtime</th><th>s instructions</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>nginx + PHP-FPM</td><td>123,819,507</td><td>1.00x</td></tr>
+<tr><td>FreeUnit 1.37.0</td><td>124,505,924</td><td>1.01x</td></tr>
+<tr><td>FreeUnit master</td><td>124,655,767</td><td>1.01x</td></tr>
+<tr><td>Apache + mod_php</td><td>124,882,210</td><td>1.01x</td></tr>
+</tbody></table>
+<h2 id="runs">Every run</h2>
+<p class="note">One row per comparison. The run id is the directory name under <code>results/</code> and the anchor of its detail block below; the date is the run's own start time. Open a row to read its metrics.</p>
+<table class="index"><thead><tr><th>run</th><th>date</th><th>site</th><th>workload</th><th>runtimes</th><th>verdict</th></tr></thead><tbody>
+<tr><td><a href="#100-wp-edit-list-master-vs-apache-sd-92483-20261014T062357Z"><code>100-wp-edit-list-master-vs-apache-sd-92483-20261</code></a></td><td>2026-10-14T07:05</td><td>http://127.0.0.1:8081</td><td>wp-edit-list</td><td>FreeUnit master vs Apache + mod_php</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#101-wp-edit-list-master-vs-nginx-fpm-sd-92483-20261014T070514Z"><code>101-wp-edit-list-master-vs-nginx-fpm-sd-92483-20</code></a></td><td>2026-10-14T07:46</td><td>http://127.0.0.1:8081</td><td>wp-edit-list</td><td>FreeUnit master vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#120-wp-front-master-33896f7-vs-nginx-fpm-sd-92483-20261017T201002Z"><code>120-wp-front-master-33896f7-vs-nginx-fpm-sd-9248</code></a></td><td>2026-10-17T20:23</td><td>http://127.0.0.1:8081</td><td>WordPress front page (no page cache)</td><td>freeunit-master-33896f7 vs nginx + PHP-FPM</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#122-wp-front-master-33896f7-vs-apache-sd-92483-20261017T205342Z"><code>122-wp-front-master-33896f7-vs-apache-sd-92483-2</code></a></td><td>2026-10-17T21:07</td><td>http://127.0.0.1:8081</td><td>WordPress front page (no page cache)</td><td>freeunit-master-33896f7 vs Apache + mod_php</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#42-wp-front-freeunit-vs-nginx-fpm-sd-92483-20261013T185123Z"><code>42-wp-front-freeunit-vs-nginx-fpm-sd-92483-20261</code></a></td><td>2026-10-13T19:05</td><td>http://127.0.0.1:8081</td><td>WordPress front page (no page cache)</td><td>FreeUnit 1.37.0 vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#43-wp-front-freeunit-master-vs-nginx-fpm-sd-92483-20261013T150324Z"><code>43-wp-front-freeunit-master-vs-nginx-fpm-sd-9248</code></a></td><td>2026-10-13T15:18</td><td>http://127.0.0.1:8081</td><td>WordPress front page (no page cache)</td><td>FreeUnit master vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#43-wp-front-freeunit-master-vs-nginx-fpm-sd-92483-20261016T041624Z"><code>43-wp-front-freeunit-master-vs-nginx-fpm-sd-9248</code></a></td><td>2026-10-16T04:30</td><td>http://127.0.0.1:8081</td><td>WordPress front page (no page cache)</td><td>FreeUnit master vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#44-wp-front-nginx-fpm-vs-apache-sd-92483-20261013T190508Z"><code>44-wp-front-nginx-fpm-vs-apache-sd-92483-2026101</code></a></td><td>2026-10-13T19:19</td><td>http://127.0.0.1:8081</td><td>WordPress front page (no page cache)</td><td>nginx + PHP-FPM vs Apache + mod_php</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#45-wp-cron-freeunit-vs-nginx-fpm-sd-92483-20261013T202354Z"><code>45-wp-cron-freeunit-vs-nginx-fpm-sd-92483-202610</code></a></td><td>2026-10-13T20:36</td><td>http://127.0.0.1:8081</td><td>WordPress /wp-cron.php (HTTP cron path)</td><td>FreeUnit 1.37.0 vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#46-wp-persistent-vs-default-freeunit-sd-92483-20261014T005938Z"><code>46-wp-persistent-vs-default-freeunit-sd-92483-20</code></a></td><td>2026-10-14T01:20</td><td>http://127.0.0.1:8081</td><td>WordPress front page (no page cache)</td><td>FreeUnit 1.37.0 vs FreeUnit 1.37.0</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#47-wp-persistent-vs-default-nginx-fpm-sd-92483-20261014T023148Z"><code>47-wp-persistent-vs-default-nginx-fpm-sd-92483-2</code></a></td><td>2026-10-14T02:52</td><td>http://127.0.0.1:8081</td><td>WordPress front page (no page cache)</td><td>nginx + PHP-FPM vs nginx + PHP-FPM</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#90-wp-rest-posts-freeunit-vs-apache-sd-92483-20261015T232304Z"><code>90-wp-rest-posts-freeunit-vs-apache-sd-92483-202</code></a></td><td>2026-10-15T23:36</td><td>http://127.0.0.1:8081</td><td>wp-rest-posts</td><td>FreeUnit 1.37.0 vs Apache + mod_php</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#91-wp-rest-posts-freeunit-vs-nginx-fpm-sd-92483-20261014T105328Z"><code>91-wp-rest-posts-freeunit-vs-nginx-fpm-sd-92483-</code></a></td><td>2026-10-14T11:07</td><td>http://127.0.0.1:8081</td><td>wp-rest-posts</td><td>FreeUnit 1.37.0 vs nginx + PHP-FPM</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#92-wp-rest-posts-master-vs-apache-sd-92483-20261016T011304Z"><code>92-wp-rest-posts-master-vs-apache-sd-92483-20261</code></a></td><td>2026-10-16T01:26</td><td>http://127.0.0.1:8081</td><td>wp-rest-posts</td><td>FreeUnit master vs Apache + mod_php</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#92-wp-rest-posts-master-vs-apache-sd-92483-20261016T045229Z"><code>92-wp-rest-posts-master-vs-apache-sd-92483-20261</code></a></td><td>2026-10-16T05:06</td><td>http://127.0.0.1:8081</td><td>wp-rest-posts</td><td>FreeUnit master vs Apache + mod_php</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#93-wp-rest-posts-master-vs-nginx-fpm-sd-92483-20261014T032050Z"><code>93-wp-rest-posts-master-vs-nginx-fpm-sd-92483-20</code></a></td><td>2026-10-14T03:34</td><td>http://127.0.0.1:8081</td><td>wp-rest-posts</td><td>FreeUnit master vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#93-wp-rest-posts-master-vs-nginx-fpm-sd-92483-20261016T083246Z"><code>93-wp-rest-posts-master-vs-nginx-fpm-sd-92483-20</code></a></td><td>2026-10-16T08:46</td><td>http://127.0.0.1:8081</td><td>wp-rest-posts</td><td>FreeUnit master vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#94-wp-edit-freeunit-vs-apache-sd-92483-20261014T082038Z"><code>94-wp-edit-freeunit-vs-apache-sd-92483-20261014T</code></a></td><td>2026-10-14T09:02</td><td>http://127.0.0.1:8081</td><td>wp-edit</td><td>FreeUnit 1.37.0 vs Apache + mod_php</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#95-wp-edit-freeunit-vs-nginx-fpm-sd-92483-20261014T110748Z"><code>95-wp-edit-freeunit-vs-nginx-fpm-sd-92483-202610</code></a></td><td>2026-10-14T11:50</td><td>http://127.0.0.1:8081</td><td>wp-edit</td><td>FreeUnit 1.37.0 vs nginx + PHP-FPM</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#96-wp-edit-master-vs-apache-sd-92483-20261014T033612Z"><code>96-wp-edit-master-vs-apache-sd-92483-20261014T03</code></a></td><td>2026-10-14T04:18</td><td>http://127.0.0.1:8081</td><td>wp-edit</td><td>FreeUnit master vs Apache + mod_php</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#97-wp-edit-master-vs-nginx-fpm-sd-92483-20261014T041828Z"><code>97-wp-edit-master-vs-nginx-fpm-sd-92483-20261014</code></a></td><td>2026-10-14T05:00</td><td>http://127.0.0.1:8081</td><td>wp-edit</td><td>FreeUnit master vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#99-wp-edit-list-freeunit-vs-nginx-fpm-sd-92483-20261014T054209Z"><code>99-wp-edit-list-freeunit-vs-nginx-fpm-sd-92483-2</code></a></td><td>2026-10-14T06:23</td><td>http://127.0.0.1:8081</td><td>wp-edit-list</td><td>FreeUnit 1.37.0 vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+</tbody></table>
+<h2 id="details">Run detail</h2>
+<p class="note">Grouped by application site. Nothing is hidden: the summary line carries the verdict, the body has the metrics, and the null-phase row that bounds the job is one click further.</p>
+<h3 id="site-http://127.0.0.1:8081">http://127.0.0.1:8081 <span class="meta">(22 runs)</span></h3>
+<details class="run" id="100-wp-edit-list-master-vs-apache-sd-92483-20261014T062357Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">wp-edit-list — FreeUnit master vs Apache + mod_php</span><span class="meta">http://127.0.0.1:8081 · 100-wp-edit-list-master-vs-apache-sd-92483-20261014T062357Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-14T07:05:12Z</p>
+<p class="headline">CLAIM wp-edit-list-c32: B is 5.2 percent more server instructions per request, outside the null band of 2.2, 11 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>apache</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>306946329.0375</td><td>322969041.6467</td><td>5.22%</td><td>[3.19, 7.25]</td><td>2.16</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>53.5725</td><td>53.6134</td><td>0.08%</td><td>[-0.58, 0.73]</td><td>0.77</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>31650735.6995</td><td>31661607.3626</td><td>0.04%</td><td>[-3.32, 3.4]</td><td>4.68</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>15891724.2472</td><td>15904400.3603</td><td>0.08%</td><td>[-0.21, 0.37]</td><td>0.48</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>8.3951</td><td>8.6519</td><td>3.08%</td><td>[-1.0, 7.16]</td><td>6.1</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>12865.3603</td><td>12867.5639</td><td>0.02%</td><td>[-3.33, 3.38]</td><td>4.73</td><td>4/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>1546.7298</td><td>1028.3937</td><td>-33.48%</td><td>[-38.37, -28.6]</td><td>5.76</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>2327.276</td><td>9192.8892</td><td>295.11%</td><td>[284.12, 306.1]</td><td>14.52</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>20.0767</td><td>19.7383</td><td>-1.67%</td><td>[-5.56, 2.21]</td><td>5.55</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>116.8899</td><td>82.3837</td><td>-29.52%</td><td>[-32.1, -26.94]</td><td>3.49</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>262102768.7865</td><td>266697465.4937</td><td>1.75%</td><td>[-0.44, 3.95]</td><td>2.77</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>3.4504</td><td>0.481</td><td>-85.82%</td><td>[-120.85, -50.79]</td><td>53.75</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>96944.5345</td><td>98056.1531</td><td>1.15%</td><td>[0.23, 2.07]</td><td>1.15</td><td>10/12</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.5 percent in server instructions per request, 95 percent CI [-2.2, 1.2], null band 2.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in db_cs, 95 percent CI [-0.8, 0.3], null band 0.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.6 percent in db_cycles, 95 percent CI [-4.7, 1.4], null band 4.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in db_instructions, 95 percent CI [-0.5, 0.1], null band 0.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in db_migrations, 95 percent CI [-4.5, 6.1], null band 6.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.7 percent in db_us, 95 percent CI [-4.7, 1.3], null band 4.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.9 percent in p50 latency (ms), 95 percent CI [-5.8, 3.9], null band 5.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -2.7 percent in p99 latency (ms), 95 percent CI [-14.5, 9.1], null band 14.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 2.0 percent in requests per second, 95 percent CI [-1.6, 5.5], null band 5.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in server cs per request, 95 percent CI [-3.5, 3.1], null band 3.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.9 percent in server cycles per request, 95 percent CI [-2.8, 0.9], null band 2.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 19.4 percent in server migrations per request, 95 percent CI [-14.9, 53.7], null band 53.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server CPU per request (us), 95 percent CI [-1.2, 1.0], null band 1.2, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>100-wp-edit-list-master-vs-apache-sd-92483-20261014T062357Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="101-wp-edit-list-master-vs-nginx-fpm-sd-92483-20261014T070514Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">wp-edit-list — FreeUnit master vs nginx + PHP-FPM</span><span class="meta">http://127.0.0.1:8081 · 101-wp-edit-list-master-vs-nginx-fpm-sd-92483-20261014T070514Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-14T07:46:27Z</p>
+<p class="headline">CLAIM wp-edit-list-c32: B is 5.6 percent less server instructions per request, outside the null band of 2.1, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>308295981.2996</td><td>291128867.7709</td><td>-5.57%</td><td>[-7.42, -3.72]</td><td>2.12</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>53.5369</td><td>53.6641</td><td>0.24%</td><td>[-0.18, 0.65]</td><td>0.48</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>31776654.6113</td><td>31980858.3437</td><td>0.65%</td><td>[-2.36, 3.66]</td><td>3.97</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>15871833.0293</td><td>15895461.7152</td><td>0.15%</td><td>[-0.11, 0.41]</td><td>0.29</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>8.3812</td><td>8.548</td><td>2.03%</td><td>[-2.02, 6.08]</td><td>5.48</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>12930.579</td><td>12991.6138</td><td>0.49%</td><td>[-2.57, 3.54]</td><td>3.31</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>1534.9447</td><td>1518.0801</td><td>-1.12%</td><td>[-5.24, 2.99]</td><td>6.81</td><td>5/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>2376.833</td><td>2255.6178</td><td>-4.71%</td><td>[-16.93, 7.5]</td><td>15.33</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>20.025</td><td>20.8075</td><td>3.93%</td><td>[0.26, 7.6]</td><td>3.7</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>119.0129</td><td>103.1737</td><td>-13.29%</td><td>[-16.49, -10.08]</td><td>6.05</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>263111343.3239</td><td>238280839.0705</td><td>-9.44%</td><td>[-11.59, -7.28]</td><td>3.04</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>3.3207</td><td>3.3169</td><td>1.31%</td><td>[-35.56, 38.17]</td><td>59.12</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>97128.5531</td><td>93432.7167</td><td>-3.8%</td><td>[-4.57, -3.04]</td><td>1.21</td><td>12/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.6 percent in server instructions per request, 95 percent CI [-1.0, 2.1], null band 2.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_cs, 95 percent CI [-0.5, 0.4], null band 0.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.7 percent in db_cycles, 95 percent CI [-2.6, 4.0], null band 4.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_instructions, 95 percent CI [-0.2, 0.3], null band 0.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.6 percent in db_migrations, 95 percent CI [-5.5, 4.2], null band 5.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_us, 95 percent CI [-3.0, 3.3], null band 3.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -2.1 percent in p50 latency (ms), 95 percent CI [-6.8, 2.6], null band 6.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 2.2 percent in p99 latency (ms), 95 percent CI [-10.8, 15.3], null band 15.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in requests per second, 95 percent CI [-3.7, 3.5], null band 3.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.9 percent in server cs per request, 95 percent CI [-2.2, 6.0], null band 6.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.2 percent in server cycles per request, 95 percent CI [-0.6, 3.0], null band 3.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -16.0 percent in server migrations per request, 95 percent CI [-59.1, 27.1], null band 59.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in server CPU per request (us), 95 percent CI [-0.6, 1.2], null band 1.2, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>101-wp-edit-list-master-vs-nginx-fpm-sd-92483-20261014T070514Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="120-wp-front-master-33896f7-vs-nginx-fpm-sd-92483-20261017T201002Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">WordPress front page (no page cache) — freeunit-master-33896f7 vs nginx + PHP-FPM</span><span class="meta">http://127.0.0.1:8081 · 120-wp-front-master-33896f7-vs-nginx-fpm-sd-92483-20261017T201002Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-17T20:23:52Z</p>
+<p class="headline">NO CLAIM wp-front-c32: inside the noise, no claim (B is 1.2 percent less server instructions per request, null band 2.3, 7 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit-master-33896f7</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>233796532.9609</td><td>230932538.9274</td><td>-1.21%</td><td>[-2.41, -0.0]</td><td>2.3</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>33.3381</td><td>33.3284</td><td>-0.03%</td><td>[-0.59, 0.54]</td><td>0.91</td><td>4/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>19154300.939</td><td>19075986.5159</td><td>-0.41%</td><td>[-3.73, 2.91]</td><td>4.72</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>8846860.0029</td><td>8842371.776</td><td>-0.05%</td><td>[-0.39, 0.29]</td><td>0.62</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>4.6619</td><td>4.6799</td><td>0.39%</td><td>[-3.86, 4.64]</td><td>6.4</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>7781.8255</td><td>7733.1123</td><td>-0.63%</td><td>[-4.0, 2.75]</td><td>4.86</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>1215.8262</td><td>1218.6038</td><td>0.28%</td><td>[-3.3, 3.86]</td><td>5.5</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>1888.4719</td><td>1796.5386</td><td>-4.82%</td><td>[-19.16, 9.52]</td><td>14.07</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>25.4558</td><td>26.5158</td><td>4.17%</td><td>[0.43, 7.9]</td><td>5.1</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>60.5682</td><td>59.0221</td><td>-2.52%</td><td>[-4.87, -0.17]</td><td>4.71</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>203075207.2418</td><td>195378107.2202</td><td>-3.77%</td><td>[-5.06, -2.49]</td><td>3.09</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.9515</td><td>0.8435</td><td>-11.43%</td><td>[-33.24, 10.38]</td><td>39.97</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>75812.028</td><td>73131.1464</td><td>-3.53%</td><td>[-4.78, -2.29]</td><td>1.67</td><td>12/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.9 percent in server instructions per request, 95 percent CI [-0.5, 2.3], null band 2.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in db_cs, 95 percent CI [-0.9, 0.5], null band 0.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in db_cycles, 95 percent CI [-3.0, 4.7], null band 4.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_instructions, 95 percent CI [-0.6, 0.5], null band 0.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -2.1 percent in db_migrations, 95 percent CI [-6.4, 2.2], null band 6.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.2 percent in db_us, 95 percent CI [-2.6, 4.9], null band 4.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -2.0 percent in p50 latency (ms), 95 percent CI [-5.5, 1.6], null band 5.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 2.3 percent in p99 latency (ms), 95 percent CI [-9.5, 14.1], null band 14.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.1 percent in requests per second, 95 percent CI [-5.1, 3.0], null band 5.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.8 percent in server cs per request, 95 percent CI [-1.1, 4.7], null band 4.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.1 percent in server cycles per request, 95 percent CI [-1.0, 3.1], null band 3.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -15.2 percent in server migrations per request, 95 percent CI [-40.0, 9.5], null band 40.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in server CPU per request (us), 95 percent CI [-0.6, 1.7], null band 1.7, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>120-wp-front-master-33896f7-vs-nginx-fpm-sd-92483-20261017T201002Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="122-wp-front-master-33896f7-vs-apache-sd-92483-20261017T205342Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">WordPress front page (no page cache) — freeunit-master-33896f7 vs Apache + mod_php</span><span class="meta">http://127.0.0.1:8081 · 122-wp-front-master-33896f7-vs-apache-sd-92483-20261017T205342Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-17T21:07:51Z</p>
+<p class="headline">CLAIM wp-front-c32: B is 3.7 percent more server instructions per request, outside the null band of 1.7, 11 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master-33896f7</th><th>apache</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>233287529.7207</td><td>242004608.8024</td><td>3.74%</td><td>[2.43, 5.04]</td><td>1.67</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>33.3242</td><td>33.4896</td><td>0.5%</td><td>[-0.13, 1.12]</td><td>1.08</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>18841404.7846</td><td>18822974.1776</td><td>-0.1%</td><td>[-3.5, 3.3]</td><td>4.04</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>8837443.0496</td><td>8859091.7927</td><td>0.25%</td><td>[-0.16, 0.65]</td><td>0.6</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>4.6237</td><td>4.7835</td><td>3.47%</td><td>[-0.13, 7.07]</td><td>4.84</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>7751.4545</td><td>7694.028</td><td>-0.74%</td><td>[-3.95, 2.46]</td><td>3.56</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>1234.0331</td><td>777.2549</td><td>-36.97%</td><td>[-39.97, -33.96]</td><td>5.85</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>1857.7101</td><td>8863.5711</td><td>377.47%</td><td>[366.09, 388.85]</td><td>14.59</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>25.6358</td><td>25.2458</td><td>-1.52%</td><td>[-4.92, 1.87]</td><td>4.04</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>60.1672</td><td>55.7123</td><td>-7.4%</td><td>[-9.72, -5.08]</td><td>3.97</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>202140971.1871</td><td>207415912.864</td><td>2.61%</td><td>[0.69, 4.53]</td><td>2.36</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.9621</td><td>0.4822</td><td>-49.74%</td><td>[-69.57, -29.91]</td><td>33.76</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>76061.6041</td><td>77104.4951</td><td>1.37%</td><td>[0.36, 2.38]</td><td>1.09</td><td>10/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.0 percent in server instructions per request, 95 percent CI [-1.7, 1.6], null band 1.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in db_cs, 95 percent CI [-1.1, 0.1], null band 1.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in db_cycles, 95 percent CI [-4.0, 3.1], null band 4.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.3 percent in db_instructions, 95 percent CI [-0.6, 0.1], null band 0.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.3 percent in db_migrations, 95 percent CI [-4.8, 2.3], null band 4.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in db_us, 95 percent CI [-3.6, 3.1], null band 3.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.2 percent in p50 latency (ms), 95 percent CI [-3.5, 5.9], null band 5.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.7 percent in p99 latency (ms), 95 percent CI [-14.6, 11.1], null band 14.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.4 percent in requests per second, 95 percent CI [-3.2, 4.0], null band 4.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in server cs per request, 95 percent CI [-4.0, 3.9], null band 4.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server cycles per request, 95 percent CI [-2.4, 2.2], null band 2.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -8.7 percent in server migrations per request, 95 percent CI [-33.8, 16.5], null band 33.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in server CPU per request (us), 95 percent CI [-1.1, 1.0], null band 1.1, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>122-wp-front-master-33896f7-vs-apache-sd-92483-20261017T205342Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="42-wp-front-freeunit-vs-nginx-fpm-sd-92483-20261013T185123Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">WordPress front page (no page cache) — FreeUnit 1.37.0 vs nginx + PHP-FPM</span><span class="meta">http://127.0.0.1:8081 · 42-wp-front-freeunit-vs-nginx-fpm-sd-92483-20261013T185123Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-13T19:05:07Z</p>
+<p class="headline">CLAIM wp-front-c32: B is 1.9 percent less server instructions per request, outside the null band of 1.2, 10 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>231991333.0774</td><td>227626240.2156</td><td>-1.88%</td><td>[-2.7, -1.05]</td><td>1.24</td><td>10/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>31.3472</td><td>31.36</td><td>0.04%</td><td>[-0.62, 0.7]</td><td>1.0</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>15217207.891</td><td>15534171.0352</td><td>2.09%</td><td>[-2.18, 6.35]</td><td>4.99</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>7062876.0557</td><td>7068326.8602</td><td>0.08%</td><td>[-0.44, 0.59]</td><td>0.75</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>4.0411</td><td>4.1856</td><td>3.64%</td><td>[-0.61, 7.89]</td><td>5.54</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>6309.6158</td><td>6410.19</td><td>1.6%</td><td>[-2.52, 5.72]</td><td>4.09</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>1218.1067</td><td>1209.0148</td><td>-0.72%</td><td>[-5.23, 3.78]</td><td>4.91</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>1844.3085</td><td>1864.0598</td><td>1.12%</td><td>[-14.87, 17.12]</td><td>12.82</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>26.225</td><td>26.6983</td><td>1.81%</td><td>[-2.16, 5.77]</td><td>4.65</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>56.9339</td><td>56.2832</td><td>-1.13%</td><td>[-3.82, 1.56]</td><td>4.05</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>197976612.8162</td><td>189274462.1355</td><td>-4.39%</td><td>[-5.46, -3.32]</td><td>1.58</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.943</td><td>0.8098</td><td>-14.04%</td><td>[-36.44, 8.36]</td><td>36.94</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>74193.046</td><td>71985.6154</td><td>-2.97%</td><td>[-4.06, -1.89]</td><td>1.51</td><td>11/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.4 percent in server instructions per request, 95 percent CI [-0.5, 1.2], null band 1.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.4 percent in db_cs, 95 percent CI [-0.2, 1.0], null band 1.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.6 percent in db_cycles, 95 percent CI [-5.0, 3.9], null band 5.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in db_instructions, 95 percent CI [-0.3, 0.8], null band 0.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in db_migrations, 95 percent CI [-4.5, 5.5], null band 5.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_us, 95 percent CI [-3.9, 4.1], null band 4.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.3 percent in p50 latency (ms), 95 percent CI [-4.9, 2.4], null band 4.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in p99 latency (ms), 95 percent CI [-12.5, 12.8], null band 12.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.7 percent in requests per second, 95 percent CI [-4.7, 3.3], null band 4.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.4 percent in server cs per request, 95 percent CI [-1.2, 4.0], null band 4.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.4 percent in server cycles per request, 95 percent CI [-0.8, 1.6], null band 1.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -3.8 percent in server migrations per request, 95 percent CI [-36.9, 29.3], null band 36.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in server CPU per request (us), 95 percent CI [-0.5, 1.5], null band 1.5, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>42-wp-front-freeunit-vs-nginx-fpm-sd-92483-20261013T185123Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="43-wp-front-freeunit-master-vs-nginx-fpm-sd-92483-20261013T150324Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">WordPress front page (no page cache) — FreeUnit master vs nginx + PHP-FPM</span><span class="meta">http://127.0.0.1:8081 · 43-wp-front-freeunit-master-vs-nginx-fpm-sd-92483-20261013T150324Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-13T15:18:51Z</p>
+<p class="headline">CLAIM wp-front-c32: B is 1.7 percent less server instructions per request, outside the null band of 1.5, 10 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>230579587.8056</td><td>226614314.5325</td><td>-1.71%</td><td>[-3.05, -0.38]</td><td>1.45</td><td>10/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>31.4103</td><td>31.331</td><td>-0.25%</td><td>[-1.0, 0.5]</td><td>1.2</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>15575582.3261</td><td>15389518.3223</td><td>-1.14%</td><td>[-5.21, 2.92]</td><td>7.26</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>7128830.4931</td><td>7065123.5496</td><td>-0.87%</td><td>[-3.02, 1.27]</td><td>1.11</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>3.9877</td><td>4.1674</td><td>4.71%</td><td>[0.14, 9.29]</td><td>5.46</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>6372.3209</td><td>6332.9296</td><td>-0.58%</td><td>[-4.44, 3.28]</td><td>7.18</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>1220.5913</td><td>1207.1954</td><td>-1.03%</td><td>[-6.46, 4.4]</td><td>7.24</td><td>5/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>1875.7171</td><td>1813.7269</td><td>-3.36%</td><td>[-18.8, 12.09]</td><td>21.31</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>25.4633</td><td>26.8442</td><td>5.52%</td><td>[0.61, 10.43]</td><td>6.85</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>58.2691</td><td>55.9352</td><td>-3.99%</td><td>[-6.78, -1.2]</td><td>6.23</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>203303951.0329</td><td>189905706.759</td><td>-6.53%</td><td>[-9.71, -3.35]</td><td>2.54</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.9826</td><td>0.7591</td><td>-17.04%</td><td>[-48.65, 14.58]</td><td>40.63</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>76241.9738</td><td>72553.7185</td><td>-4.73%</td><td>[-8.29, -1.18]</td><td>2.48</td><td>11/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>INVALID: 4 cell(s) failed, first: A wp-front-c32 block 1 slot 2 alerts=1</li>
+<li>INVALID: 4 cell(s) failed, first: A wp-front-c32 block 1 slot 2 alerts=1</li>
+<li>INVALID: 4 cell(s) failed, first: A wp-front-c32 block 1 slot 2 alerts=1</li>
+<li>INVALID: 4 cell(s) failed, first: A wp-front-c32 block 1 slot 2 alerts=1</li>
+<li>INVALID: 4 cell(s) failed, first: A wp-front-c32 block 1 slot 2 alerts=1</li>
+<li>INVALID: 4 cell(s) failed, first: A wp-front-c32 block 1 slot 2 alerts=1</li>
+<li>INVALID: 4 cell(s) failed, first: A wp-front-c32 block 1 slot 2 alerts=1</li>
+<li>INVALID: 4 cell(s) failed, first: A wp-front-c32 block 1 slot 2 alerts=1</li>
+<li>INVALID: 4 cell(s) failed, first: A wp-front-c32 block 1 slot 2 alerts=1</li>
+<li>INVALID: 4 cell(s) failed, first: A wp-front-c32 block 1 slot 2 alerts=1</li>
+<li>INVALID: 4 cell(s) failed, first: A wp-front-c32 block 1 slot 2 alerts=1</li>
+<li>INVALID: 4 cell(s) failed, first: A wp-front-c32 block 1 slot 2 alerts=1</li>
+<li>INVALID: 4 cell(s) failed, first: A wp-front-c32 block 1 slot 2 alerts=1</li>
+</ul></details>
+<p class="data">raw: <code>43-wp-front-freeunit-master-vs-nginx-fpm-sd-92483-20261013T150324Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="43-wp-front-freeunit-master-vs-nginx-fpm-sd-92483-20261016T041624Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">WordPress front page (no page cache) — FreeUnit master vs nginx + PHP-FPM</span><span class="meta">http://127.0.0.1:8081 · 43-wp-front-freeunit-master-vs-nginx-fpm-sd-92483-20261016T041624Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-16T04:30:20Z</p>
+<p class="headline">CLAIM wp-front-c32: B is 2.8 percent less server instructions per request, outside the null band of 1.7, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>234057774.4037</td><td>227566370.8202</td><td>-2.76%</td><td>[-4.08, -1.45]</td><td>1.65</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>33.3517</td><td>33.5392</td><td>0.56%</td><td>[-0.22, 1.35]</td><td>1.29</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>18971040.6632</td><td>18991423.4695</td><td>0.11%</td><td>[-3.72, 3.94]</td><td>4.66</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>8831308.4489</td><td>8845730.2472</td><td>0.16%</td><td>[-0.26, 0.58]</td><td>0.81</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>4.6533</td><td>4.7118</td><td>1.3%</td><td>[-3.02, 5.61]</td><td>5.69</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>7765.0339</td><td>7775.0849</td><td>0.13%</td><td>[-3.44, 3.7]</td><td>4.34</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>1209.9419</td><td>1232.2306</td><td>1.91%</td><td>[-1.86, 5.68]</td><td>5.66</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>1911.2025</td><td>1854.554</td><td>-2.98%</td><td>[-17.45, 11.5]</td><td>16.02</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>25.6367</td><td>26.4067</td><td>3.0%</td><td>[-0.86, 6.86]</td><td>4.06</td><td>11/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>60.8666</td><td>58.7483</td><td>-3.48%</td><td>[-5.99, -0.96]</td><td>5.85</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>202085639.5444</td><td>190807707.8588</td><td>-5.57%</td><td>[-6.8, -4.34]</td><td>2.6</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.7771</td><td>0.726</td><td>-4.51%</td><td>[-29.01, 19.99]</td><td>32.51</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>75381.9847</td><td>73219.9629</td><td>-2.87%</td><td>[-4.22, -1.52]</td><td>1.4</td><td>12/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.1 percent in server instructions per request, 95 percent CI [-1.7, 1.5], null band 1.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.6 percent in db_cs, 95 percent CI [-1.3, 0.0], null band 1.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.9 percent in db_cycles, 95 percent CI [-4.7, 2.8], null band 4.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.4 percent in db_instructions, 95 percent CI [-0.8, -0.0], null band 0.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.4 percent in db_migrations, 95 percent CI [-2.9, 5.7], null band 5.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.8 percent in db_us, 95 percent CI [-4.3, 2.7], null band 4.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.4 percent in p50 latency (ms), 95 percent CI [-4.9, 5.7], null band 5.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.5 percent in p99 latency (ms), 95 percent CI [-16.0, 13.0], null band 16.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in requests per second, 95 percent CI [-4.0, 4.1], null band 4.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.7 percent in server cs per request, 95 percent CI [-5.9, 2.5], null band 5.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.4 percent in server cycles per request, 95 percent CI [-2.6, 1.8], null band 2.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 8.0 percent in server migrations per request, 95 percent CI [-16.4, 32.5], null band 32.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.3 percent in server CPU per request (us), 95 percent CI [-1.4, 0.8], null band 1.4, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>43-wp-front-freeunit-master-vs-nginx-fpm-sd-92483-20261016T041624Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="44-wp-front-nginx-fpm-vs-apache-sd-92483-20261013T190508Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">WordPress front page (no page cache) — nginx + PHP-FPM vs Apache + mod_php</span><span class="meta">http://127.0.0.1:8081 · 44-wp-front-nginx-fpm-vs-apache-sd-92483-20261013T190508Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-13T19:19:14Z</p>
+<p class="headline">CLAIM wp-front-c32: B is 4.8 percent more server instructions per request, outside the null band of 1.2, 11 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>nginx-fpm</th><th>apache</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>229554986.1175</td><td>240503019.1922</td><td>4.77%</td><td>[3.33, 6.21]</td><td>1.19</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>31.3934</td><td>31.3941</td><td>0.0%</td><td>[-0.57, 0.57]</td><td>0.99</td><td>4/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>15365391.3133</td><td>15276362.6882</td><td>-0.58%</td><td>[-4.28, 3.11]</td><td>4.0</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>7056516.0676</td><td>7073609.5105</td><td>0.24%</td><td>[-0.3, 0.78]</td><td>0.68</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>4.1791</td><td>4.2052</td><td>0.64%</td><td>[-4.47, 5.75]</td><td>4.69</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>6340.6787</td><td>6276.3943</td><td>-1.01%</td><td>[-4.65, 2.62]</td><td>3.61</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>1230.2849</td><td>762.1275</td><td>-38.05%</td><td>[-41.08, -35.02]</td><td>5.65</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>1756.4659</td><td>8833.2032</td><td>403.63%</td><td>[392.57, 414.69]</td><td>21.49</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>26.94</td><td>25.5858</td><td>-5.03%</td><td>[-8.82, -1.24]</td><td>3.56</td><td>9/12</td><td>CLAIM</td></tr>
+<tr><td>server cs per request</td><td>56.8458</td><td>53.3356</td><td>-6.17%</td><td>[-8.79, -3.56]</td><td>2.1</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>190695436.6652</td><td>204723774.7062</td><td>7.36%</td><td>[5.8, 8.93]</td><td>1.7</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.8032</td><td>0.5019</td><td>-37.64%</td><td>[-55.98, -19.31]</td><td>37.21</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>71776.0749</td><td>75569.2332</td><td>5.29%</td><td>[4.08, 6.49]</td><td>1.15</td><td>12/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-1.0, 1.2], null band 1.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in db_cs, 95 percent CI [-0.3, 1.0], null band 1.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.4 percent in db_cycles, 95 percent CI [-4.0, 3.1], null band 4.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_instructions, 95 percent CI [-0.4, 0.7], null band 0.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.6 percent in db_migrations, 95 percent CI [-3.4, 4.7], null band 4.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.3 percent in db_us, 95 percent CI [-3.6, 3.1], null band 3.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in p50 latency (ms), 95 percent CI [-4.0, 5.6], null band 5.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 4.5 percent in p99 latency (ms), 95 percent CI [-12.5, 21.5], null band 21.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in requests per second, 95 percent CI [-3.3, 3.6], null band 3.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server cs per request, 95 percent CI [-2.1, 1.8], null band 2.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in server cycles per request, 95 percent CI [-1.3, 1.7], null band 1.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -13.6 percent in server migrations per request, 95 percent CI [-37.2, 10.0], null band 37.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server CPU per request (us), 95 percent CI [-1.1, 0.9], null band 1.1, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>44-wp-front-nginx-fpm-vs-apache-sd-92483-20261013T190508Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="45-wp-cron-freeunit-vs-nginx-fpm-sd-92483-20261013T202354Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">WordPress /wp-cron.php (HTTP cron path) — FreeUnit 1.37.0 vs nginx + PHP-FPM</span><span class="meta">http://127.0.0.1:8081 · 45-wp-cron-freeunit-vs-nginx-fpm-sd-92483-20261013T202354Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-13T20:36:46Z</p>
+<p class="headline">CLAIM wp-cron-c32: B is 0.3 percent less server instructions per request, outside the null band of 0.2, 11 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>46438035.1864</td><td>46284823.261</td><td>-0.33%</td><td>[-0.45, -0.21]</td><td>0.16</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>13.0591</td><td>13.0637</td><td>0.04%</td><td>[-0.07, 0.14]</td><td>0.12</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4417643.6186</td><td>4410742.9466</td><td>-0.15%</td><td>[-3.89, 3.58]</td><td>3.6</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>1835536.0298</td><td>1830936.5999</td><td>-0.25%</td><td>[-0.46, -0.04]</td><td>0.24</td><td>10/12</td><td>CLAIM</td></tr>
+<tr><td>db_migrations</td><td>2.1328</td><td>2.1274</td><td>-0.25%</td><td>[-2.18, 1.69]</td><td>3.74</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>1842.8479</td><td>1844.9353</td><td>0.11%</td><td>[-3.6, 3.83]</td><td>3.45</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>244.6809</td><td>236.4617</td><td>-3.36%</td><td>[-4.99, -1.72]</td><td>1.51</td><td>10/12</td><td>CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>376.2353</td><td>376.1283</td><td>0.0%</td><td>[-16.54, 16.55]</td><td>13.6</td><td>5/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>129.445</td><td>135.3875</td><td>4.59%</td><td>[0.56, 8.62]</td><td>4.35</td><td>9/12</td><td>CLAIM</td></tr>
+<tr><td>server cs per request</td><td>20.4057</td><td>19.5645</td><td>-4.11%</td><td>[-5.95, -2.28]</td><td>5.89</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>37863646.8431</td><td>36199455.3847</td><td>-4.39%</td><td>[-5.21, -3.58]</td><td>1.33</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.4891</td><td>0.7166</td><td>48.23%</td><td>[20.3, 76.17]</td><td>84.0</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>15076.4174</td><td>14439.0415</td><td>-4.23%</td><td>[-5.49, -2.96]</td><td>1.32</td><td>12/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.0 percent in server instructions per request, 95 percent CI [-0.2, 0.1], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_cs, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.3 percent in db_cycles, 95 percent CI [-3.6, 3.1], null band 3.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_instructions, 95 percent CI [-0.2, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.7 percent in db_migrations, 95 percent CI [-0.4, 3.7], null band 3.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_us, 95 percent CI [-3.5, 3.2], null band 3.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.6 percent in p50 latency (ms), 95 percent CI [-0.3, 1.5], null band 1.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.7 percent in p99 latency (ms), 95 percent CI [-12.2, 13.6], null band 13.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.0 percent in requests per second, 95 percent CI [-2.4, 4.4], null band 4.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -2.1 percent in server cs per request, 95 percent CI [-5.9, 1.7], null band 5.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in server cycles per request, 95 percent CI [-1.3, 0.4], null band 1.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 28.9 percent in server migrations per request, 95 percent CI [-26.3, 84.0], null band 84.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.3 percent in server CPU per request (us), 95 percent CI [-1.3, 0.8], null band 1.3, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>45-wp-cron-freeunit-vs-nginx-fpm-sd-92483-20261013T202354Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="46-wp-persistent-vs-default-freeunit-sd-92483-20261014T005938Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">WordPress front page (no page cache) — FreeUnit 1.37.0 vs FreeUnit 1.37.0</span><span class="meta">http://127.0.0.1:8081 · 46-wp-persistent-vs-default-freeunit-sd-92483-20261014T005938Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-14T01:20:18Z</p>
+<p class="headline">NO CLAIM wp-front-c32: inside the noise, no claim (B is 0.3 percent less server instructions per request, null band 2.3, 10 of 16 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>freeunit</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>231624459.9231</td><td>230836994.942</td><td>-0.34%</td><td>[-1.25, 0.57]</td><td>2.35</td><td>10/16</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>31.3579</td><td>27.35</td><td>-12.78%</td><td>[-13.28, -12.28]</td><td>13.6</td><td>16/16</td><td>NOISY</td></tr>
+<tr><td>db_cycles</td><td>15692061.882</td><td>14658707.8937</td><td>-6.56%</td><td>[-8.88, -4.24]</td><td>9.39</td><td>16/16</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>7105143.4465</td><td>6756778.396</td><td>-4.9%</td><td>[-5.35, -4.46]</td><td>5.67</td><td>16/16</td><td>NOISY</td></tr>
+<tr><td>db_migrations</td><td>4.0037</td><td>3.0127</td><td>-24.72%</td><td>[-28.81, -20.63]</td><td>28.58</td><td>16/16</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>6432.485</td><td>6008.754</td><td>-6.56%</td><td>[-8.81, -4.32]</td><td>8.56</td><td>16/16</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>1205.3337</td><td>1193.2502</td><td>-0.93%</td><td>[-5.13, 3.26]</td><td>4.35</td><td>11/16</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>2049.874</td><td>1985.4902</td><td>-2.85%</td><td>[-15.1, 9.39]</td><td>13.23</td><td>9/16</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>25.7225</td><td>26.1337</td><td>1.64%</td><td>[-0.96, 4.24]</td><td>4.99</td><td>12/16</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>58.3319</td><td>53.9245</td><td>-7.54%</td><td>[-10.07, -5.02]</td><td>10.08</td><td>15/16</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>199552360.0266</td><td>195556649.5169</td><td>-2.0%</td><td>[-3.23, -0.78]</td><td>5.31</td><td>13/16</td><td>NOISY</td></tr>
+<tr><td>server migrations per request</td><td>0.805</td><td>0.7303</td><td>-7.14%</td><td>[-31.61, 17.34]</td><td>38.02</td><td>8/16</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>74922.4913</td><td>73967.196</td><td>-1.27%</td><td>[-2.28, -0.27]</td><td>3.92</td><td>14/16</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>INVALID: 1 cell(s) failed, first: A wp-front-c32 block 2 slot 0 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-front-c32 block 2 slot 0 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-front-c32 block 2 slot 0 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-front-c32 block 2 slot 0 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-front-c32 block 2 slot 0 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-front-c32 block 2 slot 0 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-front-c32 block 2 slot 0 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-front-c32 block 2 slot 0 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-front-c32 block 2 slot 0 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-front-c32 block 2 slot 0 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-front-c32 block 2 slot 0 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-front-c32 block 2 slot 0 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-front-c32 block 2 slot 0 alerts=1</li>
+</ul></details>
+<p class="data">raw: <code>46-wp-persistent-vs-default-freeunit-sd-92483-20261014T005938Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="47-wp-persistent-vs-default-nginx-fpm-sd-92483-20261014T023148Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">WordPress front page (no page cache) — nginx + PHP-FPM vs nginx + PHP-FPM</span><span class="meta">http://127.0.0.1:8081 · 47-wp-persistent-vs-default-nginx-fpm-sd-92483-20261014T023148Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-14T02:52:59Z</p>
+<p class="headline">NO CLAIM wp-front-c32: inside the noise, no claim (B is 0.0 percent more server instructions per request, null band 1.2, 7 of 16 cells agree)</p>
+<table><thead><tr><th>metric</th><th>nginx-fpm</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>226847243.5608</td><td>226861688.7185</td><td>0.01%</td><td>[-0.99, 1.0]</td><td>1.23</td><td>7/16</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>31.356</td><td>27.306</td><td>-12.91%</td><td>[-13.4, -12.43]</td><td>13.49</td><td>16/16</td><td>NOISY</td></tr>
+<tr><td>db_cycles</td><td>15268014.2091</td><td>14576690.6041</td><td>-4.51%</td><td>[-6.96, -2.05]</td><td>9.63</td><td>13/16</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>7094354.7128</td><td>6727456.9674</td><td>-5.17%</td><td>[-5.51, -4.84]</td><td>5.74</td><td>16/16</td><td>NOISY</td></tr>
+<tr><td>db_migrations</td><td>4.1155</td><td>3.0656</td><td>-25.45%</td><td>[-29.28, -21.63]</td><td>29.41</td><td>16/16</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>6254.6384</td><td>5925.6759</td><td>-5.25%</td><td>[-7.67, -2.83]</td><td>10.15</td><td>16/16</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>1226.769</td><td>1175.1994</td><td>-4.15%</td><td>[-7.75, -0.54]</td><td>5.67</td><td>12/16</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>1783.9634</td><td>2038.677</td><td>14.24%</td><td>[-2.37, 30.86]</td><td>20.14</td><td>12/16</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>27.2675</td><td>26.97</td><td>-1.09%</td><td>[-3.67, 1.5]</td><td>4.44</td><td>7/16</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>55.6701</td><td>52.8183</td><td>-5.12%</td><td>[-6.68, -3.57]</td><td>7.05</td><td>16/16</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>188610732.233</td><td>186384151.7846</td><td>-1.18%</td><td>[-2.38, 0.02]</td><td>2.17</td><td>10/16</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.7911</td><td>0.7193</td><td>-7.08%</td><td>[-26.42, 12.27]</td><td>16.26</td><td>10/16</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>71931.6776</td><td>70852.9734</td><td>-1.5%</td><td>[-2.21, -0.78]</td><td>2.48</td><td>14/16</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.4 percent in server instructions per request, 95 percent CI [-0.5, 1.2], null band 1.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -13.0 percent in db_cs, 95 percent CI [-13.5, -12.5], null band 13.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -7.0 percent in db_cycles, 95 percent CI [-9.6, -4.4], null band 9.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -5.4 percent in db_instructions, 95 percent CI [-5.7, -5.0], null band 5.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -25.2 percent in db_migrations, 95 percent CI [-29.4, -20.9], null band 29.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -7.7 percent in db_us, 95 percent CI [-10.1, -5.3], null band 10.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -2.1 percent in p50 latency (ms), 95 percent CI [-5.7, 1.4], null band 5.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 4.7 percent in p99 latency (ms), 95 percent CI [-10.8, 20.1], null band 20.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.7 percent in requests per second, 95 percent CI [-1.0, 4.4], null band 4.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -5.4 percent in server cs per request, 95 percent CI [-7.1, -3.7], null band 7.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.9 percent in server cycles per request, 95 percent CI [-2.2, 0.3], null band 2.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in server migrations per request, 95 percent CI [-16.3, 15.3], null band 16.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.8 percent in server CPU per request (us), 95 percent CI [-2.5, -1.2], null band 2.5, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>47-wp-persistent-vs-default-nginx-fpm-sd-92483-20261014T023148Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="90-wp-rest-posts-freeunit-vs-apache-sd-92483-20261015T232304Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">wp-rest-posts — FreeUnit 1.37.0 vs Apache + mod_php</span><span class="meta">http://127.0.0.1:8081 · 90-wp-rest-posts-freeunit-vs-apache-sd-92483-20261015T232304Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-15T23:36:44Z</p>
+<p class="headline">NO CLAIM wp-rest-posts-c32: inside the noise, no claim (B is 0.4 percent more server instructions per request, null band 0.8, 7 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>apache</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>124694711.707</td><td>125151101.4797</td><td>0.37%</td><td>[-0.28, 1.01]</td><td>0.75</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>33.268</td><td>33.225</td><td>-0.13%</td><td>[-0.48, 0.22]</td><td>0.43</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>17043487.5261</td><td>17321556.6968</td><td>1.64%</td><td>[-1.97, 5.26]</td><td>4.35</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>8322080.3086</td><td>8319954.1338</td><td>-0.03%</td><td>[-0.31, 0.26]</td><td>0.33</td><td>4/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>5.2237</td><td>5.2555</td><td>0.69%</td><td>[-2.53, 3.91]</td><td>4.68</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>7153.3878</td><td>7252.4464</td><td>1.4%</td><td>[-1.93, 4.73]</td><td>4.55</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>727.1388</td><td>455.4032</td><td>-37.37%</td><td>[-39.56, -35.18]</td><td>3.78</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>1143.9939</td><td>8501.5715</td><td>644.16%</td><td>[627.65, 660.67]</td><td>34.05</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>43.6375</td><td>42.8442</td><td>-1.8%</td><td>[-5.52, 1.91]</td><td>5.3</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>40.8585</td><td>38.0813</td><td>-6.79%</td><td>[-9.08, -4.5]</td><td>2.44</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>110524433.0775</td><td>111872683.4816</td><td>1.22%</td><td>[-0.22, 2.66]</td><td>1.44</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.5429</td><td>0.2438</td><td>-53.16%</td><td>[-80.48, -25.84]</td><td>40.98</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>44852.3141</td><td>45071.2743</td><td>0.5%</td><td>[-0.32, 1.31]</td><td>2.0</td><td>6/12</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>INVALID: 1 cell(s) failed, first: B wp-rest-posts-c32 block 2 slot 2 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-rest-posts-c32 block 2 slot 2 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-rest-posts-c32 block 2 slot 2 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-rest-posts-c32 block 2 slot 2 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-rest-posts-c32 block 2 slot 2 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-rest-posts-c32 block 2 slot 2 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-rest-posts-c32 block 2 slot 2 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-rest-posts-c32 block 2 slot 2 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-rest-posts-c32 block 2 slot 2 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-rest-posts-c32 block 2 slot 2 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-rest-posts-c32 block 2 slot 2 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-rest-posts-c32 block 2 slot 2 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-rest-posts-c32 block 2 slot 2 alerts=1</li>
+</ul></details>
+<p class="data">raw: <code>90-wp-rest-posts-freeunit-vs-apache-sd-92483-20261015T232304Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="91-wp-rest-posts-freeunit-vs-nginx-fpm-sd-92483-20261014T105328Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">wp-rest-posts — FreeUnit 1.37.0 vs nginx + PHP-FPM</span><span class="meta">http://127.0.0.1:8081 · 91-wp-rest-posts-freeunit-vs-nginx-fpm-sd-92483-20261014T105328Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-14T11:07:00Z</p>
+<p class="headline">NO CLAIM wp-rest-posts-c32: inside the noise, no claim (B is 0.4 percent less server instructions per request, null band 1.0, 11 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>124317136.4186</td><td>123758807.274</td><td>-0.45%</td><td>[-0.8, -0.09]</td><td>0.96</td><td>11/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>33.275</td><td>33.2577</td><td>-0.05%</td><td>[-0.48, 0.37]</td><td>0.45</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>17266053.2524</td><td>17214566.3145</td><td>-0.29%</td><td>[-4.34, 3.76]</td><td>4.96</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>8320485.4249</td><td>8308935.7026</td><td>-0.14%</td><td>[-0.44, 0.17]</td><td>0.44</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>5.1746</td><td>5.1925</td><td>0.36%</td><td>[-1.9, 2.61]</td><td>4.61</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>7221.2131</td><td>7233.8402</td><td>0.19%</td><td>[-2.62, 3.0]</td><td>4.14</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>722.2902</td><td>713.4154</td><td>-1.23%</td><td>[-4.6, 2.14]</td><td>5.77</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>1139.3284</td><td>1215.6746</td><td>7.79%</td><td>[-13.69, 29.26]</td><td>25.83</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>43.1842</td><td>44.52</td><td>3.12%</td><td>[-0.26, 6.49]</td><td>4.63</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>40.9947</td><td>41.9527</td><td>2.35%</td><td>[0.39, 4.3]</td><td>2.82</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>110356350.1475</td><td>106675136.5852</td><td>-3.34%</td><td>[-4.56, -2.11]</td><td>1.77</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.4832</td><td>0.5938</td><td>27.89%</td><td>[-2.08, 57.87]</td><td>46.95</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>44967.4231</td><td>43485.5642</td><td>-3.29%</td><td>[-4.51, -2.08]</td><td>1.54</td><td>12/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.2 percent in server instructions per request, 95 percent CI [-0.6, 1.0], null band 1.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_cs, 95 percent CI [-0.4, 0.3], null band 0.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.5 percent in db_cycles, 95 percent CI [-5.0, 2.0], null band 5.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_instructions, 95 percent CI [-0.4, 0.3], null band 0.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.9 percent in db_migrations, 95 percent CI [-0.8, 4.6], null band 4.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.1 percent in db_us, 95 percent CI [-4.1, 2.0], null band 4.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -2.0 percent in p50 latency (ms), 95 percent CI [-5.8, 1.9], null band 5.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -5.3 percent in p99 latency (ms), 95 percent CI [-25.8, 15.3], null band 25.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.2 percent in requests per second, 95 percent CI [-2.2, 4.6], null band 4.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in server cs per request, 95 percent CI [-2.8, 1.8], null band 2.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in server cycles per request, 95 percent CI [-1.6, 1.8], null band 1.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -6.4 percent in server migrations per request, 95 percent CI [-46.9, 34.2], null band 46.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.4 percent in server CPU per request (us), 95 percent CI [-0.8, 1.5], null band 1.5, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>91-wp-rest-posts-freeunit-vs-nginx-fpm-sd-92483-20261014T105328Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="92-wp-rest-posts-master-vs-apache-sd-92483-20261016T011304Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">wp-rest-posts — FreeUnit master vs Apache + mod_php</span><span class="meta">http://127.0.0.1:8081 · 92-wp-rest-posts-master-vs-apache-sd-92483-20261016T011304Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-16T01:26:41Z</p>
+<p class="headline">NO CLAIM wp-rest-posts-c32: inside the noise, no claim (B is 0.2 percent more server instructions per request, null band 0.7, 8 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>apache</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>124456209.0142</td><td>124742381.6887</td><td>0.23%</td><td>[-0.17, 0.63]</td><td>0.73</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>33.2666</td><td>33.2312</td><td>-0.11%</td><td>[-0.44, 0.22]</td><td>0.5</td><td>4/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>17075028.9237</td><td>17358686.9269</td><td>1.67%</td><td>[-1.99, 5.32]</td><td>3.94</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>8319316.9853</td><td>8314900.7948</td><td>-0.05%</td><td>[-0.25, 0.15]</td><td>0.29</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>5.2693</td><td>5.2779</td><td>0.16%</td><td>[-3.13, 3.46]</td><td>2.11</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>7171.9733</td><td>7271.646</td><td>1.39%</td><td>[-2.07, 4.85]</td><td>4.13</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>741.5455</td><td>458.866</td><td>-38.1%</td><td>[-39.93, -36.28]</td><td>2.36</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>1141.766</td><td>8505.3544</td><td>647.33%</td><td>[634.76, 659.89]</td><td>35.89</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>43.2542</td><td>42.5692</td><td>-1.58%</td><td>[-5.46, 2.3]</td><td>5.12</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>41.5546</td><td>38.048</td><td>-8.41%</td><td>[-10.02, -6.8]</td><td>3.27</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>110358914.9948</td><td>111342840.8192</td><td>0.9%</td><td>[0.02, 1.77]</td><td>2.0</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.6849</td><td>0.2781</td><td>-57.45%</td><td>[-77.75, -37.15]</td><td>32.22</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>45014.4041</td><td>45089.3348</td><td>0.17%</td><td>[-1.07, 1.4]</td><td>2.22</td><td>6/12</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.2 percent in server instructions per request, 95 percent CI [-0.2, 0.7], null band 0.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_cs, 95 percent CI [-0.5, 0.3], null band 0.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_cycles, 95 percent CI [-3.8, 3.9], null band 3.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_instructions, 95 percent CI [-0.3, 0.3], null band 0.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_migrations, 95 percent CI [-2.1, 2.1], null band 2.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in db_us, 95 percent CI [-3.7, 4.1], null band 4.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in p50 latency (ms), 95 percent CI [-2.0, 2.4], null band 2.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 13.0 percent in p99 latency (ms), 95 percent CI [-9.9, 35.9], null band 35.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.7 percent in requests per second, 95 percent CI [-5.1, 3.7], null band 5.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.4 percent in server cs per request, 95 percent CI [-2.4, 3.3], null band 3.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in server cycles per request, 95 percent CI [-0.4, 2.0], null band 2.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -5.3 percent in server migrations per request, 95 percent CI [-32.2, 21.6], null band 32.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.6 percent in server CPU per request (us), 95 percent CI [-1.0, 2.2], null band 2.2, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>92-wp-rest-posts-master-vs-apache-sd-92483-20261016T011304Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="92-wp-rest-posts-master-vs-apache-sd-92483-20261016T045229Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">wp-rest-posts — FreeUnit master vs Apache + mod_php</span><span class="meta">http://127.0.0.1:8081 · 92-wp-rest-posts-master-vs-apache-sd-92483-20261016T045229Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-16T05:06:06Z</p>
+<p class="headline">NO CLAIM wp-rest-posts-c32: inside the noise, no claim (B is 0.1 percent more server instructions per request, null band 0.6, 9 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>apache</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>124670678.6135</td><td>124753148.1059</td><td>0.07%</td><td>[-0.42, 0.56]</td><td>0.57</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>33.2734</td><td>33.2406</td><td>-0.1%</td><td>[-0.53, 0.33]</td><td>0.57</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>17102830.7326</td><td>17261937.2424</td><td>0.93%</td><td>[-2.5, 4.36]</td><td>4.47</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>8323457.9921</td><td>8317017.3115</td><td>-0.08%</td><td>[-0.31, 0.15]</td><td>0.29</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>5.2551</td><td>5.323</td><td>1.3%</td><td>[-1.36, 3.97]</td><td>4.2</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>7195.0547</td><td>7222.672</td><td>0.38%</td><td>[-3.13, 3.9]</td><td>4.08</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>717.5671</td><td>445.0309</td><td>-37.98%</td><td>[-40.44, -35.52]</td><td>4.63</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>1182.2816</td><td>8523.0795</td><td>620.91%</td><td>[606.57, 635.26]</td><td>30.57</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>43.2417</td><td>43.0825</td><td>-0.37%</td><td>[-4.2, 3.47]</td><td>4.67</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>41.3117</td><td>37.9597</td><td>-8.1%</td><td>[-9.79, -6.41]</td><td>2.99</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>110773473.1417</td><td>110698211.4008</td><td>-0.07%</td><td>[-1.28, 1.15]</td><td>1.2</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.624</td><td>0.2145</td><td>-63.81%</td><td>[-87.09, -40.54]</td><td>34.8</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>45042.1524</td><td>44800.0707</td><td>-0.54%</td><td>[-1.45, 0.38]</td><td>1.22</td><td>8/12</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.1 percent in server instructions per request, 95 percent CI [-0.6, 0.4], null band 0.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in db_cs, 95 percent CI [-0.3, 0.6], null band 0.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in db_cycles, 95 percent CI [-2.9, 4.5], null band 4.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_instructions, 95 percent CI [-0.3, 0.3], null band 0.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.9 percent in db_migrations, 95 percent CI [-2.4, 4.2], null band 4.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.7 percent in db_us, 95 percent CI [-2.8, 4.1], null band 4.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.9 percent in p50 latency (ms), 95 percent CI [-0.8, 4.6], null band 4.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 5.5 percent in p99 latency (ms), 95 percent CI [-19.5, 30.6], null band 30.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.8 percent in requests per second, 95 percent CI [-4.7, 3.1], null band 4.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in server cs per request, 95 percent CI [-3.0, 2.0], null band 3.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in server cycles per request, 95 percent CI [-1.1, 1.2], null band 1.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 4.3 percent in server migrations per request, 95 percent CI [-26.2, 34.8], null band 34.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in server CPU per request (us), 95 percent CI [-1.2, 1.2], null band 1.2, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>92-wp-rest-posts-master-vs-apache-sd-92483-20261016T045229Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="93-wp-rest-posts-master-vs-nginx-fpm-sd-92483-20261014T032050Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">wp-rest-posts — FreeUnit master vs nginx + PHP-FPM</span><span class="meta">http://127.0.0.1:8081 · 93-wp-rest-posts-master-vs-nginx-fpm-sd-92483-20261014T032050Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-14T03:34:36Z</p>
+<p class="headline">CLAIM wp-rest-posts-c32: B is 0.7 percent less server instructions per request, outside the null band of 0.7, 10 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>124623705.7631</td><td>123728868.9496</td><td>-0.72%</td><td>[-1.14, -0.29]</td><td>0.67</td><td>10/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>33.3156</td><td>33.2599</td><td>-0.17%</td><td>[-0.62, 0.28]</td><td>0.65</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>17197757.756</td><td>17057474.8251</td><td>-0.82%</td><td>[-4.97, 3.34]</td><td>4.04</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>8288171.7907</td><td>8271649.5019</td><td>-0.2%</td><td>[-0.54, 0.14]</td><td>0.44</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>5.1245</td><td>5.0762</td><td>-0.93%</td><td>[-4.34, 2.48]</td><td>3.67</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>7229.0723</td><td>7168.0212</td><td>-0.85%</td><td>[-4.82, 3.12]</td><td>3.89</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>724.1237</td><td>719.6715</td><td>-0.6%</td><td>[-3.84, 2.65]</td><td>3.73</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>1253.9503</td><td>1133.4578</td><td>-9.5%</td><td>[-30.0, 11.0]</td><td>17.6</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>42.8942</td><td>44.92</td><td>4.72%</td><td>[0.33, 9.12]</td><td>4.32</td><td>9/12</td><td>CLAIM</td></tr>
+<tr><td>server cs per request</td><td>41.5061</td><td>41.8085</td><td>0.73%</td><td>[-2.21, 3.67]</td><td>4.56</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>110789927.8696</td><td>106304240.4669</td><td>-4.05%</td><td>[-5.37, -2.72]</td><td>2.1</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.5671</td><td>0.5906</td><td>4.21%</td><td>[-24.84, 33.26]</td><td>34.32</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>45013.8774</td><td>43285.3892</td><td>-3.84%</td><td>[-5.3, -2.38]</td><td>1.74</td><td>12/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.1 percent in server instructions per request, 95 percent CI [-0.7, 0.4], null band 0.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_cs, 95 percent CI [-0.7, 0.4], null band 0.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_cycles, 95 percent CI [-4.0, 4.0], null band 4.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_instructions, 95 percent CI [-0.4, 0.4], null band 0.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.5 percent in db_migrations, 95 percent CI [-0.8, 3.7], null band 3.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in db_us, 95 percent CI [-3.4, 3.9], null band 3.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in p50 latency (ms), 95 percent CI [-3.1, 3.7], null band 3.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in p99 latency (ms), 95 percent CI [-17.1, 17.6], null band 17.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.4 percent in requests per second, 95 percent CI [-4.3, 3.4], null band 4.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.4 percent in server cs per request, 95 percent CI [-4.6, 1.7], null band 4.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.7 percent in server cycles per request, 95 percent CI [-2.1, 0.8], null band 2.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -9.7 percent in server migrations per request, 95 percent CI [-34.3, 15.0], null band 34.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.3 percent in server CPU per request (us), 95 percent CI [-1.7, 1.0], null band 1.7, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>93-wp-rest-posts-master-vs-nginx-fpm-sd-92483-20261014T032050Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="93-wp-rest-posts-master-vs-nginx-fpm-sd-92483-20261016T083246Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">wp-rest-posts — FreeUnit master vs nginx + PHP-FPM</span><span class="meta">http://127.0.0.1:8081 · 93-wp-rest-posts-master-vs-nginx-fpm-sd-92483-20261016T083246Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-16T08:46:22Z</p>
+<p class="headline">CLAIM wp-rest-posts-c32: B is 0.7 percent less server instructions per request, outside the null band of 0.6, 11 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>124872473.0305</td><td>123970845.8279</td><td>-0.72%</td><td>[-1.21, -0.23]</td><td>0.61</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>33.261</td><td>33.2082</td><td>-0.16%</td><td>[-0.55, 0.23]</td><td>0.46</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>17095137.2233</td><td>17242814.0125</td><td>0.86%</td><td>[-2.48, 4.21]</td><td>4.0</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>8320471.3174</td><td>8308810.8037</td><td>-0.14%</td><td>[-0.39, 0.11]</td><td>0.35</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>5.2387</td><td>5.2354</td><td>-0.06%</td><td>[-2.25, 2.13]</td><td>3.97</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>7168.2813</td><td>7229.8014</td><td>0.86%</td><td>[-2.14, 3.85]</td><td>3.8</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>733.164</td><td>716.8445</td><td>-2.2%</td><td>[-5.04, 0.65]</td><td>4.85</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>1221.26</td><td>1153.4941</td><td>-5.09%</td><td>[-24.31, 14.12]</td><td>20.82</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>43.3283</td><td>44.63</td><td>3.0%</td><td>[-0.4, 6.41]</td><td>4.75</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>41.472</td><td>42.0616</td><td>1.44%</td><td>[-0.15, 3.04]</td><td>4.95</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>110873210.019</td><td>107004337.1698</td><td>-3.48%</td><td>[-4.47, -2.5]</td><td>2.08</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.5377</td><td>0.7022</td><td>34.04%</td><td>[0.97, 67.11]</td><td>35.52</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>44859.6526</td><td>43360.0038</td><td>-3.34%</td><td>[-4.6, -2.09]</td><td>2.39</td><td>12/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.2 percent in server instructions per request, 95 percent CI [-0.2, 0.6], null band 0.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_cs, 95 percent CI [-0.5, 0.4], null band 0.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in db_cycles, 95 percent CI [-3.3, 4.0], null band 4.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_instructions, 95 percent CI [-0.2, 0.4], null band 0.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.3 percent in db_migrations, 95 percent CI [-1.4, 4.0], null band 4.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.4 percent in db_us, 95 percent CI [-3.0, 3.8], null band 3.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.1 percent in p50 latency (ms), 95 percent CI [-4.9, 2.6], null band 4.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -2.5 percent in p99 latency (ms), 95 percent CI [-20.8, 15.9], null band 20.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.7 percent in requests per second, 95 percent CI [-4.8, 3.4], null band 4.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 2.3 percent in server cs per request, 95 percent CI [-0.3, 5.0], null band 5.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.9 percent in server cycles per request, 95 percent CI [-0.2, 2.1], null band 2.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -2.9 percent in server migrations per request, 95 percent CI [-35.5, 29.6], null band 35.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.7 percent in server CPU per request (us), 95 percent CI [-0.9, 2.4], null band 2.4, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>93-wp-rest-posts-master-vs-nginx-fpm-sd-92483-20261016T083246Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="94-wp-edit-freeunit-vs-apache-sd-92483-20261014T082038Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">wp-edit — FreeUnit 1.37.0 vs Apache + mod_php</span><span class="meta">http://127.0.0.1:8081 · 94-wp-edit-freeunit-vs-apache-sd-92483-20261014T082038Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-14T09:02:52Z</p>
+<p class="headline">CLAIM wp-edit-c32: B is 9.4 percent more server instructions per request, outside the null band of 1.6, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>apache</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>706752842.97</td><td>773341986.7357</td><td>9.43%</td><td>[6.57, 12.29]</td><td>1.55</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>63.2826</td><td>63.4043</td><td>0.19%</td><td>[-0.87, 1.26]</td><td>0.89</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>39896919.7451</td><td>38478935.5407</td><td>-3.55%</td><td>[-7.33, 0.23]</td><td>4.91</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>15842685.4463</td><td>15811402.6574</td><td>-0.19%</td><td>[-1.49, 1.11]</td><td>1.16</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>8.5754</td><td>9.5997</td><td>11.93%</td><td>[4.09, 19.78]</td><td>10.24</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>15976.6828</td><td>15532.4283</td><td>-2.78%</td><td>[-6.72, 1.16]</td><td>4.75</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>2723.2461</td><td>2006.0374</td><td>-26.32%</td><td>[-32.02, -20.61]</td><td>6.41</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>4186.5402</td><td>10260.802</td><td>145.1%</td><td>[135.14, 155.07]</td><td>12.89</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>10.8908</td><td>10.2567</td><td>-5.82%</td><td>[-9.47, -2.17]</td><td>4.87</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>148.3066</td><td>123.9847</td><td>-16.35%</td><td>[-19.58, -13.12]</td><td>5.0</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>509073079.1522</td><td>544228078.7663</td><td>6.92%</td><td>[3.66, 10.18]</td><td>2.45</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>2.6181</td><td>0.8425</td><td>-67.32%</td><td>[-93.24, -41.41]</td><td>43.56</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>177006.312</td><td>189106.8372</td><td>6.84%</td><td>[5.58, 8.09]</td><td>1.9</td><td>12/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>INVALID: 1 cell(s) failed, first: A wp-edit-c32 block 1 slot 7 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-edit-c32 block 1 slot 7 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-edit-c32 block 1 slot 7 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-edit-c32 block 1 slot 7 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-edit-c32 block 1 slot 7 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-edit-c32 block 1 slot 7 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-edit-c32 block 1 slot 7 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-edit-c32 block 1 slot 7 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-edit-c32 block 1 slot 7 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-edit-c32 block 1 slot 7 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-edit-c32 block 1 slot 7 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-edit-c32 block 1 slot 7 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-edit-c32 block 1 slot 7 alerts=1</li>
+</ul></details>
+<p class="data">raw: <code>94-wp-edit-freeunit-vs-apache-sd-92483-20261014T082038Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="95-wp-edit-freeunit-vs-nginx-fpm-sd-92483-20261014T110748Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">wp-edit — FreeUnit 1.37.0 vs nginx + PHP-FPM</span><span class="meta">http://127.0.0.1:8081 · 95-wp-edit-freeunit-vs-nginx-fpm-sd-92483-20261014T110748Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-14T11:50:20Z</p>
+<p class="headline">NO CLAIM wp-edit-c32: inside the noise, no claim (B is 1.7 percent less server instructions per request, null band 4.1, 9 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>699627354.7889</td><td>687660360.5029</td><td>-1.71%</td><td>[-5.51, 2.1]</td><td>4.09</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>63.5477</td><td>64.3851</td><td>1.32%</td><td>[-1.91, 4.54]</td><td>3.66</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>40687561.1413</td><td>40338954.028</td><td>-0.89%</td><td>[-6.84, 5.06]</td><td>5.18</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>15921681.2986</td><td>16029933.3842</td><td>0.68%</td><td>[-2.44, 3.79]</td><td>3.63</td><td>4/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>9.005</td><td>9.6341</td><td>7.03%</td><td>[1.91, 12.14]</td><td>11.5</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>16564.41</td><td>16270.0012</td><td>-1.77%</td><td>[-5.55, 2.01]</td><td>3.99</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>2847.3456</td><td>2655.5909</td><td>-6.73%</td><td>[-14.29, 0.83]</td><td>5.18</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>4167.4835</td><td>4076.5316</td><td>-2.09%</td><td>[-11.95, 7.78]</td><td>11.62</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>10.6117</td><td>11.0092</td><td>3.74%</td><td>[-0.94, 8.42]</td><td>4.42</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>145.6039</td><td>132.1772</td><td>-9.21%</td><td>[-13.72, -4.71]</td><td>5.57</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>514290969.9593</td><td>489944042.5948</td><td>-4.76%</td><td>[-9.04, -0.48]</td><td>4.64</td><td>10/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>4.5667</td><td>2.6795</td><td>-41.75%</td><td>[-68.84, -14.66]</td><td>48.32</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>181895.6705</td><td>176605.6578</td><td>-2.9%</td><td>[-4.7, -1.09]</td><td>3.73</td><td>10/12</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>INVALID: 3 cell(s) failed, first: B wp-edit-c32 block 1 slot 6 alerts=1</li>
+<li>INVALID: 3 cell(s) failed, first: B wp-edit-c32 block 1 slot 6 alerts=1</li>
+<li>INVALID: 3 cell(s) failed, first: B wp-edit-c32 block 1 slot 6 alerts=1</li>
+<li>INVALID: 3 cell(s) failed, first: B wp-edit-c32 block 1 slot 6 alerts=1</li>
+<li>INVALID: 3 cell(s) failed, first: B wp-edit-c32 block 1 slot 6 alerts=1</li>
+<li>INVALID: 3 cell(s) failed, first: B wp-edit-c32 block 1 slot 6 alerts=1</li>
+<li>INVALID: 3 cell(s) failed, first: B wp-edit-c32 block 1 slot 6 alerts=1</li>
+<li>INVALID: 3 cell(s) failed, first: B wp-edit-c32 block 1 slot 6 alerts=1</li>
+<li>INVALID: 3 cell(s) failed, first: B wp-edit-c32 block 1 slot 6 alerts=1</li>
+<li>INVALID: 3 cell(s) failed, first: B wp-edit-c32 block 1 slot 6 alerts=1</li>
+<li>INVALID: 3 cell(s) failed, first: B wp-edit-c32 block 1 slot 6 alerts=1</li>
+<li>INVALID: 3 cell(s) failed, first: B wp-edit-c32 block 1 slot 6 alerts=1</li>
+<li>INVALID: 3 cell(s) failed, first: B wp-edit-c32 block 1 slot 6 alerts=1</li>
+</ul></details>
+<p class="data">raw: <code>95-wp-edit-freeunit-vs-nginx-fpm-sd-92483-20261014T110748Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="96-wp-edit-master-vs-apache-sd-92483-20261014T033612Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">wp-edit — FreeUnit master vs Apache + mod_php</span><span class="meta">http://127.0.0.1:8081 · 96-wp-edit-master-vs-apache-sd-92483-20261014T033612Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-14T04:18:26Z</p>
+<p class="headline">CLAIM wp-edit-c32: B is 10.7 percent more server instructions per request, outside the null band of 2.3, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>apache</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>706171355.7763</td><td>781756271.7217</td><td>10.72%</td><td>[7.78, 13.65]</td><td>2.27</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>63.5118</td><td>63.5244</td><td>0.03%</td><td>[-1.61, 1.68]</td><td>2.77</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>39239917.3497</td><td>39730385.8117</td><td>1.26%</td><td>[-2.39, 4.9]</td><td>6.38</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>15865752.3685</td><td>15835708.812</td><td>-0.18%</td><td>[-1.74, 1.38]</td><td>2.13</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>8.9064</td><td>8.7086</td><td>-2.14%</td><td>[-9.9, 5.61]</td><td>11.38</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>15772.0298</td><td>15796.736</td><td>0.16%</td><td>[-3.82, 4.13]</td><td>7.04</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>2655.5684</td><td>2056.0605</td><td>-22.53%</td><td>[-28.44, -16.62]</td><td>13.0</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>4009.1399</td><td>10213.3429</td><td>155.1%</td><td>[146.17, 164.03]</td><td>12.07</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>11.0992</td><td>10.1067</td><td>-8.94%</td><td>[-12.41, -5.47]</td><td>7.14</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>145.4771</td><td>124.5367</td><td>-14.38%</td><td>[-18.52, -10.25]</td><td>4.98</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>507257720.1978</td><td>553394212.7832</td><td>9.1%</td><td>[5.6, 12.6]</td><td>2.63</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>2.7242</td><td>0.8232</td><td>-67.84%</td><td>[-83.97, -51.72]</td><td>53.98</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>176194.6506</td><td>191193.1337</td><td>8.52%</td><td>[6.68, 10.35]</td><td>2.37</td><td>12/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.2 percent in server instructions per request, 95 percent CI [-2.3, 1.9], null band 2.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.9 percent in db_cs, 95 percent CI [-2.8, 0.9], null band 2.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.8 percent in db_cycles, 95 percent CI [-6.4, 2.8], null band 6.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.4 percent in db_instructions, 95 percent CI [-2.1, 1.3], null band 2.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -2.6 percent in db_migrations, 95 percent CI [-11.4, 6.1], null band 11.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -2.9 percent in db_us, 95 percent CI [-7.0, 1.2], null band 7.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -5.3 percent in p50 latency (ms), 95 percent CI [-13.0, 2.3], null band 13.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -3.4 percent in p99 latency (ms), 95 percent CI [-12.1, 5.2], null band 12.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 2.8 percent in requests per second, 95 percent CI [-1.6, 7.1], null band 7.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in server cs per request, 95 percent CI [-3.9, 5.0], null band 5.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server cycles per request, 95 percent CI [-2.6, 2.4], null band 2.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 13.5 percent in server migrations per request, 95 percent CI [-27.0, 54.0], null band 54.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.4 percent in server CPU per request (us), 95 percent CI [-2.4, 1.5], null band 2.4, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>96-wp-edit-master-vs-apache-sd-92483-20261014T033612Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="97-wp-edit-master-vs-nginx-fpm-sd-92483-20261014T041828Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">wp-edit — FreeUnit master vs nginx + PHP-FPM</span><span class="meta">http://127.0.0.1:8081 · 97-wp-edit-master-vs-nginx-fpm-sd-92483-20261014T041828Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-14T05:00:40Z</p>
+<p class="headline">CLAIM wp-edit-c32: B is 3.3 percent less server instructions per request, outside the null band of 2.1, 10 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>718326527.4738</td><td>694501299.9583</td><td>-3.3%</td><td>[-6.39, -0.22]</td><td>2.09</td><td>10/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>64.3494</td><td>64.1276</td><td>-0.34%</td><td>[-3.45, 2.77]</td><td>1.55</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>40003345.2429</td><td>39822944.2202</td><td>-0.43%</td><td>[-5.66, 4.79]</td><td>5.48</td><td>5/12</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>15975095.5028</td><td>15962070.5562</td><td>-0.08%</td><td>[-3.02, 2.87]</td><td>1.77</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>9.0783</td><td>9.3499</td><td>3.07%</td><td>[-3.17, 9.32]</td><td>10.73</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>16109.1034</td><td>15889.6568</td><td>-1.36%</td><td>[-5.14, 2.41]</td><td>6.15</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>2713.9401</td><td>2645.4484</td><td>-2.49%</td><td>[-8.34, 3.35]</td><td>5.72</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>3970.1961</td><td>3940.334</td><td>-0.76%</td><td>[-8.67, 7.15]</td><td>15.34</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>10.8317</td><td>11.2142</td><td>3.53%</td><td>[-0.33, 7.4]</td><td>6.08</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>148.6666</td><td>133.6925</td><td>-10.06%</td><td>[-13.13, -7.0]</td><td>5.4</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>516868640.1315</td><td>487766151.119</td><td>-5.61%</td><td>[-9.03, -2.2]</td><td>2.42</td><td>10/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>2.7533</td><td>2.0217</td><td>-25.92%</td><td>[-54.45, 2.6]</td><td>37.35</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>178125.1036</td><td>171623.3784</td><td>-3.65%</td><td>[-5.61, -1.69]</td><td>2.44</td><td>10/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.2 percent in server instructions per request, 95 percent CI [-2.1, 1.8], null band 2.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_cs, 95 percent CI [-1.5, 1.5], null band 1.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.3 percent in db_cycles, 95 percent CI [-2.9, 5.5], null band 5.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in db_instructions, 95 percent CI [-1.8, 1.4], null band 1.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 3.2 percent in db_migrations, 95 percent CI [-4.3, 10.7], null band 10.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 2.9 percent in db_us, 95 percent CI [-0.3, 6.1], null band 6.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.6 percent in p50 latency (ms), 95 percent CI [-2.6, 5.7], null band 5.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 7.0 percent in p99 latency (ms), 95 percent CI [-1.3, 15.3], null band 15.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -2.5 percent in requests per second, 95 percent CI [-6.1, 1.0], null band 6.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.5 percent in server cs per request, 95 percent CI [-2.4, 5.4], null band 5.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server cycles per request, 95 percent CI [-2.4, 2.2], null band 2.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -4.7 percent in server migrations per request, 95 percent CI [-37.3, 27.9], null band 37.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in server CPU per request (us), 95 percent CI [-1.9, 2.4], null band 2.4, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>97-wp-edit-master-vs-nginx-fpm-sd-92483-20261014T041828Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="99-wp-edit-list-freeunit-vs-nginx-fpm-sd-92483-20261014T054209Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">wp-edit-list — FreeUnit 1.37.0 vs nginx + PHP-FPM</span><span class="meta">http://127.0.0.1:8081 · 99-wp-edit-list-freeunit-vs-nginx-fpm-sd-92483-20261014T054209Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db wordpress · host sd-92483 · date 2026-10-14T06:23:56Z</p>
+<p class="headline">CLAIM wp-edit-list-c32: B is 5.4 percent less server instructions per request, outside the null band of 2.5, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>306914263.3784</td><td>290287825.1833</td><td>-5.41%</td><td>[-6.9, -3.93]</td><td>2.54</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>53.6524</td><td>53.5652</td><td>-0.16%</td><td>[-0.67, 0.35]</td><td>0.79</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>32159408.0658</td><td>31869681.9708</td><td>-0.9%</td><td>[-3.71, 1.92]</td><td>4.6</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>15906893.4666</td><td>15896623.5267</td><td>-0.06%</td><td>[-0.38, 0.25]</td><td>0.49</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>8.2636</td><td>8.792</td><td>6.4%</td><td>[0.82, 11.97]</td><td>5.72</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>13052.7748</td><td>12954.4975</td><td>-0.75%</td><td>[-3.51, 2.01]</td><td>4.15</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>1547.869</td><td>1529.6198</td><td>-1.16%</td><td>[-5.6, 3.27]</td><td>5.04</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>2450.7138</td><td>2341.0092</td><td>-4.54%</td><td>[-14.96, 5.88]</td><td>17.18</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>19.7517</td><td>20.8583</td><td>5.61%</td><td>[1.99, 9.22]</td><td>4.94</td><td>9/12</td><td>CLAIM</td></tr>
+<tr><td>server cs per request</td><td>118.7568</td><td>102.3459</td><td>-13.8%</td><td>[-15.88, -11.73]</td><td>3.83</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>263603494.1438</td><td>236676795.4914</td><td>-10.21%</td><td>[-11.77, -8.65]</td><td>3.18</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>3.4909</td><td>2.8127</td><td>-19.25%</td><td>[-54.68, 16.18]</td><td>67.46</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>97625.9628</td><td>93044.7358</td><td>-4.69%</td><td>[-5.52, -3.87]</td><td>0.88</td><td>12/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>INVALID: 1 cell(s) failed, first: B wp-edit-list-c32 block 0 slot 4 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-edit-list-c32 block 0 slot 4 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-edit-list-c32 block 0 slot 4 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-edit-list-c32 block 0 slot 4 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-edit-list-c32 block 0 slot 4 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-edit-list-c32 block 0 slot 4 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-edit-list-c32 block 0 slot 4 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-edit-list-c32 block 0 slot 4 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-edit-list-c32 block 0 slot 4 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-edit-list-c32 block 0 slot 4 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-edit-list-c32 block 0 slot 4 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-edit-list-c32 block 0 slot 4 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B wp-edit-list-c32 block 0 slot 4 alerts=1</li>
+</ul></details>
+<p class="data">raw: <code>99-wp-edit-list-freeunit-vs-nginx-fpm-sd-92483-20261014T054209Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<p class="data">Rendered 2026-10-18T00:18:42Z. A plain-language summary of the findings is in
+<a href="https://github.com/freeunitorg/benchmarks-drupal/blob/main/docs/report-2026-10.md">docs/report-2026-10.md</a>;
+the suite's resume note is <code>docs/state.md</code>.</p>
+</body></html>

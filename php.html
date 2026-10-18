@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Framework-free PHP benchmarks</title>
+<meta name="description" content="Reproducible comparison of Drupal, Symfony, WordPress and framework-free PHP on Apache+mod_php, nginx+PHP-FPM, Angie, FreeNginx and FreeUnit, with a null band beside every comparison.">
+<style>
+ body { font: 15px/1.5 system-ui, sans-serif; max-width: 68rem; margin: 2rem auto; padding: 0 1rem; color: #222; }
+ h1 { font-size: 1.6rem; margin-bottom: .2rem; }
+ h2 { font-size: 1.15rem; margin-top: 2.5rem; border-top: 1px solid #ddd; padding-top: 1rem; }
+ h3 { font-size: 1rem; margin: 1.4rem 0 .4rem; }
+ table { border-collapse: collapse; width: 100%; margin: .5rem 0 1rem; font-size: 14px; }
+ th, td { text-align: right; padding: .3rem .5rem; border-bottom: 1px solid #eee; vertical-align: top; }
+ th:first-child, td:first-child { text-align: left; }
+ table.index td, table.index th { font-size: 13px; }
+ .meta, .data { color: #666; font-size: 13px; font-weight: normal; }
+ .headline { font-weight: 600; }
+ .note { background: #f6f8fa; border-left: 3px solid #888; padding: .6rem .9rem; }
+ tr.best td { font-weight: 600; background: #f0fbf4; }
+ code { background: #f6f8fa; padding: .1rem .3rem; }
+ .badge { font-size: 11px; font-weight: 700; padding: .1rem .45rem; border-radius: .7rem; white-space: nowrap; }
+ .badge.claim { background: #e6f4ea; color: #136a2f; }
+ .badge.noclaim { background: #eef1f4; color: #4a5568; }
+ .badge.invalid { background: #fdecea; color: #a12b20; }
+ .badge.nodata { background: #fff4e5; color: #8a5a00; }
+ .badge.pass { background: #e8f0fe; color: #1a4b8c; }
+ ul.verdicts { margin: .3rem 0 1rem; padding-left: 1.1rem; }
+ ul.verdicts li { margin: .2rem 0; }
+ details.run { border: 1px solid #e6e6e6; border-radius: .5rem; padding: .4rem .7rem; margin: .5rem 0; }
+ details.run > summary { cursor: pointer; display: block; }
+ .run-title { font-weight: 600; margin: 0 .5rem 0 .4rem; }
+ details[open].run { background: #fcfcfd; }
+ :target { scroll-margin-top: 1rem; background: #fffbe6; }
+ nav.pages { margin: .8rem 0 1.2rem; display: flex; flex-wrap: wrap; gap: .4rem; }
+ nav.pages a, nav.pages span.here { border: 1px solid #d7dbe0; border-radius: .4rem; padding: .25rem .6rem; font-size: 13px; }
+ nav.pages a { text-decoration: none; }
+ nav.pages span.here { background: #eef1f4; font-weight: 600; border-color: #c3c9d1; }
+ nav.pages a:hover { background: #f6f8fa; }
+ nav.toc ol { margin: .3rem 0 0; padding-left: 1.2rem; }
+ p.lede { color: #444; }
+ @media print { details.run { break-inside: avoid; } }
+</style></head><body>
+<h1>Framework-free PHP benchmarks</h1>
+<p class="lede">The control application: one PHP file, no framework, no database. This is where the per-request cost of the server itself shows, so it is the page to read first when the servers are being compared.</p>
+<nav class="pages">
+<a href="index.html">Overview <span class="meta">(85)</span></a>
+<a href="drupal-11.4.html">Drupal 11.4 <span class="meta">(14)</span></a>
+<a href="drupal-12.0.html">Drupal 12.0 <span class="meta">(27)</span></a>
+<a href="symfony.html">Symfony <span class="meta">(4)</span></a>
+<a href="wordpress.html">WordPress <span class="meta">(22)</span></a>
+<span class="here">Framework-free PHP <span class="meta">(13)</span></span>
+<a href="arm64.html">ARM64 (Oracle A1) <span class="meta">(5)</span></a>
+</nav>
+<p class="note">Everything here is rebuilt from committed <code>results/&lt;run-id&gt;/summary.json</code> files. The <strong>null band</strong> is printed beside every comparison: it is the same job run with both sides identical (A against a copy of A), so a delta smaller than the band is noise and is reported as <em>no claim</em>. Host class, governor, PHP, Drupal tag, database and runtime versions are in each run's header.</p>
+<h2 id="short">The short version</h2>
+<p class="note">This page holds <strong>13 published comparisons</strong> across <strong>1 application sites</strong>, measured on sd-91675, sd-92483. Each comparison is one job: the same cells against two runtimes, with a null phase that bounds the noise first. A <span class="badge claim">CLAIM</span> appears only when the delta is outside that band. Start with the summary tables, then open a run for its numbers; every run links to its raw <code>results/&lt;run-id&gt;/</code> directory.</p>
+<h3>CLAIM <span class="meta">(9)</span></h3>
+<ul class="verdicts">
+<li><span class="badge claim">CLAIM</span> <a href="#123-hello-master-33896f7-vs-fpm-sd-92483-20261017T221219Z">Framework-free PHP · PHP hello (no framework) · freeunit-master-33896f7 vs nginx + PHP-FPM</a> <span class="meta">CLAIM php-hello-c32: B is 107.9 percent more server instructions per request, outside the null band of 1.9, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#31-hello-freeunit-vs-fpm-sd-91675-20261010T223804Z">Framework-free PHP · PHP hello (no framework) · FreeUnit 1.37.0 vs nginx + PHP-FPM</a> <span class="meta">CLAIM php-hello-c32: B is 108.9 percent more server instructions per request, outside the null band of 2.4, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#32-headers-freeunit-vs-fpm-sd-91675-20261010T225142Z">Framework-free PHP · PHP response headers (no framework) · FreeUnit 1.37.0 vs nginx + PHP-FPM</a> <span class="meta">CLAIM php-headers-c32: B is 97.4 percent more server instructions per request, outside the null band of 1.4, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#33-body-freeunit-vs-fpm-sd-91675-20261010T230449Z">Framework-free PHP · PHP response body (no framework) · FreeUnit 1.37.0 vs nginx + PHP-FPM</a> <span class="meta">CLAIM php-body-c32: B is 196.8 percent more server instructions per request, outside the null band of 1.1, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#34-hello-master-vs-fpm-sd-91675-20261010T231753Z">Framework-free PHP · PHP hello (no framework) · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">CLAIM php-hello-c32: B is 106.3 percent more server instructions per request, outside the null band of 2.7, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#50-hello-master-new-vs-old-sd-91675-20261013T015950Z">Framework-free PHP · PHP hello (no framework) · freeunit-master-old vs FreeUnit master</a> <span class="meta">CLAIM php-hello-c32: B is 10.9 percent less server instructions per request, outside the null band of 1.7, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#51-body-master-new-vs-old-sd-91675-20261013T021253Z">Framework-free PHP · PHP response body (no framework) · freeunit-master-old vs FreeUnit master</a> <span class="meta">CLAIM php-body-c32: B is 6.8 percent less server instructions per request, outside the null band of 4.7, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#54-hello-mid-vs-new-sd-91675-20261013T084407Z">Framework-free PHP · PHP hello (no framework) · freeunit-master-mid vs FreeUnit master</a> <span class="meta">CLAIM php-hello-c32: B is 10.1 percent less server instructions per request, outside the null band of 1.6, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#56-body-mid-vs-new-sd-91675-20261013T144822Z">Framework-free PHP · PHP response body (no framework) · freeunit-master-mid vs FreeUnit master</a> <span class="meta">CLAIM php-body-c32: B is 6.4 percent less server instructions per request, outside the null band of 1.5, 12 of 12 cells agree</span></li>
+</ul>
+<h3>NO CLAIM <span class="meta">(4)</span></h3>
+<ul class="verdicts">
+<li><span class="badge noclaim">no claim</span> <a href="#115-742-hello-atomic-sd-92483-20261017T092708Z">Framework-free PHP · PHP hello (no framework) · freeunit-742-base vs freeunit-742-head</a> <span class="meta">NO CLAIM php-hello-c32: inside the noise, no claim (B is 0.2 percent less server instructions per request, null band 2.7, 9 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#125-hello-768-sd-92483-20261018T000356Z">Framework-free PHP · PHP hello (no framework) · freeunit-768-base vs freeunit-768-head</a> <span class="meta">NO CLAIM php-hello-c32: inside the noise, no claim (B is 0.2 percent more server instructions per request, null band 1.2, 7 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#53-hello-old-vs-mid-sd-91675-20261013T074709Z">Framework-free PHP · PHP hello (no framework) · freeunit-master-old vs freeunit-master-mid</a> <span class="meta">NO CLAIM php-hello-c32: inside the noise, no claim (B is 0.2 percent more server instructions per request, null band 2.7, 7 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#55-body-old-vs-mid-sd-91675-20261013T085709Z">Framework-free PHP · PHP response body (no framework) · freeunit-master-old vs freeunit-master-mid</a> <span class="meta">NO CLAIM php-body-c32: inside the noise, no claim (B is 0.9 percent less server instructions per request, null band 4.9, 6 of 12 cells agree)</span></li>
+</ul>
+<h2 id="summary">Summary: the primary metric per runtime</h2>
+<p class="note">Primary metric: s instructions (lower is better), measured c32 on one host in one window. The ratio is against the best runtime in that row. Each comparison has its null band printed in the run sections below; a ratio smaller than the band is not a difference. Caveat: this table pools absolute means from runs taken hours apart under a powersave governor, so use it for the order, not for a percentage; the per-run tables are the controlled measurement.</p>
+<h3>PHP response body (no framework) <span class="meta">(php-body-c32, mysql, sd-91675, s instructions)</span></h3>
+<table><thead><tr><th>runtime</th><th>s instructions</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>FreeUnit master</td><td>234,451</td><td>1.00x</td></tr>
+<tr><td>FreeUnit 1.37.0</td><td>248,264</td><td>1.06x</td></tr>
+<tr><td>freeunit-master-old</td><td>249,879</td><td>1.07x</td></tr>
+<tr><td>freeunit-master-mid</td><td>250,374</td><td>1.07x</td></tr>
+<tr><td>nginx + PHP-FPM</td><td>736,819</td><td>3.14x</td></tr>
+</tbody></table>
+<h3>PHP response headers (no framework) <span class="meta">(php-headers-c32, mysql, sd-91675, s instructions)</span></h3>
+<table><thead><tr><th>runtime</th><th>s instructions</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>FreeUnit 1.37.0</td><td>259,210</td><td>1.00x</td></tr>
+<tr><td>nginx + PHP-FPM</td><td>511,670</td><td>1.97x</td></tr>
+</tbody></table>
+<h3>PHP hello (no framework) <span class="meta">(php-hello-c32, mysql, sd-91675, s instructions)</span></h3>
+<table><thead><tr><th>runtime</th><th>s instructions</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>FreeUnit master</td><td>195,794</td><td>1.00x</td></tr>
+<tr><td>FreeUnit 1.37.0</td><td>210,062</td><td>1.07x</td></tr>
+<tr><td>freeunit-master-mid</td><td>210,181</td><td>1.07x</td></tr>
+<tr><td>freeunit-master-old</td><td>210,671</td><td>1.08x</td></tr>
+<tr><td>nginx + PHP-FPM</td><td>439,310</td><td>2.24x</td></tr>
+</tbody></table>
+<h3>PHP hello (no framework) <span class="meta">(php-hello-c32, mysql, sd-92483, s instructions)</span></h3>
+<table><thead><tr><th>runtime</th><th>s instructions</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>freeunit-master-33896f7</td><td>213,422</td><td>1.00x</td></tr>
+<tr><td>freeunit-742-head</td><td>216,199</td><td>1.01x</td></tr>
+<tr><td>freeunit-768-base</td><td>216,425</td><td>1.01x</td></tr>
+<tr><td>freeunit-742-base</td><td>216,540</td><td>1.01x</td></tr>
+<tr><td>freeunit-768-head</td><td>216,767</td><td>1.02x</td></tr>
+<tr><td>nginx + PHP-FPM</td><td>443,731</td><td>2.08x</td></tr>
+</tbody></table>
+<h2 id="runs">Every run</h2>
+<p class="note">One row per comparison. The run id is the directory name under <code>results/</code> and the anchor of its detail block below; the date is the run's own start time. Open a row to read its metrics.</p>
+<table class="index"><thead><tr><th>run</th><th>date</th><th>site</th><th>workload</th><th>runtimes</th><th>verdict</th></tr></thead><tbody>
+<tr><td><a href="#115-742-hello-atomic-sd-92483-20261017T092708Z"><code>115-742-hello-atomic-sd-92483-20261017T092708Z</code></a></td><td>2026-10-17T09:40</td><td>Framework-free PHP</td><td>PHP hello (no framework)</td><td>freeunit-742-base vs freeunit-742-head</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#123-hello-master-33896f7-vs-fpm-sd-92483-20261017T221219Z"><code>123-hello-master-33896f7-vs-fpm-sd-92483-2026101</code></a></td><td>2026-10-17T22:25</td><td>Framework-free PHP</td><td>PHP hello (no framework)</td><td>freeunit-master-33896f7 vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#125-hello-768-sd-92483-20261018T000356Z"><code>125-hello-768-sd-92483-20261018T000356Z</code></a></td><td>2026-10-18T00:17</td><td>Framework-free PHP</td><td>PHP hello (no framework)</td><td>freeunit-768-base vs freeunit-768-head</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#31-hello-freeunit-vs-fpm-sd-91675-20261010T223804Z"><code>31-hello-freeunit-vs-fpm-sd-91675-20261010T22380</code></a></td><td>2026-10-10T22:51</td><td>Framework-free PHP</td><td>PHP hello (no framework)</td><td>FreeUnit 1.37.0 vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#32-headers-freeunit-vs-fpm-sd-91675-20261010T225142Z"><code>32-headers-freeunit-vs-fpm-sd-91675-20261010T225</code></a></td><td>2026-10-10T23:04</td><td>Framework-free PHP</td><td>PHP response headers (no framework)</td><td>FreeUnit 1.37.0 vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#33-body-freeunit-vs-fpm-sd-91675-20261010T230449Z"><code>33-body-freeunit-vs-fpm-sd-91675-20261010T230449</code></a></td><td>2026-10-10T23:17</td><td>Framework-free PHP</td><td>PHP response body (no framework)</td><td>FreeUnit 1.37.0 vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#34-hello-master-vs-fpm-sd-91675-20261010T231753Z"><code>34-hello-master-vs-fpm-sd-91675-20261010T231753Z</code></a></td><td>2026-10-10T23:30</td><td>Framework-free PHP</td><td>PHP hello (no framework)</td><td>FreeUnit master vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#50-hello-master-new-vs-old-sd-91675-20261013T015950Z"><code>50-hello-master-new-vs-old-sd-91675-20261013T015</code></a></td><td>2026-10-13T02:12</td><td>Framework-free PHP</td><td>PHP hello (no framework)</td><td>freeunit-master-old vs FreeUnit master</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#51-body-master-new-vs-old-sd-91675-20261013T021253Z"><code>51-body-master-new-vs-old-sd-91675-20261013T0212</code></a></td><td>2026-10-13T02:25</td><td>Framework-free PHP</td><td>PHP response body (no framework)</td><td>freeunit-master-old vs FreeUnit master</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#53-hello-old-vs-mid-sd-91675-20261013T074709Z"><code>53-hello-old-vs-mid-sd-91675-20261013T074709Z</code></a></td><td>2026-10-13T08:00</td><td>Framework-free PHP</td><td>PHP hello (no framework)</td><td>freeunit-master-old vs freeunit-master-mid</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#54-hello-mid-vs-new-sd-91675-20261013T084407Z"><code>54-hello-mid-vs-new-sd-91675-20261013T084407Z</code></a></td><td>2026-10-13T08:57</td><td>Framework-free PHP</td><td>PHP hello (no framework)</td><td>freeunit-master-mid vs FreeUnit master</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#55-body-old-vs-mid-sd-91675-20261013T085709Z"><code>55-body-old-vs-mid-sd-91675-20261013T085709Z</code></a></td><td>2026-10-13T09:10</td><td>Framework-free PHP</td><td>PHP response body (no framework)</td><td>freeunit-master-old vs freeunit-master-mid</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#56-body-mid-vs-new-sd-91675-20261013T144822Z"><code>56-body-mid-vs-new-sd-91675-20261013T144822Z</code></a></td><td>2026-10-13T15:01</td><td>Framework-free PHP</td><td>PHP response body (no framework)</td><td>freeunit-master-mid vs FreeUnit master</td><td><span class="badge claim">CLAIM</span></td></tr>
+</tbody></table>
+<h2 id="details">Run detail</h2>
+<p class="note">Grouped by application site. Nothing is hidden: the summary line carries the verdict, the body has the metrics, and the null-phase row that bounds the job is one click further.</p>
+<h3 id="site-hello">Framework-free PHP <span class="meta">(13 runs)</span></h3>
+<details class="run" id="115-742-hello-atomic-sd-92483-20261017T092708Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">PHP hello (no framework) — freeunit-742-base vs freeunit-742-head</span><span class="meta">Framework-free PHP · 115-742-hello-atomic-sd-92483-20261017T092708Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-92483 · date 2026-10-17T09:40:17Z</p>
+<p class="headline">NO CLAIM php-hello-c32: inside the noise, no claim (B is 0.2 percent less server instructions per request, null band 2.7, 9 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit-742-base</th><th>freeunit-742-head</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>216539.6265</td><td>216198.6978</td><td>-0.15%</td><td>[-2.09, 1.79]</td><td>2.7</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>0.0003</td><td>0.0003</td><td>0.53%</td><td>[-12.41, 13.46]</td><td>18.25</td><td>3/12</td><td>NOISY</td></tr>
+<tr><td>db_cycles</td><td>19.4609</td><td>18.9463</td><td>-1.83%</td><td>[-16.88, 13.23]</td><td>36.45</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>4.4817</td><td>4.3941</td><td>-1.87%</td><td>[-13.32, 9.57]</td><td>52.55</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>db_migrations</td><td>0.0001</td><td>0.0001</td><td>0.0%</td><td>[-94.83, 94.83]</td><td>142.92</td><td>4/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>0.0087</td><td>0.0091</td><td>5.18%</td><td>[-12.52, 22.87]</td><td>62.59</td><td>5/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>2.7308</td><td>2.7158</td><td>-0.53%</td><td>[-5.83, 4.77]</td><td>11.3</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>9.6841</td><td>9.0047</td><td>-5.5%</td><td>[-20.67, 9.67]</td><td>19.91</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>10512.1667</td><td>10543.61</td><td>0.49%</td><td>[-6.34, 7.32]</td><td>12.0</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>5.7784</td><td>5.7912</td><td>0.29%</td><td>[-6.2, 6.78]</td><td>10.14</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>414797.5279</td><td>412210.8378</td><td>-0.62%</td><td>[-3.22, 1.97]</td><td>3.21</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.0162</td><td>0.028</td><td>68.02%</td><td>[-74.78, 210.81]</td><td>317.45</td><td>5/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>181.2885</td><td>180.1853</td><td>-0.59%</td><td>[-5.83, 4.65]</td><td>8.57</td><td>7/12</td><td>NOISY</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.4 percent in server instructions per request, 95 percent CI [-1.8, 2.7], null band 2.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.9 percent in db_cs, 95 percent CI [-14.4, 18.3], null band 18.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -7.8 percent in db_cycles, 95 percent CI [-36.4, 20.9], null band 36.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -18.9 percent in db_instructions, 95 percent CI [-52.6, 14.8], null band 52.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 16.7 percent in db_migrations, 95 percent CI [-109.6, 142.9], null band 142.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 27.8 percent in db_us, 95 percent CI [-7.0, 62.6], null band 62.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -4.0 percent in p50 latency (ms), 95 percent CI [-11.3, 3.3], null band 11.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.7 percent in p99 latency (ms), 95 percent CI [-18.6, 19.9], null band 19.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 3.4 percent in requests per second, 95 percent CI [-5.3, 12.0], null band 12.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 2.5 percent in server cs per request, 95 percent CI [-5.2, 10.1], null band 10.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in server cycles per request, 95 percent CI [-2.6, 3.2], null band 3.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 110.5 percent in server migrations per request, 95 percent CI [-96.5, 317.5], null band 317.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.9 percent in server CPU per request (us), 95 percent CI [-8.6, 4.7], null band 8.6, limit 5.0: NOISY</li>
+</ul></details>
+<p class="data">raw: <code>115-742-hello-atomic-sd-92483-20261017T092708Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="123-hello-master-33896f7-vs-fpm-sd-92483-20261017T221219Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">PHP hello (no framework) — freeunit-master-33896f7 vs nginx + PHP-FPM</span><span class="meta">Framework-free PHP · 123-hello-master-33896f7-vs-fpm-sd-92483-20261017T221219Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-92483 · date 2026-10-17T22:25:18Z</p>
+<p class="headline">CLAIM php-hello-c32: B is 107.9 percent more server instructions per request, outside the null band of 1.9, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master-33896f7</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>213422.4986</td><td>443731.2032</td><td>107.91%</td><td>[106.24, 109.59]</td><td>1.93</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>0.0003</td><td>0.0007</td><td>97.99%</td><td>[81.71, 114.26]</td><td>22.18</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_cycles</td><td>19.7629</td><td>38.6058</td><td>96.73%</td><td>[76.07, 117.38]</td><td>42.14</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>4.3113</td><td>8.8083</td><td>104.62%</td><td>[96.24, 113.01]</td><td>54.48</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_migrations</td><td>0.0</td><td>0.0002</td><td>-%</td><td>[-, -]</td><td>94.74</td><td>0/12</td><td>NO DATA</td></tr>
+<tr><td>db_us</td><td>0.0091</td><td>0.0174</td><td>91.62%</td><td>[64.6, 118.64]</td><td>50.86</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>2.7092</td><td>5.561</td><td>105.65%</td><td>[97.52, 113.78]</td><td>8.15</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>9.1734</td><td>13.696</td><td>51.7%</td><td>[35.74, 67.66]</td><td>20.44</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>10681.9458</td><td>5423.6933</td><td>-49.09%</td><td>[-55.01, -43.17]</td><td>9.27</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>5.4984</td><td>2.7106</td><td>-50.7%</td><td>[-56.64, -44.76]</td><td>7.69</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>410943.2829</td><td>931496.0036</td><td>126.68%</td><td>[123.86, 129.5]</td><td>1.99</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.0241</td><td>0.2549</td><td>1097.44%</td><td>[998.97, 1195.92]</td><td>105.58</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>175.6799</td><td>360.8628</td><td>105.55%</td><td>[97.97, 113.12]</td><td>6.21</td><td>12/12</td><td>NOISY</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.3 percent in server instructions per request, 95 percent CI [-1.2, 1.9], null band 1.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -4.4 percent in db_cs, 95 percent CI [-22.2, 13.3], null band 22.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -15.0 percent in db_cycles, 95 percent CI [-42.1, 12.2], null band 42.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -19.9 percent in db_instructions, 95 percent CI [-54.5, 14.7], null band 54.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -11.1 percent in db_migrations, 95 percent CI [-94.7, 72.5], null band 94.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 19.4 percent in db_us, 95 percent CI [-12.0, 50.9], null band 50.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -3.6 percent in p50 latency (ms), 95 percent CI [-8.2, 1.0], null band 8.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.4 percent in p99 latency (ms), 95 percent CI [-19.7, 20.4], null band 20.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 3.9 percent in requests per second, 95 percent CI [-1.5, 9.3], null band 9.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.8 percent in server cs per request, 95 percent CI [-4.0, 7.7], null band 7.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in server cycles per request, 95 percent CI [-1.1, 2.0], null band 2.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 45.3 percent in server migrations per request, 95 percent CI [-15.1, 105.6], null band 105.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -2.4 percent in server CPU per request (us), 95 percent CI [-6.2, 1.4], null band 6.2, limit 5.0: NOISY</li>
+</ul></details>
+<p class="data">raw: <code>123-hello-master-33896f7-vs-fpm-sd-92483-20261017T221219Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="125-hello-768-sd-92483-20261018T000356Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">PHP hello (no framework) — freeunit-768-base vs freeunit-768-head</span><span class="meta">Framework-free PHP · 125-hello-768-sd-92483-20261018T000356Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-92483 · date 2026-10-18T00:17:25Z</p>
+<p class="headline">NO CLAIM php-hello-c32: inside the noise, no claim (B is 0.2 percent more server instructions per request, null band 1.2, 7 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit-768-base</th><th>freeunit-768-head</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>216425.0646</td><td>216767.2752</td><td>0.17%</td><td>[-2.03, 2.37]</td><td>1.18</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>0.0003</td><td>0.0003</td><td>-5.13%</td><td>[-15.9, 5.65]</td><td>15.74</td><td>3/12</td><td>NOISY</td></tr>
+<tr><td>db_cycles</td><td>18.8419</td><td>18.9474</td><td>1.52%</td><td>[-10.52, 13.57]</td><td>35.98</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>4.256</td><td>4.1298</td><td>-2.8%</td><td>[-11.27, 5.66]</td><td>48.71</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>db_migrations</td><td>0.0001</td><td>0.0</td><td>-66.67%</td><td>[-128.43, -4.9]</td><td>87.35</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>0.008</td><td>0.0075</td><td>-6.36%</td><td>[-23.73, 11.01]</td><td>61.61</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>2.5295</td><td>2.4956</td><td>-1.29%</td><td>[-9.27, 6.69]</td><td>6.59</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>8.1617</td><td>8.789</td><td>7.86%</td><td>[-8.48, 24.2]</td><td>25.94</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>11490.9167</td><td>11420.765</td><td>-0.58%</td><td>[-7.28, 6.12]</td><td>6.07</td><td>5/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>5.7921</td><td>5.8682</td><td>1.5%</td><td>[-6.91, 9.9]</td><td>4.79</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>418693.3326</td><td>417947.7444</td><td>-0.17%</td><td>[-2.86, 2.52]</td><td>1.8</td><td>4/12</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.0129</td><td>0.0195</td><td>38.98%</td><td>[-69.87, 147.84]</td><td>63.03</td><td>4/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>168.8294</td><td>167.0366</td><td>-1.09%</td><td>[-6.13, 3.95]</td><td>6.29</td><td>6/12</td><td>NOISY</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.0 percent in server instructions per request, 95 percent CI [-1.2, 1.2], null band 1.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.3 percent in db_cs, 95 percent CI [-15.7, 13.2], null band 15.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -9.7 percent in db_cycles, 95 percent CI [-36.0, 16.7], null band 36.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -15.7 percent in db_instructions, 95 percent CI [-48.7, 17.3], null band 48.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_migrations, 95 percent CI [-87.3, 87.3], null band 87.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 25.4 percent in db_us, 95 percent CI [-10.7, 61.6], null band 61.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.3 percent in p50 latency (ms), 95 percent CI [-4.1, 6.6], null band 6.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -9.9 percent in p99 latency (ms), 95 percent CI [-25.9, 6.1], null band 25.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in requests per second, 95 percent CI [-6.1, 5.9], null band 6.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.7 percent in server cs per request, 95 percent CI [-4.8, 3.4], null band 4.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in server cycles per request, 95 percent CI [-1.8, 0.9], null band 1.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -23.4 percent in server migrations per request, 95 percent CI [-63.0, 16.2], null band 63.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.4 percent in server CPU per request (us), 95 percent CI [-3.6, 6.3], null band 6.3, limit 5.0: NOISY</li>
+</ul></details>
+<p class="data">raw: <code>125-hello-768-sd-92483-20261018T000356Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="31-hello-freeunit-vs-fpm-sd-91675-20261010T223804Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">PHP hello (no framework) — FreeUnit 1.37.0 vs nginx + PHP-FPM</span><span class="meta">Framework-free PHP · 31-hello-freeunit-vs-fpm-sd-91675-20261010T223804Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-10T22:51:40Z</p>
+<p class="headline">CLAIM php-hello-c32: B is 108.9 percent more server instructions per request, outside the null band of 2.4, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>210061.8401</td><td>438824.3827</td><td>108.93%</td><td>[107.61, 110.25]</td><td>2.41</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>0.0003</td><td>0.0006</td><td>89.74%</td><td>[77.52, 101.97]</td><td>16.72</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_cycles</td><td>16.4971</td><td>33.533</td><td>103.17%</td><td>[93.72, 112.62]</td><td>26.5</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>3.9574</td><td>7.7153</td><td>94.83%</td><td>[82.04, 107.62]</td><td>45.14</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_migrations</td><td>0.0</td><td>0.0001</td><td>300.0%</td><td>[83.09, 516.91]</td><td>151.81</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>0.0071</td><td>0.0158</td><td>122.5%</td><td>[97.1, 147.9]</td><td>56.25</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>2.6025</td><td>5.4016</td><td>107.62%</td><td>[99.58, 115.67]</td><td>12.63</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>8.2163</td><td>11.2273</td><td>36.68%</td><td>[23.36, 50.01]</td><td>12.29</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>11344.5892</td><td>5767.3658</td><td>-49.17%</td><td>[-56.32, -42.01]</td><td>10.39</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>7.0745</td><td>2.6177</td><td>-62.91%</td><td>[-66.98, -58.85]</td><td>8.1</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>410841.3489</td><td>920753.8288</td><td>124.12%</td><td>[122.24, 126.0]</td><td>2.1</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.0384</td><td>0.2436</td><td>543.49%</td><td>[502.64, 584.33]</td><td>45.72</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>175.5838</td><td>347.1183</td><td>97.62%</td><td>[89.28, 105.96]</td><td>10.09</td><td>12/12</td><td>NOISY</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.4 percent in server instructions per request, 95 percent CI [-1.7, 2.4], null band 2.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 2.8 percent in db_cs, 95 percent CI [-11.2, 16.7], null band 16.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -5.4 percent in db_cycles, 95 percent CI [-26.5, 15.7], null band 26.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -13.8 percent in db_instructions, 95 percent CI [-45.1, 17.5], null band 45.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -55.6 percent in db_migrations, 95 percent CI [-151.8, 40.7], null band 151.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 25.1 percent in db_us, 95 percent CI [-6.0, 56.2], null band 56.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.6 percent in p50 latency (ms), 95 percent CI [-9.5, 12.6], null band 12.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 3.8 percent in p99 latency (ms), 95 percent CI [-4.7, 12.3], null band 12.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -2.8 percent in requests per second, 95 percent CI [-10.4, 4.8], null band 10.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in server cs per request, 95 percent CI [-6.4, 8.1], null band 8.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in server cycles per request, 95 percent CI [-1.5, 2.1], null band 2.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -12.1 percent in server migrations per request, 95 percent CI [-45.7, 21.6], null band 45.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 3.3 percent in server CPU per request (us), 95 percent CI [-3.5, 10.1], null band 10.1, limit 5.0: NOISY</li>
+</ul></details>
+<p class="data">raw: <code>31-hello-freeunit-vs-fpm-sd-91675-20261010T223804Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="32-headers-freeunit-vs-fpm-sd-91675-20261010T225142Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">PHP response headers (no framework) — FreeUnit 1.37.0 vs nginx + PHP-FPM</span><span class="meta">Framework-free PHP · 32-headers-freeunit-vs-fpm-sd-91675-20261010T225142Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-10T23:04:48Z</p>
+<p class="headline">CLAIM php-headers-c32: B is 97.4 percent more server instructions per request, outside the null band of 1.4, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>259210.4699</td><td>511670.3648</td><td>97.4%</td><td>[96.08, 98.73]</td><td>1.43</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>0.0003</td><td>0.0007</td><td>99.44%</td><td>[88.57, 110.32]</td><td>18.18</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_cycles</td><td>17.4899</td><td>35.9063</td><td>105.42%</td><td>[97.58, 113.26]</td><td>31.84</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>4.1426</td><td>8.552</td><td>106.6%</td><td>[95.74, 117.47]</td><td>50.78</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_migrations</td><td>0.0</td><td>0.0002</td><td>433.33%</td><td>[208.21, 658.46]</td><td>-</td><td>10/12</td><td>NO NULL GATE</td></tr>
+<tr><td>db_us</td><td>0.0083</td><td>0.016</td><td>93.91%</td><td>[77.92, 109.9]</td><td>55.55</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>2.7378</td><td>5.8062</td><td>112.07%</td><td>[99.23, 124.92]</td><td>6.51</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>7.8889</td><td>12.5441</td><td>60.54%</td><td>[44.48, 76.59]</td><td>15.33</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>10605.9742</td><td>5226.9033</td><td>-50.65%</td><td>[-55.53, -45.78]</td><td>7.03</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>6.1472</td><td>2.7012</td><td>-56.01%</td><td>[-62.51, -49.5]</td><td>6.13</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>439249.9888</td><td>987712.7139</td><td>124.87%</td><td>[122.48, 127.27]</td><td>1.54</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.0537</td><td>0.2418</td><td>537.76%</td><td>[448.68, 626.84]</td><td>72.28</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>183.2485</td><td>383.129</td><td>109.52%</td><td>[102.05, 117.0]</td><td>6.1</td><td>12/12</td><td>NOISY</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.1 percent in server instructions per request, 95 percent CI [-1.4, 1.2], null band 1.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -2.4 percent in db_cs, 95 percent CI [-18.2, 13.4], null band 18.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -7.9 percent in db_cycles, 95 percent CI [-31.8, 16.0], null band 31.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -14.6 percent in db_instructions, 95 percent CI [-50.8, 21.6], null band 50.8, limit 5.0: NOISY</li>
+<li>no data for db_migrations</li>
+<li>null gate: A and a copy of A differ by 16.7 percent in db_us, 95 percent CI [-22.2, 55.6], null band 55.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.6 percent in p50 latency (ms), 95 percent CI [-5.4, 6.5], null band 6.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 4.2 percent in p99 latency (ms), 95 percent CI [-6.9, 15.3], null band 15.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.6 percent in requests per second, 95 percent CI [-7.0, 5.8], null band 7.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.0 percent in server cs per request, 95 percent CI [-6.1, 4.2], null band 6.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in server cycles per request, 95 percent CI [-1.5, 1.5], null band 1.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 28.3 percent in server migrations per request, 95 percent CI [-15.7, 72.3], null band 72.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in server CPU per request (us), 95 percent CI [-5.5, 6.1], null band 6.1, limit 5.0: NOISY</li>
+</ul></details>
+<p class="data">raw: <code>32-headers-freeunit-vs-fpm-sd-91675-20261010T225142Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="33-body-freeunit-vs-fpm-sd-91675-20261010T230449Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">PHP response body (no framework) — FreeUnit 1.37.0 vs nginx + PHP-FPM</span><span class="meta">Framework-free PHP · 33-body-freeunit-vs-fpm-sd-91675-20261010T230449Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-10T23:17:52Z</p>
+<p class="headline">CLAIM php-body-c32: B is 196.8 percent more server instructions per request, outside the null band of 1.1, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>248264.19</td><td>736819.3568</td><td>196.8%</td><td>[195.84, 197.75]</td><td>1.07</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>0.0004</td><td>0.001</td><td>137.25%</td><td>[125.6, 148.91]</td><td>20.4</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_cycles</td><td>21.9715</td><td>53.4751</td><td>143.37%</td><td>[133.02, 153.73]</td><td>30.09</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>5.1432</td><td>12.351</td><td>140.15%</td><td>[130.18, 150.12]</td><td>46.05</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_migrations</td><td>0.0001</td><td>0.0003</td><td>266.67%</td><td>[173.29, 360.04]</td><td>66.19</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>0.0106</td><td>0.023</td><td>117.3%</td><td>[96.23, 138.37]</td><td>26.15</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>3.1567</td><td>8.3139</td><td>163.45%</td><td>[151.63, 175.27]</td><td>16.31</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>11.5139</td><td>20.5661</td><td>78.69%</td><td>[67.38, 90.0]</td><td>19.35</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>8433.4533</td><td>3585.0533</td><td>-57.48%</td><td>[-60.88, -54.09]</td><td>6.59</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>8.2456</td><td>3.4479</td><td>-58.18%</td><td>[-60.94, -55.42]</td><td>2.78</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>550419.3329</td><td>1536802.4045</td><td>179.21%</td><td>[176.91, 181.51]</td><td>1.32</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.343</td><td>0.294</td><td>-13.9%</td><td>[-28.27, 0.48]</td><td>35.41</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>235.15</td><td>558.2158</td><td>137.44%</td><td>[128.24, 146.64]</td><td>6.39</td><td>12/12</td><td>NOISY</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.0 percent in server instructions per request, 95 percent CI [-1.1, 1.0], null band 1.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 3.5 percent in db_cs, 95 percent CI [-13.4, 20.4], null band 20.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -8.3 percent in db_cycles, 95 percent CI [-30.1, 13.5], null band 30.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -13.8 percent in db_instructions, 95 percent CI [-46.1, 18.4], null band 46.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 17.8 percent in db_migrations, 95 percent CI [-30.6, 66.2], null band 66.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 7.0 percent in db_us, 95 percent CI [-12.1, 26.2], null band 26.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -5.8 percent in p50 latency (ms), 95 percent CI [-16.3, 4.8], null band 16.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 6.5 percent in p99 latency (ms), 95 percent CI [-6.3, 19.3], null band 19.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.2 percent in requests per second, 95 percent CI [-6.6, 4.3], null band 6.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in server cs per request, 95 percent CI [-2.8, 2.5], null band 2.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in server cycles per request, 95 percent CI [-1.3, 0.4], null band 1.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 9.9 percent in server migrations per request, 95 percent CI [-15.6, 35.4], null band 35.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.3 percent in server CPU per request (us), 95 percent CI [-3.7, 6.4], null band 6.4, limit 5.0: NOISY</li>
+</ul></details>
+<p class="data">raw: <code>33-body-freeunit-vs-fpm-sd-91675-20261010T230449Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="34-hello-master-vs-fpm-sd-91675-20261010T231753Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">PHP hello (no framework) — FreeUnit master vs nginx + PHP-FPM</span><span class="meta">Framework-free PHP · 34-hello-master-vs-fpm-sd-91675-20261010T231753Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-10T23:30:58Z</p>
+<p class="headline">CLAIM php-hello-c32: B is 106.3 percent more server instructions per request, outside the null band of 2.7, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>213183.3331</td><td>439795.3238</td><td>106.31%</td><td>[105.56, 107.06]</td><td>2.75</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>0.0003</td><td>0.0007</td><td>99.79%</td><td>[85.19, 114.38]</td><td>15.59</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_cycles</td><td>16.8957</td><td>35.4951</td><td>110.81%</td><td>[99.01, 122.61]</td><td>32.68</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>4.0298</td><td>8.4533</td><td>111.08%</td><td>[96.58, 125.58]</td><td>50.69</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_migrations</td><td>0.0</td><td>0.0002</td><td>533.33%</td><td>[335.25, 731.42]</td><td>182.57</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>0.0075</td><td>0.0153</td><td>104.67%</td><td>[84.32, 125.01]</td><td>41.74</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>2.6303</td><td>5.5524</td><td>111.6%</td><td>[102.68, 120.52]</td><td>10.68</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>7.907</td><td>11.6799</td><td>48.76%</td><td>[36.78, 60.74]</td><td>16.55</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>11277.2317</td><td>5625.7175</td><td>-50.05%</td><td>[-56.07, -44.03]</td><td>8.97</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>6.9454</td><td>2.7066</td><td>-61.07%</td><td>[-63.49, -58.65]</td><td>10.53</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>417706.1659</td><td>922886.968</td><td>120.97%</td><td>[119.68, 122.25]</td><td>2.49</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.0272</td><td>0.2467</td><td>814.76%</td><td>[738.09, 891.43]</td><td>61.07</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>176.5918</td><td>355.7077</td><td>101.61%</td><td>[92.75, 110.46]</td><td>9.57</td><td>12/12</td><td>NOISY</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 1.2 percent in server instructions per request, 95 percent CI [-0.3, 2.7], null band 2.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_cs, 95 percent CI [-15.4, 15.6], null band 15.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -9.5 percent in db_cycles, 95 percent CI [-32.7, 13.7], null band 32.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -17.0 percent in db_instructions, 95 percent CI [-50.7, 16.7], null band 50.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -50.0 percent in db_migrations, 95 percent CI [-182.6, 82.6], null band 182.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 13.3 percent in db_us, 95 percent CI [-15.2, 41.7], null band 41.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -2.4 percent in p50 latency (ms), 95 percent CI [-10.7, 6.0], null band 10.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 9.6 percent in p99 latency (ms), 95 percent CI [2.7, 16.6], null band 16.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -3.1 percent in requests per second, 95 percent CI [-9.0, 2.8], null band 9.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 4.6 percent in server cs per request, 95 percent CI [-1.4, 10.5], null band 10.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.0 percent in server cycles per request, 95 percent CI [-0.5, 2.5], null band 2.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -19.0 percent in server migrations per request, 95 percent CI [-61.1, 23.0], null band 61.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 4.2 percent in server CPU per request (us), 95 percent CI [-1.1, 9.6], null band 9.6, limit 5.0: NOISY</li>
+</ul></details>
+<p class="data">raw: <code>34-hello-master-vs-fpm-sd-91675-20261010T231753Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="50-hello-master-new-vs-old-sd-91675-20261013T015950Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">PHP hello (no framework) — freeunit-master-old vs FreeUnit master</span><span class="meta">Framework-free PHP · 50-hello-master-new-vs-old-sd-91675-20261013T015950Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-13T02:12:52Z</p>
+<p class="headline">CLAIM php-hello-c32: B is 10.9 percent less server instructions per request, outside the null band of 1.7, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master-old</th><th>freeunit-master</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>209802.4528</td><td>186832.566</td><td>-10.95%</td><td>[-12.31, -9.59]</td><td>1.74</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>0.0003</td><td>0.0003</td><td>-10.9%</td><td>[-21.31, -0.48]</td><td>20.57</td><td>4/12</td><td>NOISY</td></tr>
+<tr><td>db_cycles</td><td>17.0143</td><td>14.7479</td><td>-13.28%</td><td>[-19.03, -7.54]</td><td>36.04</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>3.9528</td><td>3.3983</td><td>-13.99%</td><td>[-22.6, -5.38]</td><td>52.39</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>db_migrations</td><td>0.0001</td><td>0.0</td><td>-61.11%</td><td>[-156.18, 33.95]</td><td>-</td><td>4/12</td><td>NO NULL GATE</td></tr>
+<tr><td>db_us</td><td>0.0072</td><td>0.0064</td><td>-10.52%</td><td>[-22.69, 1.65]</td><td>56.94</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>2.5743</td><td>2.3138</td><td>-10.12%</td><td>[-17.72, -2.52]</td><td>6.99</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>7.4924</td><td>6.7671</td><td>-9.69%</td><td>[-19.75, 0.36]</td><td>17.88</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>11505.4708</td><td>12967.7367</td><td>12.7%</td><td>[4.64, 20.75]</td><td>8.0</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>6.6253</td><td>6.1112</td><td>-7.76%</td><td>[-11.98, -3.55]</td><td>5.13</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>412147.2759</td><td>374353.8275</td><td>-9.17%</td><td>[-10.75, -7.59]</td><td>2.27</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.0187</td><td>0.0103</td><td>-44.76%</td><td>[-62.17, -27.34]</td><td>125.95</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>172.5951</td><td>153.4776</td><td>-11.09%</td><td>[-17.91, -4.27]</td><td>7.34</td><td>10/12</td><td>NOISY</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.2 percent in server instructions per request, 95 percent CI [-1.7, 1.3], null band 1.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -5.2 percent in db_cs, 95 percent CI [-20.6, 10.1], null band 20.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -12.5 percent in db_cycles, 95 percent CI [-36.0, 11.1], null band 36.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -17.9 percent in db_instructions, 95 percent CI [-52.4, 16.6], null band 52.4, limit 5.0: NOISY</li>
+<li>no data for db_migrations</li>
+<li>null gate: A and a copy of A differ by 21.5 percent in db_us, 95 percent CI [-13.9, 56.9], null band 56.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.3 percent in p50 latency (ms), 95 percent CI [-7.0, 6.4], null band 7.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -5.4 percent in p99 latency (ms), 95 percent CI [-17.9, 7.1], null band 17.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.4 percent in requests per second, 95 percent CI [-5.2, 8.0], null band 8.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server cs per request, 95 percent CI [-5.1, 5.0], null band 5.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in server cycles per request, 95 percent CI [-2.3, 1.3], null band 2.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 18.1 percent in server migrations per request, 95 percent CI [-89.8, 126.0], null band 126.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.6 percent in server CPU per request (us), 95 percent CI [-7.3, 6.1], null band 7.3, limit 5.0: NOISY</li>
+</ul></details>
+<p class="data">raw: <code>50-hello-master-new-vs-old-sd-91675-20261013T015950Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="51-body-master-new-vs-old-sd-91675-20261013T021253Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">PHP response body (no framework) — freeunit-master-old vs FreeUnit master</span><span class="meta">Framework-free PHP · 51-body-master-new-vs-old-sd-91675-20261013T021253Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-13T02:25:49Z</p>
+<p class="headline">CLAIM php-body-c32: B is 6.8 percent less server instructions per request, outside the null band of 4.7, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master-old</th><th>freeunit-master</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>249404.1906</td><td>232456.5622</td><td>-6.79%</td><td>[-8.94, -4.64]</td><td>4.7</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>0.0004</td><td>0.0004</td><td>-5.47%</td><td>[-16.58, 5.64]</td><td>17.07</td><td>5/12</td><td>NOISY</td></tr>
+<tr><td>db_cycles</td><td>22.4658</td><td>21.7161</td><td>-3.25%</td><td>[-9.27, 2.76]</td><td>25.22</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>5.319</td><td>5.117</td><td>-3.63%</td><td>[-11.85, 4.59]</td><td>43.06</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>db_migrations</td><td>0.0001</td><td>0.0001</td><td>-16.67%</td><td>[-67.54, 34.21]</td><td>103.75</td><td>4/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>0.0101</td><td>0.0103</td><td>1.52%</td><td>[-12.83, 15.88]</td><td>65.03</td><td>4/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>3.446</td><td>3.3748</td><td>-2.09%</td><td>[-8.8, 4.62]</td><td>9.08</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>10.8444</td><td>9.9199</td><td>-8.41%</td><td>[-21.11, 4.28]</td><td>21.53</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>8255.6158</td><td>8687.2025</td><td>5.27%</td><td>[-0.43, 10.96]</td><td>8.76</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>7.9134</td><td>7.7882</td><td>-1.51%</td><td>[-8.49, 5.47]</td><td>14.82</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>552433.8792</td><td>513952.2986</td><td>-6.95%</td><td>[-9.21, -4.69]</td><td>4.0</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.2391</td><td>0.2193</td><td>-8.83%</td><td>[-32.03, 14.36]</td><td>46.51</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>238.7721</td><td>219.9667</td><td>-7.89%</td><td>[-13.97, -1.82]</td><td>10.31</td><td>10/12</td><td>NOISY</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 2.3 percent in server instructions per request, 95 percent CI [-0.1, 4.7], null band 4.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 3.5 percent in db_cs, 95 percent CI [-10.1, 17.1], null band 17.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -4.4 percent in db_cycles, 95 percent CI [-25.2, 16.4], null band 25.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -10.7 percent in db_instructions, 95 percent CI [-43.1, 21.6], null band 43.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -16.7 percent in db_migrations, 95 percent CI [-103.8, 70.4], null band 103.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 27.0 percent in db_us, 95 percent CI [-11.0, 65.0], null band 65.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.6 percent in p50 latency (ms), 95 percent CI [-9.1, 5.9], null band 9.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 10.3 percent in p99 latency (ms), 95 percent CI [-0.9, 21.5], null band 21.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -3.5 percent in requests per second, 95 percent CI [-8.8, 1.7], null band 8.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 7.0 percent in server cs per request, 95 percent CI [-0.9, 14.8], null band 14.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.4 percent in server cycles per request, 95 percent CI [-1.3, 4.0], null band 4.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 21.0 percent in server migrations per request, 95 percent CI [-4.6, 46.5], null band 46.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 4.8 percent in server CPU per request (us), 95 percent CI [-0.7, 10.3], null band 10.3, limit 5.0: NOISY</li>
+</ul></details>
+<p class="data">raw: <code>51-body-master-new-vs-old-sd-91675-20261013T021253Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="53-hello-old-vs-mid-sd-91675-20261013T074709Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">PHP hello (no framework) — freeunit-master-old vs freeunit-master-mid</span><span class="meta">Framework-free PHP · 53-hello-old-vs-mid-sd-91675-20261013T074709Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-13T08:00:29Z</p>
+<p class="headline">NO CLAIM php-hello-c32: inside the noise, no claim (B is 0.2 percent more server instructions per request, null band 2.7, 7 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit-master-old</th><th>freeunit-master-mid</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>211538.7874</td><td>212028.5146</td><td>0.23%</td><td>[-1.48, 1.95]</td><td>2.68</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>0.0003</td><td>0.0003</td><td>2.78%</td><td>[-9.48, 15.03]</td><td>24.92</td><td>2/12</td><td>NOISY</td></tr>
+<tr><td>db_cycles</td><td>17.1735</td><td>16.6491</td><td>-2.99%</td><td>[-10.21, 4.23]</td><td>35.05</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>4.0152</td><td>3.9457</td><td>-1.69%</td><td>[-9.06, 5.68]</td><td>51.78</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>db_migrations</td><td>0.0</td><td>0.0</td><td>0.0%</td><td>[-127.86, 127.86]</td><td>163.7</td><td>0/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>0.0077</td><td>0.0077</td><td>0.92%</td><td>[-15.54, 17.38]</td><td>32.88</td><td>4/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>2.5568</td><td>2.6395</td><td>3.25%</td><td>[-5.61, 12.1]</td><td>8.93</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>7.8603</td><td>7.989</td><td>1.86%</td><td>[-6.22, 9.94]</td><td>17.91</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>11382.4475</td><td>11143.4892</td><td>-2.06%</td><td>[-7.75, 3.63]</td><td>7.51</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>6.7729</td><td>6.795</td><td>0.35%</td><td>[-5.87, 6.56]</td><td>9.89</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>418306.8491</td><td>417400.0729</td><td>-0.21%</td><td>[-2.37, 1.95]</td><td>3.47</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.0245</td><td>0.0273</td><td>10.59%</td><td>[-27.08, 48.27]</td><td>63.71</td><td>5/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>173.908</td><td>177.5283</td><td>2.11%</td><td>[-2.56, 6.78]</td><td>9.12</td><td>8/12</td><td>NOISY</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.8 percent in server instructions per request, 95 percent CI [-1.0, 2.7], null band 2.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -11.2 percent in db_cs, 95 percent CI [-24.9, 2.4], null band 24.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -12.0 percent in db_cycles, 95 percent CI [-35.1, 11.1], null band 35.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -17.8 percent in db_instructions, 95 percent CI [-51.8, 16.3], null band 51.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 38.9 percent in db_migrations, 95 percent CI [-85.9, 163.7], null band 163.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 8.0 percent in db_us, 95 percent CI [-16.8, 32.9], null band 32.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.4 percent in p50 latency (ms), 95 percent CI [-8.9, 6.2], null band 8.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 6.2 percent in p99 latency (ms), 95 percent CI [-5.5, 17.9], null band 17.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.6 percent in requests per second, 95 percent CI [-7.5, 6.2], null band 7.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 3.2 percent in server cs per request, 95 percent CI [-3.5, 9.9], null band 9.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.3 percent in server cycles per request, 95 percent CI [-0.8, 3.5], null band 3.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -15.5 percent in server migrations per request, 95 percent CI [-63.7, 32.7], null band 63.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 3.0 percent in server CPU per request (us), 95 percent CI [-3.1, 9.1], null band 9.1, limit 5.0: NOISY</li>
+</ul></details>
+<p class="data">raw: <code>53-hello-old-vs-mid-sd-91675-20261013T074709Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="54-hello-mid-vs-new-sd-91675-20261013T084407Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">PHP hello (no framework) — freeunit-master-mid vs FreeUnit master</span><span class="meta">Framework-free PHP · 54-hello-mid-vs-new-sd-91675-20261013T084407Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-13T08:57:08Z</p>
+<p class="headline">CLAIM php-hello-c32: B is 10.1 percent less server instructions per request, outside the null band of 1.6, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master-mid</th><th>freeunit-master</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>208333.0046</td><td>187365.742</td><td>-10.06%</td><td>[-11.9, -8.22]</td><td>1.62</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>0.0003</td><td>0.0003</td><td>-7.69%</td><td>[-17.02, 1.64]</td><td>21.94</td><td>3/12</td><td>NOISY</td></tr>
+<tr><td>db_cycles</td><td>16.2913</td><td>14.6739</td><td>-9.95%</td><td>[-15.96, -3.94]</td><td>29.07</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>3.9042</td><td>3.464</td><td>-11.34%</td><td>[-19.12, -3.56]</td><td>48.42</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>db_migrations</td><td>0.0</td><td>0.0</td><td>-16.67%</td><td>[-142.92, 109.59]</td><td>94.83</td><td>3/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>0.0073</td><td>0.0067</td><td>-8.02%</td><td>[-20.08, 4.03]</td><td>32.3</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>2.7277</td><td>2.3907</td><td>-12.23%</td><td>[-18.66, -5.81]</td><td>8.13</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>7.3668</td><td>7.1147</td><td>-3.25%</td><td>[-12.71, 6.21]</td><td>15.42</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>11074.5283</td><td>12365.0867</td><td>11.65%</td><td>[4.95, 18.36]</td><td>8.58</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>6.3835</td><td>6.1216</td><td>-4.03%</td><td>[-11.24, 3.17]</td><td>6.38</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>407126.8553</td><td>372825.7566</td><td>-8.41%</td><td>[-10.36, -6.46]</td><td>1.84</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.0421</td><td>0.0136</td><td>-61.07%</td><td>[-115.39, -6.75]</td><td>180.56</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>175.6268</td><td>160.6521</td><td>-8.54%</td><td>[-13.75, -3.34]</td><td>8.36</td><td>11/12</td><td>NOISY</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.3 percent in server instructions per request, 95 percent CI [-0.9, 1.6], null band 1.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -4.4 percent in db_cs, 95 percent CI [-21.9, 13.0], null band 21.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -5.9 percent in db_cycles, 95 percent CI [-29.1, 17.2], null band 29.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -14.9 percent in db_instructions, 95 percent CI [-48.4, 18.6], null band 48.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_migrations, 95 percent CI [-94.8, 94.8], null band 94.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 4.3 percent in db_us, 95 percent CI [-23.7, 32.3], null band 32.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -2.5 percent in p50 latency (ms), 95 percent CI [-8.1, 3.1], null band 8.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -6.8 percent in p99 latency (ms), 95 percent CI [-15.4, 1.8], null band 15.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 3.1 percent in requests per second, 95 percent CI [-2.5, 8.6], null band 8.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.7 percent in server cs per request, 95 percent CI [-2.9, 6.4], null band 6.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.4 percent in server cycles per request, 95 percent CI [-1.8, 1.0], null band 1.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 65.5 percent in server migrations per request, 95 percent CI [-49.6, 180.6], null band 180.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -2.9 percent in server CPU per request (us), 95 percent CI [-8.4, 2.6], null band 8.4, limit 5.0: NOISY</li>
+</ul></details>
+<p class="data">raw: <code>54-hello-mid-vs-new-sd-91675-20261013T084407Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="55-body-old-vs-mid-sd-91675-20261013T085709Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">PHP response body (no framework) — freeunit-master-old vs freeunit-master-mid</span><span class="meta">Framework-free PHP · 55-body-old-vs-mid-sd-91675-20261013T085709Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-13T09:10:06Z</p>
+<p class="headline">NO CLAIM php-body-c32: inside the noise, no claim (B is 0.9 percent less server instructions per request, null band 4.9, 6 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit-master-old</th><th>freeunit-master-mid</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>250353.7248</td><td>248029.4235</td><td>-0.91%</td><td>[-3.01, 1.19]</td><td>4.89</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>0.0005</td><td>0.0005</td><td>1.48%</td><td>[-17.32, 20.29]</td><td>26.04</td><td>4/12</td><td>NOISY</td></tr>
+<tr><td>db_cycles</td><td>23.1819</td><td>24.6065</td><td>5.83%</td><td>[-6.0, 17.66]</td><td>27.21</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>5.6315</td><td>5.98</td><td>5.71%</td><td>[-9.25, 20.67]</td><td>44.07</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>db_migrations</td><td>0.0001</td><td>0.0001</td><td>100.0%</td><td>[-25.71, 225.71]</td><td>49.71</td><td>5/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>0.0109</td><td>0.0112</td><td>2.18%</td><td>[-13.64, 18.01]</td><td>50.4</td><td>4/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>3.592</td><td>3.5696</td><td>-0.72%</td><td>[-11.06, 9.61]</td><td>9.4</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>10.9178</td><td>11.477</td><td>5.16%</td><td>[-6.15, 16.47]</td><td>15.4</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>8021.5092</td><td>7892.2008</td><td>-1.67%</td><td>[-9.49, 6.16]</td><td>6.76</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>8.0274</td><td>7.7069</td><td>-3.76%</td><td>[-10.77, 3.24]</td><td>16.47</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>561389.3803</td><td>557988.6192</td><td>-0.53%</td><td>[-5.17, 4.11]</td><td>5.06</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>server migrations per request</td><td>0.2352</td><td>0.2638</td><td>12.82%</td><td>[-29.51, 55.15]</td><td>35.15</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>245.0125</td><td>243.4417</td><td>-0.59%</td><td>[-6.66, 5.47]</td><td>8.48</td><td>6/12</td><td>NOISY</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 1.7 percent in server instructions per request, 95 percent CI [-1.4, 4.9], null band 4.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 10.1 percent in db_cs, 95 percent CI [-5.9, 26.0], null band 26.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -5.0 percent in db_cycles, 95 percent CI [-27.2, 17.2], null band 27.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -13.0 percent in db_instructions, 95 percent CI [-44.1, 18.1], null band 44.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -22.2 percent in db_migrations, 95 percent CI [-49.7, 5.3], null band 49.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 22.6 percent in db_us, 95 percent CI [-5.2, 50.4], null band 50.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 2.0 percent in p50 latency (ms), 95 percent CI [-5.4, 9.4], null band 9.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 2.6 percent in p99 latency (ms), 95 percent CI [-10.3, 15.4], null band 15.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -2.1 percent in requests per second, 95 percent CI [-6.8, 2.6], null band 6.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 5.3 percent in server cs per request, 95 percent CI [-5.8, 16.5], null band 16.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.7 percent in server cycles per request, 95 percent CI [-3.6, 5.1], null band 5.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 14.3 percent in server migrations per request, 95 percent CI [-6.6, 35.2], null band 35.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 3.9 percent in server CPU per request (us), 95 percent CI [-0.7, 8.5], null band 8.5, limit 5.0: NOISY</li>
+</ul></details>
+<p class="data">raw: <code>55-body-old-vs-mid-sd-91675-20261013T085709Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="56-body-mid-vs-new-sd-91675-20261013T144822Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">PHP response body (no framework) — freeunit-master-mid vs FreeUnit master</span><span class="meta">Framework-free PHP · 56-body-mid-vs-new-sd-91675-20261013T144822Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-13T15:01:30Z</p>
+<p class="headline">CLAIM php-body-c32: B is 6.4 percent less server instructions per request, outside the null band of 1.5, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master-mid</th><th>freeunit-master</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>252717.927</td><td>236445.6006</td><td>-6.44%</td><td>[-8.49, -4.39]</td><td>1.54</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>0.0005</td><td>0.0004</td><td>-10.92%</td><td>[-19.13, -2.7]</td><td>17.14</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>db_cycles</td><td>23.5957</td><td>20.9391</td><td>-11.25%</td><td>[-14.89, -7.6]</td><td>34.63</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_instructions</td><td>5.7267</td><td>5.1194</td><td>-10.61%</td><td>[-15.86, -5.37]</td><td>44.6</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_migrations</td><td>0.0001</td><td>0.0001</td><td>-22.22%</td><td>[-82.5, 38.05]</td><td>41.27</td><td>3/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>0.011</td><td>0.0094</td><td>-14.03%</td><td>[-21.65, -6.41]</td><td>43.89</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>3.6341</td><td>3.3893</td><td>-6.67%</td><td>[-13.32, -0.02]</td><td>8.5</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>10.8717</td><td>10.4778</td><td>-3.69%</td><td>[-14.29, 6.91]</td><td>15.16</td><td>5/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>7977.62</td><td>8443.475</td><td>5.85%</td><td>[2.78, 8.92]</td><td>4.46</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>server cs per request</td><td>8.2535</td><td>8.1858</td><td>-0.83%</td><td>[-7.13, 5.48]</td><td>3.75</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>553807.2289</td><td>522362.4467</td><td>-5.68%</td><td>[-8.23, -3.12]</td><td>1.56</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.285</td><td>0.2805</td><td>-1.7%</td><td>[-16.43, 13.03]</td><td>23.28</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>248.2232</td><td>231.9733</td><td>-6.54%</td><td>[-9.96, -3.13]</td><td>4.49</td><td>11/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.2 percent in server instructions per request, 95 percent CI [-1.0, 1.5], null band 1.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.6 percent in db_cs, 95 percent CI [-14.0, 17.1], null band 17.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -7.4 percent in db_cycles, 95 percent CI [-34.6, 19.9], null band 34.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -10.5 percent in db_instructions, 95 percent CI [-44.6, 23.7], null band 44.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_migrations, 95 percent CI [-41.3, 41.3], null band 41.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 17.1 percent in db_us, 95 percent CI [-9.8, 43.9], null band 43.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.8 percent in p50 latency (ms), 95 percent CI [-8.5, 6.9], null band 8.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 3.7 percent in p99 latency (ms), 95 percent CI [-7.7, 15.2], null band 15.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.4 percent in requests per second, 95 percent CI [-4.5, 1.7], null band 4.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in server cs per request, 95 percent CI [-3.1, 3.7], null band 3.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.3 percent in server cycles per request, 95 percent CI [-1.6, 1.0], null band 1.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 7.8 percent in server migrations per request, 95 percent CI [-7.7, 23.3], null band 23.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.5 percent in server CPU per request (us), 95 percent CI [-1.5, 4.5], null band 4.5, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>56-body-mid-vs-new-sd-91675-20261013T144822Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<p class="data">Rendered 2026-10-18T00:18:42Z. A plain-language summary of the findings is in
+<a href="https://github.com/freeunitorg/benchmarks-drupal/blob/main/docs/report-2026-10.md">docs/report-2026-10.md</a>;
+the suite's resume note is <code>docs/state.md</code>.</p>
+</body></html>

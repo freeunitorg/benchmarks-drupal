@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Application-server benchmarks: Drupal, Symfony, WordPress and plain PHP</title>
+<meta name="description" content="Reproducible comparison of Drupal, Symfony, WordPress and framework-free PHP on Apache+mod_php, nginx+PHP-FPM, Angie, FreeNginx and FreeUnit, with a null band beside every comparison.">
+<style>
+ body { font: 15px/1.5 system-ui, sans-serif; max-width: 68rem; margin: 2rem auto; padding: 0 1rem; color: #222; }
+ h1 { font-size: 1.6rem; margin-bottom: .2rem; }
+ h2 { font-size: 1.15rem; margin-top: 2.5rem; border-top: 1px solid #ddd; padding-top: 1rem; }
+ h3 { font-size: 1rem; margin: 1.4rem 0 .4rem; }
+ table { border-collapse: collapse; width: 100%; margin: .5rem 0 1rem; font-size: 14px; }
+ th, td { text-align: right; padding: .3rem .5rem; border-bottom: 1px solid #eee; vertical-align: top; }
+ th:first-child, td:first-child { text-align: left; }
+ table.index td, table.index th { font-size: 13px; }
+ .meta, .data { color: #666; font-size: 13px; font-weight: normal; }
+ .headline { font-weight: 600; }
+ .note { background: #f6f8fa; border-left: 3px solid #888; padding: .6rem .9rem; }
+ tr.best td { font-weight: 600; background: #f0fbf4; }
+ code { background: #f6f8fa; padding: .1rem .3rem; }
+ .badge { font-size: 11px; font-weight: 700; padding: .1rem .45rem; border-radius: .7rem; white-space: nowrap; }
+ .badge.claim { background: #e6f4ea; color: #136a2f; }
+ .badge.noclaim { background: #eef1f4; color: #4a5568; }
+ .badge.invalid { background: #fdecea; color: #a12b20; }
+ .badge.nodata { background: #fff4e5; color: #8a5a00; }
+ .badge.pass { background: #e8f0fe; color: #1a4b8c; }
+ ul.verdicts { margin: .3rem 0 1rem; padding-left: 1.1rem; }
+ ul.verdicts li { margin: .2rem 0; }
+ details.run { border: 1px solid #e6e6e6; border-radius: .5rem; padding: .4rem .7rem; margin: .5rem 0; }
+ details.run > summary { cursor: pointer; display: block; }
+ .run-title { font-weight: 600; margin: 0 .5rem 0 .4rem; }
+ details[open].run { background: #fcfcfd; }
+ :target { scroll-margin-top: 1rem; background: #fffbe6; }
+ nav.pages { margin: .8rem 0 1.2rem; display: flex; flex-wrap: wrap; gap: .4rem; }
+ nav.pages a, nav.pages span.here { border: 1px solid #d7dbe0; border-radius: .4rem; padding: .25rem .6rem; font-size: 13px; }
+ nav.pages a { text-decoration: none; }
+ nav.pages span.here { background: #eef1f4; font-weight: 600; border-color: #c3c9d1; }
+ nav.pages a:hover { background: #f6f8fa; }
+ nav.toc ol { margin: .3rem 0 0; padding-left: 1.2rem; }
+ p.lede { color: #444; }
+ @media print { details.run { break-inside: avoid; } }
+</style></head><body>
+<h1>Application-server benchmarks: Drupal, Symfony, WordPress and plain PHP</h1>
+<p class="lede">An instruction-count comparison of the same application on several runtimes, one job at a time, with the measurement noise bounded before any claim is made. <a href="https://github.com/freeunitorg/benchmarks-drupal/blob/main/docs/report-2026-10.md">Read the findings in prose</a>.</p>
+<nav class="pages">
+<span class="here">Overview <span class="meta">(85)</span></span>
+<a href="drupal-11.4.html">Drupal 11.4 <span class="meta">(14)</span></a>
+<a href="drupal-12.0.html">Drupal 12.0 <span class="meta">(27)</span></a>
+<a href="symfony.html">Symfony <span class="meta">(4)</span></a>
+<a href="wordpress.html">WordPress <span class="meta">(22)</span></a>
+<a href="php.html">Framework-free PHP <span class="meta">(13)</span></a>
+<a href="arm64.html">ARM64 (Oracle A1) <span class="meta">(5)</span></a>
+</nav>
+<p class="note">Everything here is rebuilt from committed <code>results/&lt;run-id&gt;/summary.json</code> files. The <strong>null band</strong> is printed beside every comparison: it is the same job run with both sides identical (A against a copy of A), so a delta smaller than the band is noise and is reported as <em>no claim</em>. Host class, governor, PHP, Drupal tag, database and runtime versions are in each run's header.</p>
+<h2 id="pages">Pages</h2>
+<p class="note">The result set is split by application family so each page stays readable while the runtime and database matrices grow. Every page carries its own short version, ranking table, run index and per-run detail; the raw data is the same committed <code>results/</code> tree for all of them.</p>
+<table class="index"><thead><tr><th>page</th><th>runs</th><th>sites</th><th>claim</th><th>no claim</th><th>invalid</th><th>no data</th></tr></thead><tbody>
+<tr><td><a href="drupal-11.4.html">Drupal 11.4</a><div class="meta">Drupal 11.4, demo_umami profile on Apache+mod_php, nginx+PHP-FPM, the two nginx forks built from source, and FreeUnit, across the database axis.</div></td><td>14</td><td>2</td><td>7</td><td>6</td><td>0</td><td>0</td></tr>
+<tr><td><a href="drupal-12.0.html">Drupal 12.0</a><div class="meta">Drupal 12.0.0-beta1, demo_umami profile on Apache+mod_php, nginx+PHP-FPM, the two nginx forks built from source, and FreeUnit, across the database axis.</div></td><td>27</td><td>2</td><td>18</td><td>9</td><td>0</td><td>0</td></tr>
+<tr><td><a href="symfony.html">Symfony</a><div class="meta">Symfony on the same runtimes.</div></td><td>4</td><td>1</td><td>2</td><td>1</td><td>0</td><td>0</td></tr>
+<tr><td><a href="wordpress.html">WordPress</a><div class="meta">WordPress front page, the HTTP cron path, and the persistent-connection drop-in.</div></td><td>22</td><td>1</td><td>14</td><td>8</td><td>0</td><td>0</td></tr>
+<tr><td><a href="php.html">Framework-free PHP</a><div class="meta">The control application: one PHP file, no framework, no database. This is where the per-request cost of the server itself shows, so it is the page to read first when the servers are being compared.</div></td><td>13</td><td>1</td><td>9</td><td>4</td><td>0</td><td>0</td></tr>
+<tr><td><a href="arm64.html">ARM64 (Oracle A1)</a><div class="meta">The same servers on an aarch64 host, where the guest has no PMU: the primary metric is the server&#x27;s own CPU time per request, not retired instructions. Read the ratios; the absolute numbers are not comparable with the x86 pages.</div></td><td>5</td><td>2</td><td>4</td><td>1</td><td>0</td><td>0</td></tr>
+</tbody></table>
+<h2 id="arms">Cron and queue arms: cold CLI against the HTTP path</h2>
+<p class="note">One row per arm from the raw <code>ticks.tsv</code>. Arm A is a cold one-shot CLI process (<code>drush core:cron</code> / <code>queue:run</code>, or the equivalent bench command on Drupal 12), arm B is <code>GET /cron/{key}</code> served by a normal web worker. The CLI arm runs before the web workers are warm, so its wall time is the one to read; the HTTP arm returns before the job finishes on FreeUnit (it detaches), which is why its wall time is the trigger latency.</p>
+<table><thead><tr><th>arm</th><th>runtime</th><th>trigger</th><th>ticks</th><th>mean wall (s)</th><th>median wall (s)</th><th>mean job CPU (ms)</th><th>process growth</th><th>relative mean</th></tr></thead><tbody>
+<tr><td>B</td><td>nginx-fpm</td><td>GET /cron/benchmark</td><td>20</td><td>0.703</td><td>0.774</td><td>111.3</td><td>+0</td><td>1.00x</td></tr>
+<tr><td>B</td><td>apache</td><td>GET /cron/benchmark</td><td>20</td><td>0.725</td><td>0.784</td><td>121.2</td><td>+0</td><td>1.03x</td></tr>
+<tr><td>B</td><td>freeunit</td><td>GET /cron/benchmark</td><td>20</td><td>0.726</td><td>0.965</td><td>113.9</td><td>+0</td><td>1.03x</td></tr>
+<tr><td>A</td><td>freeunit</td><td>drush core:cron</td><td>20</td><td>5.903</td><td>2.730</td><td>0.0</td><td>+0</td><td>8.40x</td></tr>
+</tbody></table>
+<p class="data">A process growth of 0 over 20 ticks is the gist bug (two leaked processes per tick) staying fixed. The mean job CPU of the cold-CLI row is a sampling gap, not a real zero: that process is gone before the sampler reads it.</p>
+<h2 id="short">The short version</h2>
+<p class="note">This page holds <strong>85 published comparisons</strong> across <strong>8 application sites</strong>, measured on fu-build-arm, pro4s-2, sd-91675, sd-92483. Each comparison is one job: the same cells against two runtimes, with a null phase that bounds the noise first. A <span class="badge claim">CLAIM</span> appears only when the delta is outside that band. Start with the summary tables, then open a run for its numbers; every run links to its raw <code>results/&lt;run-id&gt;/</code> directory.</p>
+<h3>CLAIM <span class="meta">(54)</span></h3>
+<ul class="verdicts">
+<li><span class="badge claim">CLAIM</span> <a href="#02-front-anon-freeunit-vs-fpm-11.4-20261010T054857Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit 1.37.0 vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-front-c32: B is 7.7 percent more server instructions per request, outside the null band of 0.1, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#03-front-anon-fpm-vs-apache-11.4-20261010T072319Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · nginx + PHP-FPM vs Apache + mod_php</a> <span class="meta">CLAIM drupal-front-c32: B is 54.7 percent more server instructions per request, outside the null band of 0.1, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#04-front-auth-freeunit-vs-fpm-11.4-20261010T060133Z">Drupal 11.4, demo_umami profile · Front page, authenticated (page cache bypassed) · FreeUnit 1.37.0 vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-auth-c32: B is 0.6 percent less server instructions per request, outside the null band of 0.3, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#16-front-anon-master-vs-fpm-11.4-20261010T125416Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-front-c32: B is 7.7 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#18-front-anon-master-vs-apache-11.4-20261010T132008Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit master vs Apache + mod_php</a> <span class="meta">CLAIM drupal-front-c32: B is 66.8 percent more server instructions per request, outside the null band of 0.1, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#42-auth-symbolic-vs-fpm-11.4-20261010T160737Z">Drupal 11.4, demo_umami profile · Front page, authenticated (page cache bypassed) · freeunit-symbolic vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-auth-c32: B is 0.6 percent more server instructions per request, outside the null band of 0.6, 12 of 12 cells agree</span></li>
+<li class="meta">and 48 more under <a href="#runs">every run</a> on this page.</li>
+</ul>
+<h3>NO CLAIM <span class="meta">(29)</span></h3>
+<ul class="verdicts">
+<li><span class="badge noclaim">no claim</span> <a href="#05-share-probe-freeunit-11.4-20261010T074309Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit 1.37.0 vs FreeUnit 1.37.0, direct routes</a> <span class="meta">NO CLAIM drupal-front-c32: inside the noise, no claim (B is 0.0 percent less server instructions per request, null band 0.2, 6 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#06-front-anon-master-vs-1370-11.4-20261010T063845Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit 1.37.0 vs FreeUnit master</a> <span class="meta">NO CLAIM drupal-front-c32: inside the noise, no claim (B is 0.0 percent less server instructions per request, null band 0.2, 6 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#07-front-auth-master-vs-1370-11.4-20261010T065118Z">Drupal 11.4, demo_umami profile · Front page, authenticated (page cache bypassed) · FreeUnit 1.37.0 vs FreeUnit master</a> <span class="meta">NO CLAIM drupal-auth-c32: inside the noise, no claim (B is 0.2 percent less server instructions per request, null band 0.3, 8 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#17-front-auth-master-vs-fpm-11.4-20261010T130654Z">Drupal 11.4, demo_umami profile · Front page, authenticated (page cache bypassed) · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">NO CLAIM drupal-auth-c32: inside the noise, no claim (B is 0.3 percent less server instructions per request, null band 0.4, 11 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#43-auth-fpm-vs-symbolic-11.4-20261010T162052Z">Drupal 11.4, demo_umami profile · Front page, authenticated (page cache bypassed) · nginx + PHP-FPM vs freeunit-symbolic</a> <span class="meta">NO CLAIM drupal-auth-c32: inside the noise, no claim (B is 0.3 percent less server instructions per request, null band 0.3, 11 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#22-drupal-auth-freeunit-vs-fpm-11.4-standard-sd-91675-20261010T201420Z">Drupal 11.4, standard profile · Front page, authenticated (page cache bypassed) · FreeUnit 1.37.0 vs nginx + PHP-FPM</a> <span class="meta">NO CLAIM drupal-auth-c32: inside the noise, no claim (B is 0.6 percent more server instructions per request, null band 0.7, 12 of 12 cells agree)</span></li>
+<li class="meta">and 23 more under <a href="#runs">every run</a> on this page.</li>
+</ul>
+<h3>PASS <span class="meta">(2)</span></h3>
+<ul class="verdicts">
+<li><span class="badge pass">pass</span> <a href="#01-null-front-anon-11.4-20261010T052707Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit 1.37.0 vs FreeUnit 1.37.0</a> <span class="meta">PASS drupal-front-c32: null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-0.0, 0.1], null band 0.1, limit 5.0: PASS</span></li>
+<li><span class="badge pass">pass</span> <a href="#13-null-symfony-11.4-20261010T080927Z">Symfony 7.4 · Symfony front page (Twig + one SELECT) · FreeUnit 1.37.0 vs FreeUnit 1.37.0</a> <span class="meta">PASS symfony-front-c32: null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-0.0, 0.2], null band 0.2, limit 5.0: PASS</span></li>
+</ul>
+<p class="data">Rendered 2026-10-18T00:18:42Z. A plain-language summary of the findings is in
+<a href="https://github.com/freeunitorg/benchmarks-drupal/blob/main/docs/report-2026-10.md">docs/report-2026-10.md</a>;
+the suite's resume note is <code>docs/state.md</code>.</p>
+</body></html>
