@@ -1,0 +1,25 @@
+# ARM body-size sweep, 8k (8192 bytes): the control app's response length is the only
+# thing that changes across 154-156, with the front/worker split, so worker_us separates a
+# per-byte response copy from a per-request worker cost. On this guest there is no PMU, so
+# server_us and the schedstat split are the instruments.
+JOB=155-arm-body-8k-master-vs-fpm-decompose
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-body-8k
+RUNTIME_A=freeunit-master-10e1a9bec
+RUNTIME_B=nginx-fpm
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+DECOMPOSE=1
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="worker_us per request is flat in body size (per-request cost) or grows with it (per-byte copy)"
+FALSIFY="no change between the sizes"

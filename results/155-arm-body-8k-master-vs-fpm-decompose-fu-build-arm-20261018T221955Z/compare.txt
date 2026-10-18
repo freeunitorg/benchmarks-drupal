@@ -1,0 +1,17 @@
+CLAIM php-body-8k-c32: B is 51.5 percent more server CPU per request (us), outside the null band of 3.0, 8 of 8 cells agree
+job 155-arm-body-8k-master-vs-fpm-decompose  run 155-arm-body-8k-master-vs-fpm-decompose-fu-build-arm-20261018T221955Z  A None ()  B None ()  governor unknown/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  php-body-8k-c32 server_us                   171.249      170.347    -0.52     [-3.00, +1.96]   3.00    4/8  PASS
+null  php-body-8k-c32 db_us                         0.011        0.011    +2.49   [-20.25, +25.23]  25.23    4/8  NOISY
+null  php-body-8k-c32 front_us                     49.068       48.818    -0.51     [-1.83, +0.82]   1.83    5/8  PASS
+null  php-body-8k-c32 p50_ms                        5.618        5.578    -0.71     [-3.70, +2.29]   3.70    4/8  PASS
+null  php-body-8k-c32 p99_ms                        7.073        7.015    -0.80     [-4.06, +2.45]   4.06    5/8  PASS
+null  php-body-8k-c32 rps                        5783.860     5818.510    +0.61     [-1.81, +3.02]   3.02    5/8  PASS
+null  php-body-8k-c32 worker_us                   122.181      121.529    -0.53     [-3.49, +2.44]   3.49    4/8  PASS
+ab    php-body-8k-c32 server_us                   170.377      258.223   +51.54   [+46.64, +56.43]   3.00    8/8  CLAIM
+ab    php-body-8k-c32 db_us                         0.008        0.013   +63.66   [+50.69, +76.63]  25.23    8/8  NOISY
+ab    php-body-8k-c32 front_us                     48.843      100.842  +106.43  [+95.94, +116.93]   1.83    8/8  CLAIM
+ab    php-body-8k-c32 p50_ms                        5.570        8.386   +50.49   [+37.80, +63.18]   3.70    8/8  CLAIM
+ab    php-body-8k-c32 p99_ms                        6.956       14.758  +112.10  [+92.73, +131.48]   4.06    8/8  CLAIM
+ab    php-body-8k-c32 rps                        5827.086     3837.705   -34.15   [-36.88, -31.42]   3.02    8/8  CLAIM
+ab    php-body-8k-c32 worker_us                   121.534      157.381   +29.48   [+25.41, +33.55]   3.49    8/8  CLAIM
