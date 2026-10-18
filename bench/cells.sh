@@ -507,8 +507,8 @@ timed_cell() {  # phase side cell conns block slot runtime
     perf_start db "$(echo $rpids | tr ' ' ',')"
     local fpids wpids
     if [ "${DECOMPOSE:-0}" = 1 ]; then
-        fpids=$(pids_role "$rt" front "$(sv "$side" CNAME)" | tr '\n' ' ')
-        wpids=$(pids_role "$rt" worker "$(sv "$side" CNAME)" | tr '\n' ' ')
+        fpids=$(pids_role "$rt" front "$name" | tr '\n' ' ')
+        wpids=$(pids_role "$rt" worker "$name" | tr '\n' ' ')
         perf_start sf "$(echo $fpids | tr ' ' ',')"
         perf_start sw "$(echo $wpids | tr ' ' ',')"
     fi
