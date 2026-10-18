@@ -1,0 +1,23 @@
+# Current master on the A1 host against nginx + PHP-FPM: the ARM master row was the
+# stale :master pin (2dc6596f5), and no ARM front-page cell has ever compared master
+# with FPM. No PMU on this guest, so server_us is the primary metric; one core for the
+# server and one for the load generator.
+JOB=134-arm-hello-master-10e1a9bec-vs-fpm
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-master-10e1a9bec
+RUNTIME_B=nginx-fpm
+SITE=hello
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="current master needs less server CPU per request than nginx plus PHP-FPM on aarch64"
+FALSIFY="a delta inside the null band, or FPM cheaper"
