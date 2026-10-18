@@ -1,0 +1,17 @@
+CLAIM php-body-64k-c32: B is 80.0 percent more server CPU per request (us), outside the null band of 3.5, 8 of 8 cells agree
+job 156-arm-body-64k-master-vs-fpm-decompose  run 156-arm-body-64k-master-vs-fpm-decompose-fu-build-arm-20261018T222555Z  A None ()  B None ()  governor unknown/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  php-body-64k-c32 server_us                   206.469      204.228    -1.09     [-3.46, +1.28]   3.46    6/8  PASS
+null  php-body-64k-c32 db_us                         0.013        0.013    +2.84   [-16.15, +21.84]  21.84    5/8  NOISY
+null  php-body-64k-c32 front_us                     71.464       70.995    -0.66     [-2.65, +1.33]   2.65    5/8  PASS
+null  php-body-64k-c32 p50_ms                        6.851        6.756    -1.40     [-4.11, +1.32]   4.11    5/8  PASS
+null  php-body-64k-c32 p99_ms                        9.032        9.025    -0.08     [-3.89, +3.73]   3.89    4/8  PASS
+null  php-body-64k-c32 rps                        4757.700     4812.939    +1.16     [-1.16, +3.48]   3.48    6/8  PASS
+null  php-body-64k-c32 worker_us                   135.005      133.234    -1.32     [-3.92, +1.28]   3.92    6/8  PASS
+ab    php-body-64k-c32 server_us                   209.737      377.355   +79.95   [+76.68, +83.23]   3.46    8/8  CLAIM
+ab    php-body-64k-c32 db_us                         0.010        0.020  +101.25  [+84.91, +117.59]  21.84    8/8  NOISY
+ab    php-body-64k-c32 front_us                     72.553      168.583  +132.41 [+126.30, +138.52]   2.65    8/8  CLAIM
+ab    php-body-64k-c32 p50_ms                        6.985       12.635   +81.09   [+63.28, +98.89]   4.11    8/8  CLAIM
+ab    php-body-64k-c32 p99_ms                        9.313       21.850  +134.61 [+112.68, +156.55]   3.89    8/8  CLAIM
+ab    php-body-64k-c32 rps                        4677.821     2586.850   -44.69   [-47.36, -42.02]   3.48    8/8  CLAIM
+ab    php-body-64k-c32 worker_us                   137.183      208.771   +52.21   [+49.32, +55.10]   3.92    8/8  CLAIM

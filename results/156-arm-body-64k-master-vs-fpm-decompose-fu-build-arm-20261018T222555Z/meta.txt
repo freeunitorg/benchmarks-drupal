@@ -1,0 +1,29 @@
+job=156-arm-body-64k-master-vs-fpm-decompose
+run_id=156-arm-body-64k-master-vs-fpm-decompose-fu-build-arm-20261018T222555Z
+host=fu-build-arm
+date=2026-10-18T22:31:10Z
+workload=php-body-64k
+runtime_a=freeunit-master-10e1a9bec
+runtime_b=nginx-fpm
+site=hello
+db=mysql
+phases=null ab conns=32 dur=6 warm=2 reps=2 rate=
+server_cpus=0 load_cpus=1 db_cpus=1
+governor=unknown
+epp=unknown
+kernel=6.18.54-0-virt
+oha=oha 1.16.0
+perf_image=
+freeunit_image=e1bc85bc1a10
+freeunit_master_sha=cc94deb2d12a874b225bba503b64aa26cf0b62cf
+freeunit_master_image=dc81e83f630b
+freeunit_master_old_sha=unknown
+freeunit_master_old_image=
+freeunit_master_mid_sha=unknown
+freeunit_master_mid_image=
+fpm_image=057503d6c5b7
+apache_image=085e1725bd44
+mariadb_image=7db29378d4fd
+issue=https://github.com/freeunitorg/benchmarks-drupal
+expect=worker_us per request is flat in body size (per-request cost) or grows with it (per-byte copy)
+falsify=no change between the sizes
