@@ -1,0 +1,20 @@
+# Ladder step 2: master at ff694772 against master at 33896f7e, i.e. the atomic/plain sweep (#736, #741, #742, #749) plus the CI/shell changes and #752's predecessor. Isolates what the sweep cost on the server-only path.
+JOB=129-hello-33896f7-vs-ff694772
+ISSUE="https://github.com/freeunitorg/freeunit"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-742-base
+RUNTIME_B=freeunit-master-33896f7
+SITE=hello
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the sweep is free on a request that passes no descriptor and creates no shm map"
+FALSIFY="a CLAIM above the band: the sweep added instructions to the per-request port path"
