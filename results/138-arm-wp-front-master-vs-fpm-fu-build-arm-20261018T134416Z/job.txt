@@ -1,0 +1,21 @@
+# WordPress on the A1 host: the page compares the WP front page with mod_php only (83, 88), and those runs are pinned to an old master. Current master against FPM completes the FPM column on ARM.
+JOB=138-arm-wp-front-master-vs-fpm
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=wp-front
+RUNTIME_A=freeunit-master-10e1a9bec
+RUNTIME_B=nginx-fpm
+SITE=wp
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="FreeUnit master needs less server CPU per WordPress render than nginx plus PHP-FPM on aarch64"
+FALSIFY="a CLAIM with FPM cheaper, or a delta inside the band"
