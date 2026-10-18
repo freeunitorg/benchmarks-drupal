@@ -1,0 +1,23 @@
+# PR #768 replaces libcCMSG_NXTHDR() with an inline nxt_span_t walk on glibc, in the
+# port socket's control-message loop. The images are its base (10e1a9bec) and its head
+# (791d2d3dc), so the delta is the PR alone. hello: the server layer is the whole
+# request, so a per-message cost on the port receive path is at its largest share.
+JOB=125-hello-768
+ISSUE="https://github.com/freeunitorg/freeunit/pull/768"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-768-base
+RUNTIME_B=freeunit-768-head
+SITE=hello
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the inline walk costs nothing measurable on a request that passes no descriptor, or a few instructions if the port receive path walks control data per message"
+FALSIFY="a CLAIM above the band: the walk is on the request path and has a price"
