@@ -1,0 +1,23 @@
+# Same pair as 125 on the Drupal 12 anonymous front page: the IPC-heavy case, where the
+# router posts each request to the PHP worker. If descriptors travel with those posts,
+# PR #768's inline cmsg walk runs per request and shows up here.
+JOB=126-front-anon-768
+ISSUE="https://github.com/freeunitorg/freeunit/pull/768"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-768-base
+RUNTIME_B=freeunit-768-head
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the cmsg walk is a rounding error inside a 4.4M-instruction page-cache-hit request"
+FALSIFY="a CLAIM above the band: the port control-message path is expensive per request"
