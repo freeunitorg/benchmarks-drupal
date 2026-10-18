@@ -1,0 +1,22 @@
+# The auth gap against nginx+FPM at the new tip: 143/144 measured it at 4.4-4.6 percent of server CPU, all in the worker; PR 751 is the first merge that could move that number.
+JOB=151-front-auth-master-b532b9d-vs-fpm-decompose
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-auth
+RUNTIME_A=freeunit-master-b532b9d
+RUNTIME_B=nginx-fpm
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+DECOMPOSE=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="see the cell comment"
+FALSIFY="see the cell comment"
