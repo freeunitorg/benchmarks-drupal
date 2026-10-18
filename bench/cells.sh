@@ -392,6 +392,9 @@ url_for() {
     case "$WORKLOAD" in
     php-headers) echo "http://127.0.0.1:$PORT/?mode=headers" ;;
     php-body)    echo "http://127.0.0.1:$PORT/?mode=body" ;;
+    php-body-1k)  echo "http://127.0.0.1:$PORT/?mode=body&size=1024" ;;
+    php-body-8k)  echo "http://127.0.0.1:$PORT/?mode=body&size=8192" ;;
+    php-body-64k) echo "http://127.0.0.1:$PORT/?mode=body&size=65536" ;;
     wp-front)    echo "http://127.0.0.1:$PORT/" ;;
     wp-front-auth) echo "http://127.0.0.1:$PORT/" ;;
     wp-cron)     echo "http://127.0.0.1:$PORT/wp-cron.php?doing_wp_cron=1" ;;

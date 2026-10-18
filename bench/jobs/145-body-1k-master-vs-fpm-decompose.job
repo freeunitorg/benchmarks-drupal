@@ -1,0 +1,24 @@
+# Body-size sweep, 1k: the same PHP echo with a 1024-byte response, master against
+# nginx+FPM, with the front/worker split. 143 put the auth deficit in the worker; this
+# separates a per-byte worker cost (the response copy) from a per-request one (setup),
+# because nothing but the body length changes between the three cells.
+JOB=145-body-1k-master-vs-fpm-decompose
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-body-1k
+RUNTIME_A=freeunit-master-10e1a9bec
+RUNTIME_B=nginx-fpm
+SITE=hello
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+DECOMPOSE=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="worker_us per request is flat in body size (per-request cost) or grows with it (per-byte copy)"
+FALSIFY="no change between the sizes: the worker cost is neither per byte nor per request at this scale"
