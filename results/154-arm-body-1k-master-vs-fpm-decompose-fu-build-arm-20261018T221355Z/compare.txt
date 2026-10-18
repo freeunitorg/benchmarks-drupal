@@ -1,0 +1,17 @@
+NOISY php-body-1k-c32: the null band 9.0 is over the limit 5.0, no claim; rerun on a quiet box (B is 36.6 percent more server CPU per request (us))
+job 154-arm-body-1k-master-vs-fpm-decompose  run 154-arm-body-1k-master-vs-fpm-decompose-fu-build-arm-20261018T221355Z  A None ()  B None ()  governor unknown/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  php-body-1k-c32 server_us                   169.014      161.174    -4.50     [-9.02, +0.01]   9.02    7/8  NOISY
+null  php-body-1k-c32 db_us                         0.011        0.010    -4.73   [-25.18, +15.71]  25.18    2/8  NOISY
+null  php-body-1k-c32 front_us                     45.080       43.780    -2.84     [-5.71, +0.03]   5.71    7/8  NOISY
+null  php-body-1k-c32 p50_ms                        5.554        5.270    -4.98     [-9.72, -0.24]   9.72    7/8  NOISY
+null  php-body-1k-c32 p99_ms                        6.739        6.377    -5.30    [-10.50, -0.10]  10.50    7/8  NOISY
+null  php-body-1k-c32 rps                        5834.920     6123.029    +5.05     [+0.15, +9.95]   9.95    7/8  NOISY
+null  php-body-1k-c32 worker_us                   123.935      117.395    -5.10    [-10.23, +0.04]  10.23    7/8  NOISY
+ab    php-body-1k-c32 server_us                   163.636      223.387   +36.58   [+31.36, +41.81]   9.02    8/8  NOISY
+ab    php-body-1k-c32 db_us                         0.008        0.010   +31.40    [+3.10, +59.70]  25.18    7/8  NOISY
+ab    php-body-1k-c32 front_us                     44.371       87.054   +96.29  [+83.71, +108.87]   5.71    8/8  NOISY
+ab    php-body-1k-c32 p50_ms                        5.339        7.439   +39.50   [+25.23, +53.77]   9.72    8/8  NOISY
+ab    php-body-1k-c32 p99_ms                        6.487       12.977  +100.09  [+85.69, +114.49]  10.50    8/8  NOISY
+ab    php-body-1k-c32 rps                        6046.199     4432.266   -26.65   [-30.56, -22.75]   9.95    8/8  NOISY
+ab    php-body-1k-c32 worker_us                   119.265      136.333   +14.36   [+10.82, +17.90]  10.23    8/8  NOISY
