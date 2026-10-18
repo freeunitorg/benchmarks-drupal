@@ -1,0 +1,21 @@
+# The ARM page has no authenticated-Drupal row against nginx+FPM at all, and auth is the cell where the server share is smallest (a full render dominates). Current master against FPM tells us whether the ARM result holds where the framework does most of the work.
+JOB=137-arm-front-auth-master-vs-fpm-12.0
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-auth
+RUNTIME_A=freeunit-master-10e1a9bec
+RUNTIME_B=nginx-fpm
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="FreeUnit master needs less server CPU per authenticated request than nginx plus PHP-FPM on aarch64, or the difference is inside the band"
+FALSIFY="a CLAIM with FPM cheaper"
