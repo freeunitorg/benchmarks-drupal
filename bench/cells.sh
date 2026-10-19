@@ -545,7 +545,7 @@ timed_cell() {  # phase side cell conns block slot runtime
         # daemon where the file is already ours.
         if [ -f "$R/perf.rec.$side" ]; then
             docker run --rm -v "$R:/from:ro" -v "$OUTDIR:/to" alpine:3 \
-                cp "/from/perf.rec.$side" "/to/perf.rec.$side" 2>/dev/null \
+                sh -c "cp /from/perf.rec.$side /to/perf.rec.$side && chmod 644 /to/perf.rec.$side" 2>/dev/null \
                 || cp "$R/perf.rec.$side" "$OUTDIR/perf.rec.$side" 2>/dev/null
         fi
     fi
