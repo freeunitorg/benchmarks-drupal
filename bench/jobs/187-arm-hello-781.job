@@ -1,0 +1,21 @@
+# PR 781 on the A1 host: the fixed-script OPcache hand-off against its base, which is the tip. The image enables opcache with file override and no timestamp validation, and the runtime config uses a fixed script target, so the POC path engages; on this guest the PHP worker is where the server CPU is spent.
+JOB=187-arm-hello-781
+ISSUE="https://github.com/freeunitorg/freeunit/pull/781"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=freeunit-781
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="the OPcache hand-off is free or cheaper on aarch64 too, where the worker path is the most expensive"
+FALSIFY="a CLAIM above the band: the fast path costs server CPU"
