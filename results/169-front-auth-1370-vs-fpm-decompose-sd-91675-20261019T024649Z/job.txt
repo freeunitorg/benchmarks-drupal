@@ -1,0 +1,22 @@
+# The decisive cell for attribution: does 1.37.0 itself lose server CPU to nginx+FPM on the authenticated Drupal page, with the front/worker split? If the release shows the same worker deficit, the gap predates every merged PR and is not a regression from the atomic or PHP work; if the release is level, one of the merges since October introduced it and the ladder can bisect it.
+JOB=169-front-auth-1370-vs-fpm-decompose
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-auth
+RUNTIME_A=freeunit
+RUNTIME_B=nginx-fpm
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+DECOMPOSE=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="see the cell comment"
+FALSIFY="see the cell comment"
