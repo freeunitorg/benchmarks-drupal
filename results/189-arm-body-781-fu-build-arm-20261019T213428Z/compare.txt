@@ -1,0 +1,13 @@
+NO CLAIM php-body-c32: inside the noise, no claim (B is 1.8 percent less server CPU per request (us), null band 4.1, 6 of 8 cells agree)
+job 189-arm-body-781  run 189-arm-body-781-fu-build-arm-20261019T213428Z  A None ()  B None ()  governor unknown/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  php-body-c32   server_us                   202.468      197.829    -2.28     [-4.10, -0.45]   4.10    8/8  PASS
+null  php-body-c32   db_us                         0.013        0.012    -4.68   [-28.11, +18.75]  28.11    4/8  NOISY
+null  php-body-c32   p50_ms                        6.758        6.556    -2.96     [-4.87, -1.04]   4.87    7/8  PASS
+null  php-body-c32   p99_ms                        8.895        8.771    -1.32     [-4.53, +1.90]   4.53    6/8  PASS
+null  php-body-c32   rps                        4821.615     4955.216    +2.80     [+0.73, +4.86]   4.86    7/8  PASS
+ab    php-body-c32   server_us                   199.558      195.928    -1.82     [-4.76, +1.12]   4.10    6/8  NO CLAIM
+ab    php-body-c32   db_us                         0.009        0.010   +14.06   [-14.79, +42.92]  28.11    4/8  NOISY
+ab    php-body-c32   p50_ms                        6.618        6.515    -1.55     [-4.99, +1.90]   4.87    6/8  NO CLAIM
+ab    php-body-c32   p99_ms                        8.814        8.696    -1.34     [-5.41, +2.73]   4.53    4/8  NO CLAIM
+ab    php-body-c32   rps                        4912.206     4984.250    +1.47     [-1.80, +4.73]   4.86    6/8  NO CLAIM
