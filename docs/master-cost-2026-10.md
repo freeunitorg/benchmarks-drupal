@@ -85,3 +85,31 @@ disk) and removes it when the cells succeed. Before, every job left a
 `/tmp/drupal-bench.*` directory on the 40 GB root: 255 stale ones on pro4s-2, 146 on
 o-build, and a 27.5 GB perf recording in `/tmp` filled `/` on pro4s-4 and broke
 docker builds and the idle gate for hours.
+
+## Update 2026-10-19: the tip is now faster than the release
+
+Master moved 95 commits (`b532b9d` → `13effad40`): perf(php) send-the-header-with-first-output,
+perf(libunit) small-header buffer, the libunit wake-up/quit/non-blocking fixes, router queue
+coalescing, h1p and the controller PUT/DELETE ordering.
+
+| cell | A → B | Δ | 95 % CI | band | agree | verdict |
+|---|---|---|---|---|---|---|
+| 171 hello | `b532b9d` → `13effad40` | −1.06 % | [−2.32, +0.19] | 1.43 | 9/12 | NO CLAIM |
+| 172 cached front | `b532b9d` → `13effad40` | −0.04 % | [−0.21, +0.12] | 0.19 | 5/12 | NO CLAIM |
+| 173 auth, split | `b532b9d` → `13effad40` | −0.03 % instr, worker_us −2.06 % | [−6.31, +2.20] | 3.40 | 8/12 | NO CLAIM |
+| **175 hello** | **`1.37.0` → `13effad40`** | **−3.10 %** | **[−4.91, −1.29]** | 2.33 | 11/12 | **CLAIM** |
+| 176 cached front | `1.37.0` → `13effad40` | −0.06 % | [−0.19, +0.07] | 0.27 | 7/12 | NO CLAIM |
+
+No regression from the 95 merges on any path measured. And the release-vs-master series on the
+server-only cell has now crossed zero:
+
+| master | Δ instructions vs 1.37.0 | verdict |
+|---|---|---|
+| `ff694772` (17 Oct) | **+3.09 %** | CLAIM — master slower than the release |
+| `10e1a9bec` | −0.2 % | NO CLAIM |
+| `b532b9d` | −1.15 % | NO CLAIM |
+| **`13effad40` (19 Oct)** | **−3.10 %** | **CLAIM — master faster than the release** |
+
+The server-only path is now measurably cheaper than the 1.37.0 tarball; the cached front page
+is level (176: −0.06 %), so the gain is in the request/worker plumbing, not in the framework
+path.
