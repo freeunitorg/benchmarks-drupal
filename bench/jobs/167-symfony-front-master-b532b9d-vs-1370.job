@@ -1,0 +1,21 @@
+# The Symfony front page against the release at today's commit. The last measurement was 15 on 2026-10-10 at 868ccc29 and the page has carried it since.
+JOB=167-symfony-front-master-b532b9d-vs-1370
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=symfony-front
+RUNTIME_A=freeunit-master-b532b9d
+RUNTIME_B=symfony
+SITE=
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="see the cell comment"
+FALSIFY="see the cell comment"
