@@ -1,0 +1,17 @@
+CLAIM php-hello-c32: B is 42.5 percent more server CPU per request (us), outside the null band of 1.8, 8 of 8 cells agree
+job 160-arm-hello-master-b532b9d-vs-fpm  run 160-arm-hello-master-b532b9d-vs-fpm-fu-build-arm-20261019T015220Z  A None ()  B None ()  governor unknown/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  php-hello-c32  server_us                   153.147      153.037    -0.07     [-1.81, +1.67]   1.81    5/8  PASS
+null  php-hello-c32  db_us                         0.010        0.010    +1.04   [-20.53, +22.61]  22.61    3/8  NOISY
+null  php-hello-c32  front_us                     43.297       43.264    -0.07     [-1.26, +1.11]   1.26    3/8  PASS
+null  php-hello-c32  p50_ms                        5.050        5.053    +0.08     [-2.21, +2.37]   2.37    4/8  PASS
+null  php-hello-c32  p99_ms                        6.050        6.033    -0.29     [-2.98, +2.40]   2.98    5/8  PASS
+null  php-hello-c32  rps                        6380.110     6391.981    +0.19     [-1.86, +2.24]   2.24    4/8  PASS
+null  php-hello-c32  worker_us                   109.850      109.773    -0.07     [-2.10, +1.97]   2.10    5/8  PASS
+ab    php-hello-c32  server_us                   154.694      220.467   +42.52   [+37.56, +47.48]   1.81    8/8  CLAIM
+ab    php-hello-c32  db_us                         0.007        0.010   +34.87   [+11.49, +58.26]  22.61    7/8  NOISY
+ab    php-hello-c32  front_us                     43.513       87.941  +102.06  [+89.83, +114.28]   1.26    8/8  CLAIM
+ab    php-hello-c32  p50_ms                        5.087        7.384   +45.16   [+32.65, +57.66]   2.37    8/8  CLAIM
+ab    php-hello-c32  p99_ms                        6.052       12.493  +106.36  [+93.27, +119.46]   2.98    8/8  CLAIM
+ab    php-hello-c32  rps                        6342.194     4489.578   -29.22   [-32.22, -26.21]   2.24    8/8  CLAIM
+ab    php-hello-c32  worker_us                   111.181      132.526   +19.20   [+15.79, +22.60]   2.10    8/8  CLAIM

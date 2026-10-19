@@ -1,0 +1,22 @@
+# ARM hello at the new master tip against nginx+FPM: 134 measured 40 percent cheaper for FreeUnit at 10e1a9bec; this keeps the ARM ranking on the current commit.
+JOB=160-arm-hello-master-b532b9d-vs-fpm
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-master-b532b9d
+RUNTIME_B=nginx-fpm
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+DECOMPOSE=1
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="see the cell comment"
+FALSIFY="see the cell comment"
