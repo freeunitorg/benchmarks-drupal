@@ -1,0 +1,35 @@
+job=151-front-auth-master-b532b9d-vs-fpm-decompose
+run_id=151-front-auth-master-b532b9d-vs-fpm-decompose-sd-91675-20261018T235607Z
+host=sd-91675
+date=2026-10-19T00:17:17Z
+workload=drupal-auth
+runtime_a=freeunit-master-b532b9d
+runtime_b=nginx-fpm
+site=12.0
+db=mysql
+phases=null ab conns=32 dur=8 warm=2 reps=3 rate=
+server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=4,5
+governor=powersave
+epp=balance_power
+kernel=6.8.0-136-generic
+oha=oha 1.16.0
+perf_image=1ec7891af56e
+freeunit_image=f2e0ddd0c66c
+freeunit_master_sha=ff694772b0fac0875f76bcc66331389919387db3
+freeunit_master_image=84c075bac860
+freeunit_master_old_sha=8492d5ee43a99a8f1504598ed44d046b61d85131
+freeunit_master_old_image=27e7df605a06
+freeunit_master_mid_sha=dc30c8a7e76fe86f8063ce7eafcefc285137629a
+freeunit_master_mid_image=4776b334d7ee
+fpm_image=1a5b4c582255
+apache_image=20d92780099d
+mariadb_image=0d0945c57f75
+issue=https://github.com/freeunitorg/benchmarks-drupal
+expect=see the cell comment
+falsify=see the cell comment
+tag=drupal/recommended-project:12.0.0-beta1 drupal=12.0.0-beta1 php=8.5.11 profile=demo_umami drush=0 composer_opt=1 preload=0
+site-build: auth cookie verified (session cookie plus dynamic cache header)
+site=12.0
+runroot=/data/projects/benchmarks-drupal/run
+installed=2026-10-12T08:29:14Z
+user=bench-user
