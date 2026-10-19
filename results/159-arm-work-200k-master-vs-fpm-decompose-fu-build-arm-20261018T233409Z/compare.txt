@@ -1,0 +1,17 @@
+CLAIM php-work-200k-c32: B is 4.9 percent more server CPU per request (us), outside the null band of 0.2, 8 of 8 cells agree
+job 159-arm-work-200k-master-vs-fpm-decompose  run 159-arm-work-200k-master-vs-fpm-decompose-fu-build-arm-20261018T233409Z  A None ()  B None ()  governor unknown/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  php-work-200k-c32 server_us                  3132.860     3133.988    +0.04     [-0.11, +0.18]   0.18    5/8  PASS
+null  php-work-200k-c32 db_us                         0.189        0.196    +2.81   [-19.72, +25.34]  25.34    5/8  NOISY
+null  php-work-200k-c32 front_us                     84.530       85.287    +0.89     [-1.18, +2.97]   2.97    5/8  PASS
+null  php-work-200k-c32 p50_ms                      106.663      106.108    -0.52     [-2.70, +1.65]   2.70    6/8  PASS
+null  php-work-200k-c32 p99_ms                      143.023      142.144    -0.61     [-1.25, +0.02]   1.25    6/8  PASS
+null  php-work-200k-c32 rps                         318.748      318.627    -0.04     [-0.19, +0.12]   0.19    5/8  PASS
+null  php-work-200k-c32 worker_us                  3048.331     3048.701    +0.01     [-0.09, +0.11]   0.11    4/8  PASS
+ab    php-work-200k-c32 server_us                  3133.325     3286.495    +4.89     [+4.64, +5.13]   0.18    8/8  CLAIM
+ab    php-work-200k-c32 db_us                         0.147        0.144    -1.91   [-27.05, +23.22]  25.34    3/8  NOISY
+ab    php-work-200k-c32 front_us                     84.565      159.242   +88.31   [+82.05, +94.56]   2.97    8/8  CLAIM
+ab    php-work-200k-c32 p50_ms                      106.483      104.147    -2.19     [-3.41, -0.97]   2.70    7/8  NO CLAIM
+ab    php-work-200k-c32 p99_ms                      142.098      140.870    -0.86     [-1.90, +0.17]   1.25    7/8  NO CLAIM
+ab    php-work-200k-c32 rps                         318.663      303.822    -4.66     [-4.88, -4.44]   0.19    8/8  CLAIM
+ab    php-work-200k-c32 worker_us                  3048.760     3127.253    +2.57     [+2.47, +2.67]   0.11    8/8  CLAIM
