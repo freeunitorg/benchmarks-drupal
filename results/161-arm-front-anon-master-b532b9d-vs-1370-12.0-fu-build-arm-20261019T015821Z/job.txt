@@ -1,0 +1,22 @@
+# ARM cached front page, new master tip against the release: the ARM page's master row has been a stale pin, and the release-vs-master difference is the question the x86 cells answer at 0.1 percent.
+JOB=161-arm-front-anon-master-b532b9d-vs-1370-12.0
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-master-b532b9d
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+DECOMPOSE=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="see the cell comment"
+FALSIFY="see the cell comment"

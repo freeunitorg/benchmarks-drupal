@@ -1,0 +1,13 @@
+NO CLAIM drupal-front-c32: inside the noise, no claim (B is 1.4 percent more server CPU per request (us), null band 1.4, 6 of 8 cells agree)
+job 161-arm-front-anon-master-b532b9d-vs-1370-12.0  run 161-arm-front-anon-master-b532b9d-vs-1370-12.0-fu-build-arm-20261019T015821Z  A None ()  B None ()  governor unknown/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  drupal-front-c32 server_us                  2632.010     2630.708    -0.05     [-1.43, +1.33]   1.43    4/8  PASS
+null  drupal-front-c32 db_us                      1152.122     1147.312    -0.42     [-1.89, +1.06]   1.89    6/8  PASS
+null  drupal-front-c32 p50_ms                       92.308       92.417    +0.12     [-1.84, +2.08]   2.08    4/8  PASS
+null  drupal-front-c32 p99_ms                      117.001      116.218    -0.66     [-2.53, +1.22]   2.53    6/8  PASS
+null  drupal-front-c32 rps                         377.620      377.646    +0.01     [-1.42, +1.44]   1.44    4/8  PASS
+ab    drupal-front-c32 server_us                  2618.255     2655.534    +1.42     [-0.40, +3.24]   1.43    6/8  NO CLAIM
+ab    drupal-front-c32 db_us                      1141.957     1153.779    +1.04     [-0.37, +2.44]   1.89    7/8  NO CLAIM
+ab    drupal-front-c32 p50_ms                       92.159       93.627    +1.59     [-0.51, +3.69]   2.08    7/8  NO CLAIM
+ab    drupal-front-c32 p99_ms                      115.260      117.966    +2.34     [+0.11, +4.56]   2.53    6/8  NO CLAIM
+ab    drupal-front-c32 rps                         379.670      373.095    -1.73     [-3.67, +0.20]   1.44    6/8  NO CLAIM
