@@ -1,0 +1,35 @@
+job=176-front-anon-13effad-vs-1370-12.0
+run_id=176-front-anon-13effad-vs-1370-12.0-sd-91675-20261019T060515Z
+host=sd-91675
+date=2026-10-19T06:25:42Z
+workload=drupal-front
+runtime_a=freeunit
+runtime_b=freeunit-master-13effad
+site=12.0
+db=mysql
+phases=null ab conns=32 dur=8 warm=2 reps=3 rate=
+server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=4,5
+governor=powersave
+epp=balance_power
+kernel=6.8.0-136-generic
+oha=oha 1.16.0
+perf_image=1ec7891af56e
+freeunit_image=195833b4fe5d
+freeunit_master_sha=ff694772b0fac0875f76bcc66331389919387db3
+freeunit_master_image=e770070c83ed
+freeunit_master_old_sha=8492d5ee43a99a8f1504598ed44d046b61d85131
+freeunit_master_old_image=bac9ac45a4f2
+freeunit_master_mid_sha=dc30c8a7e76fe86f8063ce7eafcefc285137629a
+freeunit_master_mid_image=9889b22fdc81
+fpm_image=f6bc3446556b
+apache_image=be1fb900bdfa
+mariadb_image=0d0945c57f75
+issue=https://github.com/freeunitorg/benchmarks-drupal
+expect=no regression from the 95 merges on this path; a CLAIM against b532b9d is a regression
+falsify=A CLAIM with B slower: the merges cost instructions on this path
+tag=drupal/recommended-project:12.0.0-beta1 drupal=12.0.0-beta1 php=8.5.11 profile=demo_umami drush=0 composer_opt=1 preload=0
+site-build: auth cookie verified (session cookie plus dynamic cache header)
+site=12.0
+runroot=/data/projects/benchmarks-drupal/run
+installed=2026-10-12T08:29:14Z
+user=bench-user
