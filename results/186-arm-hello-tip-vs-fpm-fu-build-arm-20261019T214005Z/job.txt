@@ -1,0 +1,21 @@
+# ARM hello at the current tip against nginx+FPM: the ARM page's hello row is still at 10e1a9bec, and this keeps the framework-free ranking on the tip while the x86 boxes are busy.
+JOB=186-arm-hello-tip-vs-fpm
+ISSUE="https://github.com/freeunitorg/freeunit/pull/781"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=nginx-fpm
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="the OPcache hand-off is free or cheaper on aarch64 too, where the worker path is the most expensive"
+FALSIFY="a CLAIM above the band: the fast path costs server CPU"
