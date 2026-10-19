@@ -1,0 +1,21 @@
+# The framework-free control against nginx+FPM at today's commit: 123 measured 1.37.0 vs master there, but the master-vs-FPM pair has not been run since 34 (ff694772). On the ARM guest it is FreeUnit +42.5 percent.
+JOB=164-hello-master-b532b9d-vs-fpm
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-master-b532b9d
+RUNTIME_B=nginx-fpm
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="see the cell comment"
+FALSIFY="see the cell comment"
