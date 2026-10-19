@@ -1,0 +1,13 @@
+CLAIM php-headers-c32: B is 4.1 percent less server CPU per request (us), outside the null band of 2.3, 7 of 8 cells agree
+job 188-arm-headers-781  run 188-arm-headers-781-fu-build-arm-20261019T212850Z  A None ()  B None ()  governor unknown/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  php-headers-c32 server_us                   165.022      166.282    +0.76     [-0.74, +2.27]   2.27    5/8  PASS
+null  php-headers-c32 db_us                         0.011        0.011    -1.20   [-24.36, +21.96]  24.36    2/8  NOISY
+null  php-headers-c32 p50_ms                        5.452        5.501    +0.91     [-0.99, +2.81]   2.81    7/8  PASS
+null  php-headers-c32 p99_ms                        6.615        6.610    -0.08     [-2.48, +2.33]   2.48    4/8  PASS
+null  php-headers-c32 rps                        5919.531     5877.528    -0.71     [-2.51, +1.08]   2.51    6/8  PASS
+ab    php-headers-c32 server_us                   166.131      159.229    -4.15     [-6.60, -1.70]   2.27    7/8  CLAIM
+ab    php-headers-c32 db_us                         0.007        0.007    -0.11   [-27.94, +27.72]  24.36    3/8  NOISY
+ab    php-headers-c32 p50_ms                        5.481        5.268    -3.87     [-6.83, -0.92]   2.81    7/8  CLAIM
+ab    php-headers-c32 p99_ms                        6.716        6.263    -6.71    [-11.65, -1.77]   2.48    8/8  CLAIM
+ab    php-headers-c32 rps                        5879.382     6138.349    +4.43     [+1.26, +7.60]   2.51    7/8  CLAIM
