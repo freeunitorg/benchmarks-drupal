@@ -1,0 +1,25 @@
+# ARM PHP-work sweep, 1k (n=1000): the control app runs a deterministic PHP loop and
+# nothing else changes, so worker_us separates Unit's per-request worker setup from a
+# per-unit-of-PHP-work difference. The auth cell (142) put a 12.5 percent worker deficit
+# on this guest; 154-156 showed the transport is not the cause, so this is the next test.
+JOB=157-arm-work-1k-master-vs-fpm-decompose
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-work-1k
+RUNTIME_A=freeunit-master-10e1a9bec
+RUNTIME_B=nginx-fpm
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+DECOMPOSE=1
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="worker_us per unit of PHP work is the same for both runtimes, or Unit pays a per-request constant"
+FALSIFY="no trend across 1k/20k/200k"
