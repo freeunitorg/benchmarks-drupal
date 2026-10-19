@@ -538,7 +538,16 @@ timed_cell() {  # phase side cell conns block slot runtime
     if [ "${PERF_RECORD:-0}" = 1 ] && [ "$ph" = ab ]; then
         rec_stop "$side"
         # keep only each side's LAST ab cell: stable name, later cells overwrite
-        [ -f "$R/perf.rec.$side" ] && cp "$R/perf.rec.$side" "$OUTDIR/perf.rec.$side" 2>/dev/null
+        # The recorder runs as root inside its container, so perf writes a 0600
+        # root-owned file into the scratch: a plain cp as the host user fails and
+        # 2>/dev/null hid it, which is why no published run ever kept a recording.
+        # Copy through a root container, and fall back to cp for a user-namespaced
+        # daemon where the file is already ours.
+        if [ -f "$R/perf.rec.$side" ]; then
+            docker run --rm -v "$R:/from:ro" -v "$OUTDIR:/to" alpine:3 \
+                cp "/from/perf.rec.$side" "/to/perf.rec.$side" 2>/dev/null \
+                || cp "$R/perf.rec.$side" "$OUTDIR/perf.rec.$side" 2>/dev/null
+        fi
     fi
     python3 - "$R/oha.json" > "$R/oha.txt" <<'PY' || die "cannot read oha json"
 import json, sys
