@@ -1,0 +1,22 @@
+# ARM WordPress at the new tip against nginx+FPM: 138 measured FPM 11 percent cheaper in server CPU at 10e1a9bec, the worst cell for FreeUnit on this host.
+JOB=163-arm-wp-front-master-b532b9d-vs-fpm
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=wp-front
+RUNTIME_A=freeunit-master-b532b9d
+RUNTIME_B=nginx-fpm
+SITE=wp
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+DECOMPOSE=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="see the cell comment"
+FALSIFY="see the cell comment"
