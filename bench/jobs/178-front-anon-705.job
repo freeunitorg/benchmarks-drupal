@@ -1,0 +1,22 @@
+# The same pair on the cached Drupal 12 front page, where a request carries many fields and nginx-compat headers, so the packing change has the most to work with.
+JOB=178-front-anon-705
+ISSUE="https://github.com/freeunitorg/freeunit/pull/705"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-705-base
+RUNTIME_B=freeunit-705
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+DECOMPOSE=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="packing the request structures is free or cheaper on this path"
+FALSIFY="a CLAIM above the band: the repack cost instructions"
