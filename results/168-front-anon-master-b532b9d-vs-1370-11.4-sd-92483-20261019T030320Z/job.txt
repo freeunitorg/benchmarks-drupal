@@ -1,0 +1,21 @@
+# Drupal 11.4 at today's commit against 1.37.0. The published pair (06) is from 8492d5ee on 12 Oct, so the 11.4 column has been two master merges behind the 12.0 one.
+JOB=168-front-anon-master-b532b9d-vs-1370-11.4
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-master-b532b9d
+SITE=11.4
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="see the cell comment"
+FALSIFY="see the cell comment"
