@@ -1,0 +1,22 @@
+# Authenticated Drupal, new tip against b532b9d with the front/worker split: perf(php) send-the-header-with-first-output (c49a89f93) and the libunit header buffer (544faf4bc) live in the worker path, which is where the deficit is.
+JOB=173-front-auth-13effad-vs-b532b9d-decompose
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-auth
+RUNTIME_A=freeunit-master-b532b9d
+RUNTIME_B=freeunit-master-13effad
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+DECOMPOSE=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="no regression from the 95 merges on this path; a CLAIM against b532b9d is a regression"
+FALSIFY="A CLAIM with B slower: the merges cost instructions on this path"

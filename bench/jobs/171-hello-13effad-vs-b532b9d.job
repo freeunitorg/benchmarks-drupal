@@ -1,0 +1,22 @@
+# Regression check on the server-only request: 95 commits since b532b9d, including perf(libunit) small-header buffer, libunit wake-up and quit fixes, router queue coalescing and the h1p changes. hello is 210k instructions per request, so a 1 percent regression is 2k instructions and this cell resolves it.
+JOB=171-hello-13effad-vs-b532b9d
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-master-b532b9d
+RUNTIME_B=freeunit-master-13effad
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+DECOMPOSE=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="no regression from the 95 merges on this path; a CLAIM against b532b9d is a regression"
+FALSIFY="A CLAIM with B slower: the merges cost instructions on this path"
