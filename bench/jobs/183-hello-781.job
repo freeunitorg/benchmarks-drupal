@@ -1,0 +1,22 @@
+# PR 781 (fixed script handed to OPcache) against its base, which is the current tip e63168bd. The bench image runs opcache.enable=On, enable_file_override=On and validate_timestamps=Off, and the runtime config uses "script": "index.php", so the POC path engages. hello: the server layer is the whole request.
+JOB=183-hello-781
+ISSUE="https://github.com/freeunitorg/freeunit/pull/781"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=freeunit-781
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+DECOMPOSE=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the OPcache hand-off is free or cheaper: it removes three file syscalls per request on a fixed script target"
+FALSIFY="a CLAIM above the band: the fast path costs instructions"

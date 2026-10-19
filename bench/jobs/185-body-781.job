@@ -1,0 +1,22 @@
+# The same pair with a 64 KiB body: the syscall saving should be independent of the body size, so this is the control.
+JOB=185-body-781
+ISSUE="https://github.com/freeunitorg/freeunit/pull/781"
+PHASES="null ab"
+WORKLOAD=php-body
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=freeunit-781
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the OPcache hand-off is free or cheaper: it removes three file syscalls per request on a fixed script target"
+FALSIFY="a CLAIM above the band: the fast path costs instructions"
