@@ -222,7 +222,9 @@ rec_start() {  # name (pids ignored: records the whole SERVER_CPUS set)
     # pid-targeted record fails from a sibling container ("Couldn't create
     # thread/CPU maps: No such process" - the target lives in another pid
     # namespace); the runtimes are pinned to SERVER_CPUS, so record the set.
-    docker run -d --name "recrec-$$-$1" --rm --label "bench-run=${RUN_ID:-manual}" --label bench-role=perf \
+    # No --rm: a recorder that dies at start took its only diagnostic (docker logs)
+    # with it, and rec_stop removes the container after reading the exit code.
+    docker run -d --name "recrec-$$-$1" --label "bench-run=${RUN_ID:-manual}" --label bench-role=perf \
         --cap-add PERFMON --pid=host \
         -v "$R:/out" "$PERF_IMAGE" \
         perf record -F 999 --call-graph dwarf,4096 -a -C "$SERVER_CPUS" \
@@ -394,6 +396,9 @@ url_for() {
     php-headers) echo "http://127.0.0.1:$PORT/?mode=headers" ;;
     php-body)    echo "http://127.0.0.1:$PORT/?mode=body" ;;
     php-body-1k)  echo "http://127.0.0.1:$PORT/?mode=body&size=1024" ;;
+    php-work-1k)   echo "http://127.0.0.1:$PORT/?mode=work&n=1000" ;;
+    php-work-20k)  echo "http://127.0.0.1:$PORT/?mode=work&n=20000" ;;
+    php-work-200k) echo "http://127.0.0.1:$PORT/?mode=work&n=200000" ;;
     php-body-8k)  echo "http://127.0.0.1:$PORT/?mode=body&size=8192" ;;
     php-body-64k) echo "http://127.0.0.1:$PORT/?mode=body&size=65536" ;;
     wp-front)    echo "http://127.0.0.1:$PORT/" ;;
