@@ -1,0 +1,22 @@
+# The libc pair on one host at one commit: Debian 13 glibc against Alpine musl, hello, 32 connections. This is the cell the 12-17 percent gap was measured on, so the delta here is the residual after #693 (per-thread pool clusters) and #712.
+JOB=200-arm-musl-hello
+ISSUE="https://github.com/freeunitorg/freeunit-exp/issues/118"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=freeunit-musl-tip
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+DECOMPOSE=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="musl costs more per request than glibc at the same commit; the delta is what #693/#712 left of the 12-17 percent gap"
+FALSIFY="a CLAIM with musl cheaper, which would mean the gap is gone or inverted"
