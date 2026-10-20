@@ -1,0 +1,22 @@
+# The same pair on a cached Drupal 12 front page, with the front/worker split: the hello gap is allocation-dominated, and this cell says whether an application that does real work sees it at all.
+JOB=201-arm-musl-front-12.0
+ISSUE="https://github.com/freeunitorg/freeunit-exp/issues/118"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=freeunit-musl-tip
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+DECOMPOSE=1
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="musl costs more per request than glibc at the same commit; the delta is what #693/#712 left of the 12-17 percent gap"
+FALSIFY="a CLAIM with musl cheaper, which would mean the gap is gone or inverted"
