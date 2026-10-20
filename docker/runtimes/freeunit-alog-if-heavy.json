@@ -61,7 +61,7 @@
     },
     "access_log": {
         "path": "/tmp/access.log",
-        "format": "$remote_addr - $remote_user [$time_local] \"$request\" $status $body_bytes_sent \"$http_referer\" \"$http_user_agent\"",
-        "if": "$remote_addr$request_uri$http_user_agent$http_referer$status"
+        "format": "$remote_addr [$time_local] \"$request_line\" $status $body_bytes_sent \"$header_referer\" \"$header_user_agent\"",
+        "if": "$remote_addr$request_uri$status$time_local$host"
     }
 }
