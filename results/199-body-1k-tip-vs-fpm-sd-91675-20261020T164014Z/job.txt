@@ -1,0 +1,21 @@
+# Run 154's 1 KiB body cell came back NOISY (null band 9.0 against a 5.0 limit); this is the small-body point of the per-byte trend at the shipping commit.
+JOB=199-body-1k-tip-vs-fpm
+ISSUE="https://github.com/freeunitorg/freeunit-exp/issues/107"
+PHASES="null ab"
+WORKLOAD=php-body
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=nginx-fpm
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the same image with an access_log member: the delta is the whole logging path this cell isolates"
+FALSIFY="a CLAIM where the variant with logging is cheaper than the one without"
