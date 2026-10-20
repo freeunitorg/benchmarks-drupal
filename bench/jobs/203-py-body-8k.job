@@ -1,0 +1,21 @@
+# The middle point of the Python body sweep.
+JOB=203-py-body-8k
+ISSUE="https://github.com/freeunitorg/freeunit-exp/issues/113"
+PHASES="null ab"
+WORKLOAD=py-body-8k
+RUNTIME_A=freeunit-python
+RUNTIME_B=gunicorn
+SITE=py-hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="the delta is flat with body size"
+FALSIFY="a trend that is not monotone with the swept dimension, or a CLAIM with the wrong sign"

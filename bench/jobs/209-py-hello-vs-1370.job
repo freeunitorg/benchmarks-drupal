@@ -1,0 +1,21 @@
+# The release cell the issue asks for: the 1.37.1 candidate against 1.37.0 on the same python app, the check run 150 did for Drupal auth.
+JOB=209-py-hello-vs-1370
+ISSUE="https://github.com/freeunitorg/freeunit-exp/issues/113"
+PHASES="null ab"
+WORKLOAD=py-hello
+RUNTIME_A=freeunit-python-1370
+RUNTIME_B=freeunit-python
+SITE=py-hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=1
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="level with 1.37.0 on this path"
+FALSIFY="a trend that is not monotone with the swept dimension, or a CLAIM with the wrong sign"

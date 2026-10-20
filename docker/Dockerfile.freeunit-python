@@ -53,8 +53,13 @@ RUN set -eux; \
 COPY --from=build /usr/sbin/unitd /usr/sbin/unitd
 COPY --from=build /usr/lib/unit/modules /usr/lib/unit/modules
 COPY docker/entrypoint-freeunit.sh /usr/local/bin/entrypoint-freeunit.sh
+# The config lives in the image so that the harness can bind-mount over an existing file
+# (a bind mount onto a path that does not exist is created as a directory and the mount
+# fails); the suite mounts run/runtimes/<runtime>.json over it.
+COPY docker/runtimes/freeunit-python.json /docker-entrypoint.d/config.json
 RUN chmod +x /usr/local/bin/entrypoint-freeunit.sh \
-    && mkdir -p /var/lib/unit /var/log /docker-entrypoint.d
+    && mkdir -p /var/lib/unit /var/log /docker-entrypoint.d \
+    && ln -sf /dev/stderr /var/log/unit.log
 
 WORKDIR /app
 EXPOSE 80
