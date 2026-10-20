@@ -1,0 +1,21 @@
+# The access log's write path alone: the same image, same site, same config except an access_log to a file with a one-variable format. Difference against the no-log baseline is the cost of formatting and writing one record per request.
+JOB=194-front-auth-alog-file
+ISSUE="https://github.com/freeunitorg/freeunit-exp/issues/107"
+PHASES="null ab"
+WORKLOAD=drupal-auth
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=freeunit-alog
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the same image with an access_log member: the delta is the whole logging path this cell isolates"
+FALSIFY="a CLAIM where the variant with logging is cheaper than the one without"
