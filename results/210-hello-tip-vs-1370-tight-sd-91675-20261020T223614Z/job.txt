@@ -1,0 +1,22 @@
+# The release headline again with four blocks of ten seconds: run 182 resolved -2.5 percent against a 2.33 percent band, and a patch-release claim deserves a narrower band than that.
+JOB=210-hello-tip-vs-1370-tight
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-tip-e63168bd
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the tip is cheaper on the framework-free path, as 175 and 182 said"
+FALSIFY="a CLAIM in the other direction, or a band that still swallows the effect"
