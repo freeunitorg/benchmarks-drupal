@@ -102,7 +102,10 @@ printf 'job\tphase\tside\trev\tcell\tblock\tslot\tmetric\tvalue\n' > "$OUT"
 
 command -v "$OHA" >/dev/null || die "no oha ($OHA)"
 command -v docker >/dev/null || die "no docker"
-[ -n "${SITE_DIR:-}" ] && [ -f "$SITE_DIR/web/index.php" ] || die "no installed site at SITE_DIR=$SITE_DIR"
+# A site is installed when it carries the entry point its runtime needs: the PHP ones
+# have web/index.php, the Python leg has py/wsgi.py (the module's import target).
+[ -n "${SITE_DIR:-}" ] && { [ -f "$SITE_DIR/web/index.php" ] || [ -f "$SITE_DIR/py/wsgi.py" ]; } \
+    || die "no installed site at SITE_DIR=$SITE_DIR"
 if [ "$PERF" = 1 ]; then
     # the host's perf_event_paranoid blocks counters for the calling user; the
     # harness method is a PERFMON-capable container with the host pid namespace.
@@ -632,7 +635,14 @@ PY
 main() {
     # NO_DB=1: the workload needs no database, so none is started and no core is spent
     # on one (hello, headers, body and work cells never touch the site's DB).
-    if [ "${NO_DB:-0}" = 1 ]; then NO_DB_A=1 NO_DB_B=1 SPLIT=0; else start_db A; fi
+    if [ "${NO_DB:-0}" = 1 ]; then
+        # start_db also creates the per-side network the runtime joins, so it still has
+        # to happen -- just without a container on a core.
+        NO_DB_A=1 NO_DB_B=1 SPLIT=0
+        docker network create "$NET_A" >/dev/null 2>&1 || true
+    else
+        start_db A
+    fi
     [ "$SPLIT" = 1 ] && start_db B
     for k in $(seq 0 $((REPS - 1))); do
         if [ $((k % 2)) = 0 ]; then ord=("${ORDER[@]}"); else ord=("${SWAP[@]}"); fi

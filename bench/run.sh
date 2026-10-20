@@ -69,8 +69,13 @@ cpus_overlap() {  # two comma lists -> 0 when they share a cpu
     done
     return 1
 }
-for _pair in "SERVER_CPUS:LOAD_CPUS" "SERVER_CPUS:DB_CPUS" "LOAD_CPUS:DB_CPUS"; do
+# A job that needs no database (NO_DB=1: hello, headers, body, work) does not start one,
+# so the load:db pair is not a constraint there and a two-core host can run the cell.
+_pairs="SERVER_CPUS:LOAD_CPUS SERVER_CPUS:DB_CPUS"
+[ "${NO_DB:-0}" = 1 ] || _pairs="$_pairs LOAD_CPUS:DB_CPUS"
+for _pair in $_pairs; do
     _a=${_pair%%:*}; _b=${_pair#*:}
+    [ "${NO_DB:-0}" = 1 ] && [ "$_b" = DB_CPUS ] && continue
     if cpus_overlap "${!_a}" "${!_b}"; then
         echo "run.sh: $_a=${!_a} and $_b=${!_b} share a cpu; the measurement is void" >&2
         exit 1
@@ -166,7 +171,7 @@ if [ -f "$SITE_DIR/meta.txt" ]; then
     WP_POST_ID=$(awk -F= '$1 == "wp_post_id" { print $2 }' "$SITE_DIR/meta.txt")
 fi
 export SITE_DIR SITE_DIR_A SITE_DIR_B OUT RESROOT COOKIE_FILE COOKIE_FILE_B JOB RUN_ID PHASES WORKLOAD
-export WP_POST_ID
+export WP_POST_ID NO_DB
 export RUNTIME_A RUNTIME_B SITE CONNS DUR WARM REPS RATE APP_PROCS PERF AE DECOMPOSE EXTRA_COOKIE_BYTES DB DB_A DB_B PERF_EVENTS PERF_RECORD
 # cells.sh has its own OHA default of bare "oha" on PATH; the host that has oha
 # outside PATH answered "no oha (oha)" until this was exported.
