@@ -1,0 +1,816 @@
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=401 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=458 unit: controller  
+  pid=459 unit: router      
+  pid=464 unit: "py" prototype 
+  pid=465 unit: "py" application 
+  pid=466 unit: "py" application 
+  pid=467 unit: "py" application 
+  pid=468 unit: "py" application 
+  pid=469 unit: "py" application 
+  pid=470 unit: "py" application 
+  pid=471 unit: "py" application 
+  pid=472 unit: "py" application 
+  pid=473 unit: "py" application 
+  pid=474 unit: "py" application 
+  pid=475 unit: "py" application 
+  pid=476 unit: "py" application 
+  pid=477 unit: "py" application 
+  pid=478 unit: "py" application 
+  pid=480 unit: "py" application 
+  pid=481 unit: "py" application 
+  pid=484 unit: "py" application 
+  pid=485 unit: "py" application 
+  pid=486 unit: "py" application 
+  pid=487 unit: "py" application 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=756 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=814 unit: controller  
+  pid=815 unit: router      
+  pid=819 unit: "py" prototype 
+  pid=821 unit: "py" application 
+  pid=822 unit: "py" application 
+  pid=823 unit: "py" application 
+  pid=824 unit: "py" application 
+  pid=825 unit: "py" application 
+  pid=826 unit: "py" application 
+  pid=827 unit: "py" application 
+  pid=828 unit: "py" application 
+  pid=829 unit: "py" application 
+  pid=830 unit: "py" application 
+  pid=831 unit: "py" application 
+  pid=832 unit: "py" application 
+  pid=833 unit: "py" application 
+  pid=834 unit: "py" application 
+  pid=836 unit: "py" application 
+  pid=837 unit: "py" application 
+  pid=840 unit: "py" application 
+  pid=841 unit: "py" application 
+  pid=842 unit: "py" application 
+  pid=843 unit: "py" application 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=1115 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=1173 unit: controller  
+  pid=1175 unit: router      
+  pid=1179 unit: "py" prototype 
+  pid=1180 unit: "py" application 
+  pid=1181 unit: "py" application 
+  pid=1182 unit: "py" application 
+  pid=1185 unit: "py" application 
+  pid=1194 unit: "py" application 
+  pid=1201 unit: "py" application 
+  pid=1208 unit: "py" application 
+  pid=1217 unit: "py" application 
+  pid=1224 unit: "py" application 
+  pid=1231 unit: "py" application 
+  pid=1240 unit: "py" application 
+  pid=1248 unit: "py" application 
+  pid=1255 unit: "py" application 
+  pid=1262 unit: "py" application 
+  pid=1269 unit: "py" application 
+  pid=1277 unit: "py" application 
+  pid=1286 unit: "py" application 
+  pid=1291 unit: "py" application 
+  pid=1296 unit: "py" application 
+  pid=1301 unit: "py" application 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=1565 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=1626 unit: controller  
+  pid=1628 unit: router      
+  pid=1632 unit: "py" prototype 
+  pid=1633 unit: "py" application 
+  pid=1634 unit: "py" application 
+  pid=1635 unit: "py" application 
+  pid=1636 unit: "py" application 
+  pid=1637 unit: "py" application 
+  pid=1638 unit: "py" application 
+  pid=1639 unit: "py" application 
+  pid=1640 unit: "py" application 
+  pid=1641 unit: "py" application 
+  pid=1642 unit: "py" application 
+  pid=1643 unit: "py" application 
+  pid=1644 unit: "py" application 
+  pid=1645 unit: "py" application 
+  pid=1646 unit: "py" application 
+  pid=1648 unit: "py" application 
+  pid=1651 unit: "py" application 
+  pid=1652 unit: "py" application 
+  pid=1653 unit: "py" application 
+  pid=1654 unit: "py" application 
+  pid=1655 unit: "py" application 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=1921 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=1981 unit: controller  
+  pid=1982 unit: router      
+  pid=1985 unit: "py" prototype 
+  pid=1986 unit: "py" application 
+  pid=1987 unit: "py" application 
+  pid=1988 unit: "py" application 
+  pid=1989 unit: "py" application 
+  pid=1990 unit: "py" application 
+  pid=1991 unit: "py" application 
+  pid=1992 unit: "py" application 
+  pid=1993 unit: "py" application 
+  pid=1994 unit: "py" application 
+  pid=1995 unit: "py" application 
+  pid=1996 unit: "py" application 
+  pid=1997 unit: "py" application 
+  pid=1998 unit: "py" application 
+  pid=1999 unit: "py" application 
+  pid=2001 unit: "py" application 
+  pid=2002 unit: "py" application 
+  pid=2005 unit: "py" application 
+  pid=2006 unit: "py" application 
+  pid=2007 unit: "py" application 
+  pid=2008 unit: "py" application 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=2275 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=2334 unit: controller  
+  pid=2335 unit: router      
+  pid=2339 unit: "py" prototype 
+  pid=2342 unit: "py" application 
+  pid=2343 unit: "py" application 
+  pid=2344 unit: "py" application 
+  pid=2345 unit: "py" application 
+  pid=2346 unit: "py" application 
+  pid=2347 unit: "py" application 
+  pid=2348 unit: "py" application 
+  pid=2349 unit: "py" application 
+  pid=2350 unit: "py" application 
+  pid=2351 unit: "py" application 
+  pid=2352 unit: "py" application 
+  pid=2353 unit: "py" application 
+  pid=2354 unit: "py" application 
+  pid=2355 unit: "py" application 
+  pid=2357 unit: "py" application 
+  pid=2358 unit: "py" application 
+  pid=2361 unit: "py" application 
+  pid=2362 unit: "py" application 
+  pid=2363 unit: "py" application 
+  pid=2364 unit: "py" application 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=2642 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=2702 unit: controller  
+  pid=2703 unit: router      
+  pid=2708 unit: "py" prototype 
+  pid=2711 unit: "py" application 
+  pid=2712 unit: "py" application 
+  pid=2713 unit: "py" application 
+  pid=2714 unit: "py" application 
+  pid=2715 unit: "py" application 
+  pid=2716 unit: "py" application 
+  pid=2717 unit: "py" application 
+  pid=2718 unit: "py" application 
+  pid=2719 unit: "py" application 
+  pid=2720 unit: "py" application 
+  pid=2721 unit: "py" application 
+  pid=2722 unit: "py" application 
+  pid=2723 unit: "py" application 
+  pid=2724 unit: "py" application 
+  pid=2726 unit: "py" application 
+  pid=2729 unit: "py" application 
+  pid=2733 unit: "py" application 
+  pid=2737 unit: "py" application 
+  pid=2738 unit: "py" application 
+  pid=2739 unit: "py" application 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=3007 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=3067 unit: controller  
+  pid=3068 unit: router      
+  pid=3071 unit: "py" prototype 
+  pid=3074 unit: "py" application 
+  pid=3075 unit: "py" application 
+  pid=3076 unit: "py" application 
+  pid=3077 unit: "py" application 
+  pid=3078 unit: "py" application 
+  pid=3079 unit: "py" application 
+  pid=3080 unit: "py" application 
+  pid=3081 unit: "py" application 
+  pid=3082 unit: "py" application 
+  pid=3083 unit: "py" application 
+  pid=3084 unit: "py" application 
+  pid=3085 unit: "py" application 
+  pid=3086 unit: "py" application 
+  pid=3087 unit: "py" application 
+  pid=3089 unit: "py" application 
+  pid=3092 unit: "py" application 
+  pid=3093 unit: "py" application 
+  pid=3094 unit: "py" application 
+  pid=3095 unit: "py" application 
+  pid=3096 unit: "py" application 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=3385 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=3442 unit: controller  
+  pid=3443 unit: router      
+  pid=3445 unit: "py" prototype 
+  pid=3448 unit: "py" application 
+  pid=3451 unit: "py" application 
+  pid=3452 unit: "py" application 
+  pid=3453 unit: "py" application 
+  pid=3454 unit: "py" application 
+  pid=3455 unit: "py" application 
+  pid=3456 unit: "py" application 
+  pid=3457 unit: "py" application 
+  pid=3458 unit: "py" application 
+  pid=3459 unit: "py" application 
+  pid=3460 unit: "py" application 
+  pid=3461 unit: "py" application 
+  pid=3462 unit: "py" application 
+  pid=3463 unit: "py" application 
+  pid=3465 unit: "py" application 
+  pid=3466 unit: "py" application 
+  pid=3469 unit: "py" application 
+  pid=3470 unit: "py" application 
+  pid=3471 unit: "py" application 
+  pid=3472 unit: "py" application 
+runtime=rt-32766-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=3741 bash /usr/local/bin/entrypoint-python.sh 
+  pid=3795 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 20 --log-level warning asgi:application 
+  pid=3796 nginx: master process nginx -g daemon off; 
+  pid=3802 nginx: worker process 
+  pid=3803 nginx: worker process 
+  pid=3804 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=3805 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=3806 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=3807 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=3808 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+  pid=3809 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=25) --multiprocessing-fork 
+  pid=3810 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=29) --multiprocessing-fork 
+  pid=3811 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=33) --multiprocessing-fork 
+  pid=3812 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=37) --multiprocessing-fork 
+  pid=3813 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=41) --multiprocessing-fork 
+  pid=3814 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=45) --multiprocessing-fork 
+  pid=3815 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=49) --multiprocessing-fork 
+  pid=3816 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=53) --multiprocessing-fork 
+  pid=3817 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=57) --multiprocessing-fork 
+  pid=3818 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=61) --multiprocessing-fork 
+  pid=3819 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=65) --multiprocessing-fork 
+  pid=3820 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=69) --multiprocessing-fork 
+  pid=3821 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=73) --multiprocessing-fork 
+  pid=3822 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=77) --multiprocessing-fork 
+  pid=3823 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=81) --multiprocessing-fork 
+  pid=3824 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=85) --multiprocessing-fork 
+runtime=rt-32766-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=4132 bash /usr/local/bin/entrypoint-python.sh 
+  pid=4188 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 20 --log-level warning asgi:application 
+  pid=4189 nginx: master process nginx -g daemon off; 
+  pid=4194 nginx: worker process 
+  pid=4195 nginx: worker process 
+  pid=4197 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=4198 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=4199 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=4200 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=4201 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+  pid=4202 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=25) --multiprocessing-fork 
+  pid=4203 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=29) --multiprocessing-fork 
+  pid=4204 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=33) --multiprocessing-fork 
+  pid=4205 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=37) --multiprocessing-fork 
+  pid=4206 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=41) --multiprocessing-fork 
+  pid=4207 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=45) --multiprocessing-fork 
+  pid=4208 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=49) --multiprocessing-fork 
+  pid=4209 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=53) --multiprocessing-fork 
+  pid=4210 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=57) --multiprocessing-fork 
+  pid=4211 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=61) --multiprocessing-fork 
+  pid=4212 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=65) --multiprocessing-fork 
+  pid=4213 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=69) --multiprocessing-fork 
+  pid=4214 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=73) --multiprocessing-fork 
+  pid=4215 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=77) --multiprocessing-fork 
+  pid=4216 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=81) --multiprocessing-fork 
+  pid=4217 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=85) --multiprocessing-fork 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=4533 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=4589 unit: controller  
+  pid=4590 unit: router      
+  pid=4593 unit: "py" prototype 
+  pid=4595 unit: "py" application 
+  pid=4597 unit: "py" application 
+  pid=4598 unit: "py" application 
+  pid=4599 unit: "py" application 
+  pid=4600 unit: "py" application 
+  pid=4601 unit: "py" application 
+  pid=4602 unit: "py" application 
+  pid=4603 unit: "py" application 
+  pid=4604 unit: "py" application 
+  pid=4605 unit: "py" application 
+  pid=4606 unit: "py" application 
+  pid=4607 unit: "py" application 
+  pid=4608 unit: "py" application 
+  pid=4609 unit: "py" application 
+  pid=4611 unit: "py" application 
+  pid=4614 unit: "py" application 
+  pid=4615 unit: "py" application 
+  pid=4616 unit: "py" application 
+  pid=4617 unit: "py" application 
+  pid=4618 unit: "py" application 
+runtime=rt-32766-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=4884 bash /usr/local/bin/entrypoint-python.sh 
+  pid=4941 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 20 --log-level warning asgi:application 
+  pid=4942 nginx: master process nginx -g daemon off; 
+  pid=4948 nginx: worker process 
+  pid=4949 nginx: worker process 
+  pid=4951 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=4952 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=4953 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=4954 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=4955 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+  pid=4956 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=25) --multiprocessing-fork 
+  pid=4957 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=29) --multiprocessing-fork 
+  pid=4958 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=33) --multiprocessing-fork 
+  pid=4959 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=37) --multiprocessing-fork 
+  pid=4960 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=41) --multiprocessing-fork 
+  pid=4961 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=45) --multiprocessing-fork 
+  pid=4962 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=49) --multiprocessing-fork 
+  pid=4963 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=53) --multiprocessing-fork 
+  pid=4964 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=57) --multiprocessing-fork 
+  pid=4965 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=61) --multiprocessing-fork 
+  pid=4966 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=65) --multiprocessing-fork 
+  pid=4967 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=69) --multiprocessing-fork 
+  pid=4968 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=73) --multiprocessing-fork 
+  pid=4969 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=77) --multiprocessing-fork 
+  pid=4970 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=81) --multiprocessing-fork 
+  pid=4971 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=85) --multiprocessing-fork 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=5274 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=5331 unit: controller  
+  pid=5332 unit: router      
+  pid=5333 unit: "py" prototype 
+  pid=5334 unit: "py" application 
+  pid=5339 unit: "py" application 
+  pid=5340 unit: "py" application 
+  pid=5341 unit: "py" application 
+  pid=5342 unit: "py" application 
+  pid=5343 unit: "py" application 
+  pid=5344 unit: "py" application 
+  pid=5345 unit: "py" application 
+  pid=5346 unit: "py" application 
+  pid=5347 unit: "py" application 
+  pid=5348 unit: "py" application 
+  pid=5349 unit: "py" application 
+  pid=5350 unit: "py" application 
+  pid=5351 unit: "py" application 
+  pid=5353 unit: "py" application 
+  pid=5354 unit: "py" application 
+  pid=5357 unit: "py" application 
+  pid=5358 unit: "py" application 
+  pid=5359 unit: "py" application 
+  pid=5360 unit: "py" application 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=5628 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=5684 unit: controller  
+  pid=5685 unit: router      
+  pid=5687 unit: "py" prototype 
+  pid=5689 unit: "py" application 
+  pid=5692 unit: "py" application 
+  pid=5693 unit: "py" application 
+  pid=5694 unit: "py" application 
+  pid=5695 unit: "py" application 
+  pid=5696 unit: "py" application 
+  pid=5697 unit: "py" application 
+  pid=5698 unit: "py" application 
+  pid=5699 unit: "py" application 
+  pid=5700 unit: "py" application 
+  pid=5701 unit: "py" application 
+  pid=5702 unit: "py" application 
+  pid=5703 unit: "py" application 
+  pid=5704 unit: "py" application 
+  pid=5706 unit: "py" application 
+  pid=5707 unit: "py" application 
+  pid=5710 unit: "py" application 
+  pid=5711 unit: "py" application 
+  pid=5712 unit: "py" application 
+  pid=5713 unit: "py" application 
+runtime=rt-32766-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=5978 bash /usr/local/bin/entrypoint-python.sh 
+  pid=6037 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 20 --log-level warning asgi:application 
+  pid=6038 nginx: master process nginx -g daemon off; 
+  pid=6043 nginx: worker process 
+  pid=6044 nginx: worker process 
+  pid=6046 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=6047 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=6048 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=6049 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=6050 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+  pid=6051 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=25) --multiprocessing-fork 
+  pid=6052 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=29) --multiprocessing-fork 
+  pid=6053 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=33) --multiprocessing-fork 
+  pid=6054 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=37) --multiprocessing-fork 
+  pid=6055 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=41) --multiprocessing-fork 
+  pid=6056 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=45) --multiprocessing-fork 
+  pid=6057 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=49) --multiprocessing-fork 
+  pid=6058 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=53) --multiprocessing-fork 
+  pid=6059 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=57) --multiprocessing-fork 
+  pid=6060 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=61) --multiprocessing-fork 
+  pid=6061 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=65) --multiprocessing-fork 
+  pid=6062 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=69) --multiprocessing-fork 
+  pid=6063 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=73) --multiprocessing-fork 
+  pid=6064 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=77) --multiprocessing-fork 
+  pid=6065 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=81) --multiprocessing-fork 
+  pid=6066 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=85) --multiprocessing-fork 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=6379 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=6436 unit: controller  
+  pid=6437 unit: router      
+  pid=6442 unit: "py" prototype 
+  pid=6443 unit: "py" application 
+  pid=6444 unit: "py" application 
+  pid=6445 unit: "py" application 
+  pid=6446 unit: "py" application 
+  pid=6447 unit: "py" application 
+  pid=6448 unit: "py" application 
+  pid=6449 unit: "py" application 
+  pid=6450 unit: "py" application 
+  pid=6451 unit: "py" application 
+  pid=6452 unit: "py" application 
+  pid=6453 unit: "py" application 
+  pid=6454 unit: "py" application 
+  pid=6455 unit: "py" application 
+  pid=6456 unit: "py" application 
+  pid=6458 unit: "py" application 
+  pid=6459 unit: "py" application 
+  pid=6462 unit: "py" application 
+  pid=6463 unit: "py" application 
+  pid=6464 unit: "py" application 
+  pid=6465 unit: "py" application 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=6733 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=6791 unit: controller  
+  pid=6792 unit: router      
+  pid=6797 unit: "py" prototype 
+  pid=6798 unit: "py" application 
+  pid=6799 unit: "py" application 
+  pid=6800 unit: "py" application 
+  pid=6801 unit: "py" application 
+  pid=6802 unit: "py" application 
+  pid=6803 unit: "py" application 
+  pid=6804 unit: "py" application 
+  pid=6805 unit: "py" application 
+  pid=6806 unit: "py" application 
+  pid=6807 unit: "py" application 
+  pid=6808 unit: "py" application 
+  pid=6809 unit: "py" application 
+  pid=6810 unit: "py" application 
+  pid=6811 unit: "py" application 
+  pid=6813 unit: "py" application 
+  pid=6814 unit: "py" application 
+  pid=6817 unit: "py" application 
+  pid=6818 unit: "py" application 
+  pid=6819 unit: "py" application 
+  pid=6820 unit: "py" application 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=7093 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=7151 unit: controller  
+  pid=7152 unit: router      
+  pid=7157 unit: "py" prototype 
+  pid=7158 unit: "py" application 
+  pid=7160 unit: "py" application 
+  pid=7161 unit: "py" application 
+  pid=7162 unit: "py" application 
+  pid=7163 unit: "py" application 
+  pid=7164 unit: "py" application 
+  pid=7165 unit: "py" application 
+  pid=7166 unit: "py" application 
+  pid=7167 unit: "py" application 
+  pid=7168 unit: "py" application 
+  pid=7169 unit: "py" application 
+  pid=7170 unit: "py" application 
+  pid=7171 unit: "py" application 
+  pid=7172 unit: "py" application 
+  pid=7174 unit: "py" application 
+  pid=7177 unit: "py" application 
+  pid=7178 unit: "py" application 
+  pid=7179 unit: "py" application 
+  pid=7180 unit: "py" application 
+  pid=7181 unit: "py" application 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=7448 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=7503 unit: controller  
+  pid=7504 unit: router      
+  pid=7507 unit: "py" prototype 
+  pid=7510 unit: "py" application 
+  pid=7512 unit: "py" application 
+  pid=7513 unit: "py" application 
+  pid=7514 unit: "py" application 
+  pid=7515 unit: "py" application 
+  pid=7516 unit: "py" application 
+  pid=7517 unit: "py" application 
+  pid=7518 unit: "py" application 
+  pid=7519 unit: "py" application 
+  pid=7520 unit: "py" application 
+  pid=7521 unit: "py" application 
+  pid=7528 unit: "py" application 
+  pid=7529 unit: "py" application 
+  pid=7530 unit: "py" application 
+  pid=7532 unit: "py" application 
+  pid=7535 unit: "py" application 
+  pid=7536 unit: "py" application 
+  pid=7537 unit: "py" application 
+  pid=7538 unit: "py" application 
+  pid=7539 unit: "py" application 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=7804 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=7864 unit: controller  
+  pid=7865 unit: router      
+  pid=7868 unit: "py" prototype 
+  pid=7870 unit: "py" application 
+  pid=7872 unit: "py" application 
+  pid=7873 unit: "py" application 
+  pid=7874 unit: "py" application 
+  pid=7875 unit: "py" application 
+  pid=7876 unit: "py" application 
+  pid=7877 unit: "py" application 
+  pid=7878 unit: "py" application 
+  pid=7879 unit: "py" application 
+  pid=7880 unit: "py" application 
+  pid=7881 unit: "py" application 
+  pid=7882 unit: "py" application 
+  pid=7883 unit: "py" application 
+  pid=7884 unit: "py" application 
+  pid=7886 unit: "py" application 
+  pid=7887 unit: "py" application 
+  pid=7890 unit: "py" application 
+  pid=7891 unit: "py" application 
+  pid=7892 unit: "py" application 
+  pid=7893 unit: "py" application 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=8160 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=8221 unit: controller  
+  pid=8222 unit: router      
+  pid=8223 unit: "py" prototype 
+  pid=8226 unit: "py" application 
+  pid=8229 unit: "py" application 
+  pid=8230 unit: "py" application 
+  pid=8231 unit: "py" application 
+  pid=8232 unit: "py" application 
+  pid=8233 unit: "py" application 
+  pid=8234 unit: "py" application 
+  pid=8235 unit: "py" application 
+  pid=8236 unit: "py" application 
+  pid=8237 unit: "py" application 
+  pid=8238 unit: "py" application 
+  pid=8239 unit: "py" application 
+  pid=8240 unit: "py" application 
+  pid=8241 unit: "py" application 
+  pid=8243 unit: "py" application 
+  pid=8246 unit: "py" application 
+  pid=8247 unit: "py" application 
+  pid=8248 unit: "py" application 
+  pid=8249 unit: "py" application 
+  pid=8250 unit: "py" application 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=8510 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=8568 unit: controller  
+  pid=8569 unit: router      
+  pid=8572 unit: "py" prototype 
+  pid=8575 unit: "py" application 
+  pid=8576 unit: "py" application 
+  pid=8577 unit: "py" application 
+  pid=8578 unit: "py" application 
+  pid=8579 unit: "py" application 
+  pid=8580 unit: "py" application 
+  pid=8583 unit: "py" application 
+  pid=8592 unit: "py" application 
+  pid=8599 unit: "py" application 
+  pid=8606 unit: "py" application 
+  pid=8615 unit: "py" application 
+  pid=8621 unit: "py" application 
+  pid=8629 unit: "py" application 
+  pid=8636 unit: "py" application 
+  pid=8644 unit: "py" application 
+  pid=8654 unit: "py" application 
+  pid=8661 unit: "py" application 
+  pid=8668 unit: "py" application 
+  pid=8675 unit: "py" application 
+  pid=8684 unit: "py" application 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=9050 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=9108 unit: controller  
+  pid=9109 unit: router      
+  pid=9112 unit: "py" prototype 
+  pid=9114 unit: "py" application 
+  pid=9116 unit: "py" application 
+  pid=9117 unit: "py" application 
+  pid=9118 unit: "py" application 
+  pid=9119 unit: "py" application 
+  pid=9120 unit: "py" application 
+  pid=9121 unit: "py" application 
+  pid=9122 unit: "py" application 
+  pid=9123 unit: "py" application 
+  pid=9124 unit: "py" application 
+  pid=9125 unit: "py" application 
+  pid=9126 unit: "py" application 
+  pid=9127 unit: "py" application 
+  pid=9128 unit: "py" application 
+  pid=9130 unit: "py" application 
+  pid=9131 unit: "py" application 
+  pid=9134 unit: "py" application 
+  pid=9135 unit: "py" application 
+  pid=9136 unit: "py" application 
+  pid=9137 unit: "py" application 
+runtime=rt-32766-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=9408 bash /usr/local/bin/entrypoint-python.sh 
+  pid=9465 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 20 --log-level warning asgi:application 
+  pid=9466 nginx: master process nginx -g daemon off; 
+  pid=9471 nginx: worker process 
+  pid=9472 nginx: worker process 
+  pid=9474 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=9475 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=9476 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=9477 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=9478 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+  pid=9479 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=25) --multiprocessing-fork 
+  pid=9480 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=29) --multiprocessing-fork 
+  pid=9481 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=33) --multiprocessing-fork 
+  pid=9482 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=37) --multiprocessing-fork 
+  pid=9483 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=41) --multiprocessing-fork 
+  pid=9484 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=45) --multiprocessing-fork 
+  pid=9485 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=49) --multiprocessing-fork 
+  pid=9486 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=53) --multiprocessing-fork 
+  pid=9487 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=57) --multiprocessing-fork 
+  pid=9488 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=61) --multiprocessing-fork 
+  pid=9489 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=65) --multiprocessing-fork 
+  pid=9490 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=69) --multiprocessing-fork 
+  pid=9491 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=73) --multiprocessing-fork 
+  pid=9492 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=77) --multiprocessing-fork 
+  pid=9493 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=81) --multiprocessing-fork 
+  pid=9494 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=85) --multiprocessing-fork 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=9796 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=9854 unit: controller  
+  pid=9855 unit: router      
+  pid=9860 unit: "py" prototype 
+  pid=9861 unit: "py" application 
+  pid=9862 unit: "py" application 
+  pid=9863 unit: "py" application 
+  pid=9864 unit: "py" application 
+  pid=9865 unit: "py" application 
+  pid=9866 unit: "py" application 
+  pid=9867 unit: "py" application 
+  pid=9868 unit: "py" application 
+  pid=9869 unit: "py" application 
+  pid=9870 unit: "py" application 
+  pid=9871 unit: "py" application 
+  pid=9872 unit: "py" application 
+  pid=9873 unit: "py" application 
+  pid=9874 unit: "py" application 
+  pid=9876 unit: "py" application 
+  pid=9877 unit: "py" application 
+  pid=9881 unit: "py" application 
+  pid=9882 unit: "py" application 
+  pid=9883 unit: "py" application 
+  pid=9884 unit: "py" application 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=10150 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=10208 unit: controller  
+  pid=10209 unit: router      
+  pid=10214 unit: "py" prototype 
+  pid=10215 unit: "py" application 
+  pid=10216 unit: "py" application 
+  pid=10217 unit: "py" application 
+  pid=10218 unit: "py" application 
+  pid=10219 unit: "py" application 
+  pid=10220 unit: "py" application 
+  pid=10221 unit: "py" application 
+  pid=10222 unit: "py" application 
+  pid=10223 unit: "py" application 
+  pid=10224 unit: "py" application 
+  pid=10225 unit: "py" application 
+  pid=10226 unit: "py" application 
+  pid=10227 unit: "py" application 
+  pid=10228 unit: "py" application 
+  pid=10230 unit: "py" application 
+  pid=10233 unit: "py" application 
+  pid=10234 unit: "py" application 
+  pid=10235 unit: "py" application 
+  pid=10236 unit: "py" application 
+  pid=10237 unit: "py" application 
+runtime=rt-32766-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=10508 bash /usr/local/bin/entrypoint-python.sh 
+  pid=10566 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 20 --log-level warning asgi:application 
+  pid=10567 nginx: master process nginx -g daemon off; 
+  pid=10572 nginx: worker process 
+  pid=10573 nginx: worker process 
+  pid=10575 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=10576 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=10577 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=10578 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=10579 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+  pid=10580 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=25) --multiprocessing-fork 
+  pid=10581 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=29) --multiprocessing-fork 
+  pid=10582 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=33) --multiprocessing-fork 
+  pid=10583 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=37) --multiprocessing-fork 
+  pid=10584 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=41) --multiprocessing-fork 
+  pid=10585 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=45) --multiprocessing-fork 
+  pid=10586 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=49) --multiprocessing-fork 
+  pid=10587 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=53) --multiprocessing-fork 
+  pid=10588 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=57) --multiprocessing-fork 
+  pid=10589 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=61) --multiprocessing-fork 
+  pid=10590 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=65) --multiprocessing-fork 
+  pid=10591 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=69) --multiprocessing-fork 
+  pid=10592 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=73) --multiprocessing-fork 
+  pid=10593 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=77) --multiprocessing-fork 
+  pid=10594 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=81) --multiprocessing-fork 
+  pid=10595 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=85) --multiprocessing-fork 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=10893 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=10952 unit: controller  
+  pid=10953 unit: router      
+  pid=10957 unit: "py" prototype 
+  pid=10959 unit: "py" application 
+  pid=10960 unit: "py" application 
+  pid=10961 unit: "py" application 
+  pid=10962 unit: "py" application 
+  pid=10963 unit: "py" application 
+  pid=10964 unit: "py" application 
+  pid=10965 unit: "py" application 
+  pid=10966 unit: "py" application 
+  pid=10967 unit: "py" application 
+  pid=10968 unit: "py" application 
+  pid=10969 unit: "py" application 
+  pid=10970 unit: "py" application 
+  pid=10971 unit: "py" application 
+  pid=10972 unit: "py" application 
+  pid=10974 unit: "py" application 
+  pid=10975 unit: "py" application 
+  pid=10978 unit: "py" application 
+  pid=10979 unit: "py" application 
+  pid=10980 unit: "py" application 
+  pid=10981 unit: "py" application 
+runtime=rt-32766-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=11249 bash /usr/local/bin/entrypoint-python.sh 
+  pid=11303 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 20 --log-level warning asgi:application 
+  pid=11304 nginx: master process nginx -g daemon off; 
+  pid=11310 nginx: worker process 
+  pid=11311 nginx: worker process 
+  pid=11314 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=11315 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=11316 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=11317 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=11318 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+  pid=11319 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=25) --multiprocessing-fork 
+  pid=11320 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=29) --multiprocessing-fork 
+  pid=11321 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=33) --multiprocessing-fork 
+  pid=11322 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=37) --multiprocessing-fork 
+  pid=11323 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=41) --multiprocessing-fork 
+  pid=11324 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=45) --multiprocessing-fork 
+  pid=11325 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=49) --multiprocessing-fork 
+  pid=11326 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=53) --multiprocessing-fork 
+  pid=11327 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=57) --multiprocessing-fork 
+  pid=11328 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=61) --multiprocessing-fork 
+  pid=11329 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=65) --multiprocessing-fork 
+  pid=11330 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=69) --multiprocessing-fork 
+  pid=11331 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=73) --multiprocessing-fork 
+  pid=11332 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=77) --multiprocessing-fork 
+  pid=11333 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=81) --multiprocessing-fork 
+  pid=11334 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=85) --multiprocessing-fork 
+runtime=rt-32766-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=11642 bash /usr/local/bin/entrypoint-python.sh 
+  pid=11697 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 20 --log-level warning asgi:application 
+  pid=11698 nginx: master process nginx -g daemon off; 
+  pid=11703 nginx: worker process 
+  pid=11704 nginx: worker process 
+  pid=11706 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=11707 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=11708 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=11709 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=11710 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+  pid=11711 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=25) --multiprocessing-fork 
+  pid=11712 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=29) --multiprocessing-fork 
+  pid=11713 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=33) --multiprocessing-fork 
+  pid=11714 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=37) --multiprocessing-fork 
+  pid=11715 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=41) --multiprocessing-fork 
+  pid=11716 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=45) --multiprocessing-fork 
+  pid=11717 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=49) --multiprocessing-fork 
+  pid=11718 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=53) --multiprocessing-fork 
+  pid=11719 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=57) --multiprocessing-fork 
+  pid=11720 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=61) --multiprocessing-fork 
+  pid=11721 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=65) --multiprocessing-fork 
+  pid=11722 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=69) --multiprocessing-fork 
+  pid=11723 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=73) --multiprocessing-fork 
+  pid=11724 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=77) --multiprocessing-fork 
+  pid=11725 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=81) --multiprocessing-fork 
+  pid=11726 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=85) --multiprocessing-fork 
+runtime=rt-32766-freeunit-python-asgi url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=12038 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=12095 unit: controller  
+  pid=12097 unit: router      
+  pid=12101 unit: "py" prototype 
+  pid=12102 unit: "py" application 
+  pid=12103 unit: "py" application 
+  pid=12104 unit: "py" application 
+  pid=12105 unit: "py" application 
+  pid=12106 unit: "py" application 
+  pid=12107 unit: "py" application 
+  pid=12108 unit: "py" application 
+  pid=12109 unit: "py" application 
+  pid=12110 unit: "py" application 
+  pid=12111 unit: "py" application 
+  pid=12112 unit: "py" application 
+  pid=12113 unit: "py" application 
+  pid=12114 unit: "py" application 
+  pid=12115 unit: "py" application 
+  pid=12117 unit: "py" application 
+  pid=12121 unit: "py" application 
+  pid=12122 unit: "py" application 
+  pid=12123 unit: "py" application 
+  pid=12124 unit: "py" application 
+  pid=12127 unit: "py" application 

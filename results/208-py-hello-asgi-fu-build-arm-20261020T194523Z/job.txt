@@ -1,0 +1,23 @@
+# The same hello through ASGI: Unit's python module against uvicorn, so the leg covers both interfaces the module ships.
+JOB=208-py-hello-asgi
+ISSUE="https://github.com/freeunitorg/freeunit-exp/issues/113"
+PHASES="null ab"
+WORKLOAD=py-hello
+RUNTIME_A=freeunit-python-asgi
+RUNTIME_B=uvicorn
+SITE=py-hello
+DB=mysql
+# no database is needed: hello, body and work answer from the app alone
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=6
+REPS=2
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="ASGI behaves as WSGI: a per-request constant"
+FALSIFY="a trend that is not monotone with the swept dimension, or a CLAIM with the wrong sign"

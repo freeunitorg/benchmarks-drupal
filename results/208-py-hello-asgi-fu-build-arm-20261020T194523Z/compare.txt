@@ -1,0 +1,13 @@
+NOISY py-hello-c32: the null band 109.1 is over the limit 5.0, no claim; rerun on a quiet box (B is 8552.8 percent more server CPU per request (us))
+job 208-py-hello-asgi  run 208-py-hello-asgi-fu-build-arm-20261020T194523Z  A None ()  B None ()  governor unknown/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  py-hello-c32   server_us                    15.864       11.657   -27.36  [-109.13, +54.42] 109.13    5/8  NOISY
+null  py-hello-c32   db_us                         0.000        0.000      n/a                n/a    n/a    0/8  NO DATA
+null  py-hello-c32   p50_ms                        4.740        4.722    -0.35     [-3.31, +2.60]   3.31    4/8  PASS
+null  py-hello-c32   p99_ms                        8.563        8.579    +0.19     [-1.66, +2.04]   2.04    5/8  PASS
+null  py-hello-c32   rps                        6374.041     6352.438    -0.34     [-2.03, +1.35]   2.03    6/8  PASS
+ab    py-hello-c32   server_us                     8.389      723.653 +8552.85 [+8300.23, +8805.46] 109.13    8/8  NOISY
+ab    py-hello-c32   db_us                         0.000        0.000      n/a                n/a    n/a    0/8  NO DATA
+ab    py-hello-c32   p50_ms                        4.706       21.585  +358.67 [+332.83, +384.51]   3.31    8/8  CLAIM
+ab    py-hello-c32   p99_ms                        8.493       56.204  +561.79 [+489.43, +634.16]   2.04    8/8  CLAIM
+ab    py-hello-c32   rps                        6403.531     1381.247   -78.43   [-79.56, -77.30]   2.03    8/8  CLAIM
