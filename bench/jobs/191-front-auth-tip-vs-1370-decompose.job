@@ -1,0 +1,22 @@
+# Authenticated Drupal 12, the 1.37.1 candidate against 1.37.0, with the front/worker split. This is the cell where FreeUnit trails nginx+FPM; the release question is only whether the candidate made it worse.
+JOB=191-front-auth-tip-vs-1370-decompose
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-auth
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-tip-e63168bd
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+DECOMPOSE=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the 1.37.1 candidate is level with 1.37.0 on this path; a CLAIM with B lower is an improvement worth shipping, a CLAIM with B higher is a release regression"
+FALSIFY="A CLAIM with B higher on a path the merges do not touch"
