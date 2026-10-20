@@ -1,0 +1,27 @@
+# The next step after 143: the auth deficit is in the PHP worker (front_us 292 vs 469 us
+# in FreeUnit's favour, worker_us 29 490 vs 28 130 against us), so record where the
+# worker's instructions go. PERF_RECORD=1 keeps a call-graph sample per side; with
+# DECOMPOSE=1 the front/worker pid groups are known, so the worker profile can be
+# filtered out of the same run. PMU is available on x86, which is why this runs here.
+JOB=144-front-auth-master-vs-fpm-record-decompose
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-auth
+RUNTIME_A=freeunit-master-10e1a9bec
+RUNTIME_B=nginx-fpm
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+DECOMPOSE=1
+PERF_RECORD=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the worker profile names what costs the 1.4 ms per request that php-fpm does not spend"
+FALSIFY="no symbol difference in the worker: then the cost is not in the code the profile can see"

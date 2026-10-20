@@ -1,0 +1,21 @@
+# PR #752 on the Drupal 12 anonymous front page: engine counters and shm chunk maps are touched per request, so if the -2.45 pct it showed on hello is real it should appear here at a smaller size. The pair is one commit apart.
+JOB=132-front-anon-10e1a9bec-vs-33896f7
+ISSUE="https://github.com/freeunitorg/freeunit"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-master-33896f7
+RUNTIME_B=freeunit-768-base
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="#752 is free or better on an IPC-heavy request"
+FALSIFY="a CLAIM above the band: the new atomics cost on the request path"

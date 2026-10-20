@@ -1,0 +1,20 @@
+# Ladder step 3: master at 33896f7e against 10e1a9bec, which is #752 (engine counters and shm chunk maps atomic) and whatever merged with it. One commit apart in effect.
+JOB=130-hello-10e1a9bec-vs-33896f7
+ISSUE="https://github.com/freeunitorg/freeunit"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-master-33896f7
+RUNTIME_B=freeunit-768-base
+SITE=hello
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="one commit of counter and shm-map atomics is below the cell's resolution"
+FALSIFY="a CLAIM above the band: #752 is visible per request"

@@ -1,0 +1,22 @@
+# The release against nginx+FPM on the control request, split: the baseline worker gap where FreeUnit is far ahead, to read next to 169.
+JOB=170-hello-1370-vs-fpm-decompose
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit
+RUNTIME_B=nginx-fpm
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+DECOMPOSE=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="see the cell comment"
+FALSIFY="see the cell comment"
