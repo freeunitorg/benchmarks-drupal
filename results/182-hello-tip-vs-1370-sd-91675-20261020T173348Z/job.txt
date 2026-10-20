@@ -1,0 +1,23 @@
+# The net against the release on the control request, at the current tip. 175 measured
+# -3.10 percent (CLAIM, master faster) at 13effad40; four commits later this keeps the
+# number naming the tip.
+JOB=182-hello-tip-vs-1370
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-tip-e63168bd
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="master at the tip is still at or below 1.37.0 on the server-only request"
+FALSIFY="a CLAIM above the band: the release is the faster server"
