@@ -1,0 +1,13 @@
+CLAIM py-body-64k-c32: B is 372.7 percent more server CPU per request (us), outside the null band of 2.1, 8 of 8 cells agree
+job 204-py-body-64k  run 204-py-body-64k-fu-build-arm-20261020T192030Z  A None ()  B None ()  governor unknown/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  py-body-64k-c32 server_us                   157.346      157.061    -0.17     [-2.07, +1.73]   2.07    5/8  PASS
+null  py-body-64k-c32 db_us                         0.000        0.000      n/a                n/a    n/a    0/8  NO DATA
+null  py-body-64k-c32 p50_ms                        5.372        5.380    +0.15     [-2.26, +2.56]   2.56    4/8  PASS
+null  py-body-64k-c32 p99_ms                        7.706        7.511    -2.51     [-8.28, +3.27]   8.28    5/8  NOISY
+null  py-body-64k-c32 rps                        5959.344     5980.065    +0.36     [-1.75, +2.47]   2.47    3/8  PASS
+ab    py-body-64k-c32 server_us                   160.433      757.804  +372.71 [+368.26, +377.17]   2.07    8/8  CLAIM
+ab    py-body-64k-c32 db_us                         0.000        0.000      n/a                n/a    n/a    0/8  NO DATA
+ab    py-body-64k-c32 p50_ms                        5.492       24.637  +349.24 [+343.09, +355.38]   2.56    8/8  CLAIM
+ab    py-body-64k-c32 p99_ms                        7.800       42.832  +449.95 [+433.41, +466.49]   8.28    8/8  NOISY
+ab    py-body-64k-c32 rps                        5855.130     1305.547   -77.67   [-80.10, -75.25]   2.47    8/8  CLAIM
