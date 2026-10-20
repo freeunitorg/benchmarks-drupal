@@ -1,0 +1,21 @@
+# The same if built from five variables, and the full record format: whether the condition's cost scales with the number of variables it resolves.
+JOB=197-front-auth-alog-if-heavy
+ISSUE="https://github.com/freeunitorg/freeunit-exp/issues/107"
+PHASES="null ab"
+WORKLOAD=drupal-auth
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=freeunit-alog-if-heavy
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the same image with an access_log member: the delta is the whole logging path this cell isolates"
+FALSIFY="a CLAIM where the variant with logging is cheaper than the one without"
