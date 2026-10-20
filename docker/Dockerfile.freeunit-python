@@ -1,0 +1,61 @@
+# FreeUnit with the Python module, for the Python leg of the benchmark suite.
+#
+# The PHP images configure `php`; this one configures `python`, and the base is the
+# official python image so the interpreter is the distribution's own build (the same
+# choice the PHP images make). The module is self-contained: Unit compiles the WSGI and
+# ASGI wrappers into it, so the application needs no `unit` package on the image.
+#
+#   docker build -f docker/Dockerfile.freeunit-python \
+#       --build-arg FREEUNIT_REF=<sha> -t drupal-bench-freeunit:py-<tag> .
+ARG PY_BASE=python:3.13-slim-trixie
+
+FROM ${PY_BASE} AS build
+
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        build-essential curl ca-certificates \
+        libssl-dev libpcre2-dev zlib1g-dev; \
+    rm -rf /var/lib/apt/lists/*
+
+ARG FREEUNIT_REF=e63168bd3e4d708ce39c1ab7988ec13060dfb325
+
+RUN set -eux; \
+    curl -fsSL "https://github.com/freeunitorg/freeunit/archive/${FREEUNIT_REF}.tar.gz" \
+        -o /tmp/freeunit.tar.gz; \
+    mkdir -p /usr/src/freeunit; \
+    tar -xzf /tmp/freeunit.tar.gz -C /usr/src/freeunit --strip-components=1
+
+WORKDIR /usr/src/freeunit
+
+RUN set -eux; \
+    ./configure --prefix=/usr --statedir=/var/lib/unit \
+        --control=unix:/var/run/control.unit.sock \
+        --runstatedir=/var/run --pid=/var/run/unit.pid \
+        --logdir=/var/log --log=/var/log/unit.log --tmpdir=/var/tmp \
+        --user=www-data --group=www-data --modulesdir=/usr/lib/unit/modules \
+        --openssl --zlib; \
+    ./configure python --config=python3-config; \
+    make -j"$(nproc)"; \
+    make install
+
+FROM ${PY_BASE}
+
+ARG FREEUNIT_REF=e63168bd3e4d708ce39c1ab7988ec13060dfb325
+LABEL org.freeunit.ref=$FREEUNIT_REF
+
+# Runtime libraries the unitd build links against.
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends libssl3t64 libpcre2-8-0 zlib1g; \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /usr/sbin/unitd /usr/sbin/unitd
+COPY --from=build /usr/lib/unit/modules /usr/lib/unit/modules
+COPY docker/entrypoint-freeunit.sh /usr/local/bin/entrypoint-freeunit.sh
+RUN chmod +x /usr/local/bin/entrypoint-freeunit.sh \
+    && mkdir -p /var/lib/unit /var/log /docker-entrypoint.d
+
+WORKDIR /app
+EXPOSE 80
+ENTRYPOINT ["/usr/local/bin/entrypoint-freeunit.sh", "unitd", "--no-daemon"]

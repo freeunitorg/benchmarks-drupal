@@ -1,0 +1,27 @@
+# The Python reference stacks: nginx in front of gunicorn (WSGI) or uvicorn (ASGI).
+# Same topology as the PHP leg (nginx + php-fpm in one container), so the comparison is
+# module against app server, not process layout against process layout.
+#
+#   docker build -f docker/Dockerfile.python --build-arg APP_SERVER=gunicorn \
+#       --build-arg APP_MODULE=wsgi:application -t drupal-bench-python:gunicorn .
+ARG PY_BASE=python:3.13-slim-trixie
+FROM ${PY_BASE}
+
+ARG APP_SERVER=gunicorn
+ARG APP_MODULE=wsgi:application
+
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends nginx curl; \
+    rm -rf /var/lib/apt/lists/*; \
+    pip install --no-cache-dir "gunicorn==23.0.0" "uvicorn==0.37.0"
+
+COPY docker/entrypoint-python.sh /usr/local/bin/entrypoint-python.sh
+COPY docker/runtimes/py-proxy.conf /etc/nginx/conf.d/default.conf
+RUN chmod +x /usr/local/bin/entrypoint-python.sh \
+    && rm -f /etc/nginx/sites-enabled/default
+
+ENV APP_SERVER=${APP_SERVER} APP_MODULE=${APP_MODULE}
+WORKDIR /app
+EXPOSE 80
+ENTRYPOINT ["/usr/local/bin/entrypoint-python.sh"]
