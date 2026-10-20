@@ -1,0 +1,22 @@
+# The cached Drupal 12 front page, the 1.37.1 candidate (tip e63168bd) against 1.37.0. 175 measured this pair at 13effad40 and found no claim; the four commits since touch compression, access-log if, tests and tools, so this re-confirms the release comparison at the shipping commit.
+JOB=190-front-anon-tip-vs-1370-12.0
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-tip-e63168bd
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+DECOMPOSE=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the 1.37.1 candidate is level with 1.37.0 on this path; a CLAIM with B lower is an improvement worth shipping, a CLAIM with B higher is a release regression"
+FALSIFY="A CLAIM with B higher on a path the merges do not touch"
