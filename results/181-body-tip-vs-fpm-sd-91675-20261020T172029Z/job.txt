@@ -1,0 +1,21 @@
+# The same pair with a 64 KiB body: the response-body path.
+JOB=181-body-tip-vs-fpm
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-body
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=nginx-fpm
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the framework-free ranking at the current tip"
+FALSIFY="FreeUnit behind the classic stack on a request with no framework work"
