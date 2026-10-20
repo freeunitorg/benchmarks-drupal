@@ -1,0 +1,22 @@
+# The Symfony row in the results set is stale: FreeUnit against nginx+FPM on a Symfony front page at the shipping commit.
+JOB=214-symfony-front-vs-fpm
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=nginx-fpm
+SITE=symfony
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the margin the cached Drupal front page shows, or better"
+FALSIFY="a margin in FPM favour, which would say the advantage does not carry to Symfony"

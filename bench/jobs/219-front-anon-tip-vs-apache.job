@@ -1,0 +1,22 @@
+# Apache with mod_php against FreeUnit on the cached Drupal 12 front page at the shipping commit: the Apache rows predate the release.
+JOB=219-front-anon-tip-vs-apache
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=apache
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="mod_php costs more per request"
+FALSIFY="mod_php cheaper on this path"
