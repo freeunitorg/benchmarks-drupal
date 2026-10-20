@@ -15,6 +15,20 @@ from wsgi import _work  # the loop is identical by construction, not by copy
 
 
 async def application(scope, receive, send):
+    # Unit sends lifespan events to the app at startup and shutdown; an app that only
+    # asserts "http" raises on startup, the worker's lifespan handling logs an exception
+    # and the process is recycled, which wrecked the cell's null band (109 percent).
+    if scope["type"] == "lifespan":
+        while True:
+            message = await receive()
+            if message["type"] == "lifespan.startup":
+                await send({"type": "lifespan.startup.complete"})
+            elif message["type"] == "lifespan.shutdown":
+                await send({"type": "lifespan.shutdown.complete"})
+                return
+            else:
+                return
+
     assert scope["type"] == "http"
 
     params = parse_qs(scope.get("query_string", b"").decode(), keep_blank_values=True)
