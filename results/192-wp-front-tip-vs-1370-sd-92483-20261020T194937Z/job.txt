@@ -1,0 +1,22 @@
+# WordPress front page, the 1.37.1 candidate against 1.37.0: the heaviest PHP render path in the suite and the one where the header-with-first-output work should show if it shows anywhere.
+JOB=192-wp-front-tip-vs-1370
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=wp-front
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-tip-e63168bd
+SITE=wp
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the 1.37.1 candidate is level with 1.37.0 on this path; a CLAIM with B lower is an improvement worth shipping, a CLAIM with B higher is a release regression"
+FALSIFY="A CLAIM with B higher on a path the merges do not touch"
