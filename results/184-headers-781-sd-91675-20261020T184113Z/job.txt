@@ -1,0 +1,22 @@
+# The same pair with 20 response headers and two cookies, to see whether the saving survives a header-heavy response.
+JOB=184-headers-781
+ISSUE="https://github.com/freeunitorg/freeunit/pull/781"
+PHASES="null ab"
+WORKLOAD=php-headers
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=freeunit-781
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+DECOMPOSE=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the OPcache hand-off is free or cheaper: it removes three file syscalls per request on a fixed script target"
+FALSIFY="a CLAIM above the band: the fast path costs instructions"
