@@ -12,6 +12,8 @@ ARG FREEUNIT_SHA256=8ae237d5a32d77bb8a7426d844ce75aeb18583a4e47318f55e17839d865f
 ARG CC_OPT=
 ARG BASE=php:8.5.11-cli-trixie
 
+# JEMALLOC=1 preloads jemalloc instead of glibc malloc, for the #688 comparison.
+ARG JEMALLOC=0
 FROM ghcr.io/mlocati/php-extension-installer:2 AS php-extension-installer
 FROM ${BASE} AS freeunit-build
 ARG FREEUNIT_REF
@@ -46,6 +48,7 @@ RUN set -eux; \
     make install
 
 FROM ${BASE} AS freeunit
+ARG JEMALLOC=0
 ARG FREEUNIT_REF=1.37.0
 LABEL org.freeunit.ref=$FREEUNIT_REF
 COPY --from=php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/install-php-extensions
@@ -59,8 +62,10 @@ RUN set -eux; \
     else \
         printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' > /etc/apt/apt.conf.d/80-retries; \
         apt-get update; \
+        if [ "$JEMALLOC" = "1" ]; then JEMALLOC_PKG="libjemalloc2"; else JEMALLOC_PKG=""; fi; \
         apt-get install -y --no-install-recommends curl ca-certificates default-mysql-client \
-            libssl3t64 libpcre2-8-0 zlib1g libzstd1 libbrotli1; \
+            libssl3t64 libpcre2-8-0 zlib1g libzstd1 libbrotli1 $JEMALLOC_PKG; \
+        if [ "$JEMALLOC" = "1" ]; then echo /usr/lib/x86_64-linux-gnu/libjemalloc.so.2 > /etc/ld.so.preload; fi; \
         rm -rf /var/lib/apt/lists/*; \
     fi; \
     mkdir -p /var/lib/unit /docker-entrypoint.d; \
