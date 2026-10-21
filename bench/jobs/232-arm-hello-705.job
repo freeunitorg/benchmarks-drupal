@@ -1,0 +1,22 @@
+# The first merge in the pre-sweep range that the x86 attribution named: 705 packs the request structures and pins the shared-memory layouts. On aarch64 the cost is already present at ff694772 (+6.12 percent, job 224), so it lives in 705, 708 or 730.
+JOB=232-arm-hello-705
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-master-705
+SITE=hello
+DB=mysql
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="if this commit is where the aarch64 cost was introduced, the delta is already positive here and stays positive at the tip"
+FALSIFY="a level result, which would push the cost to a later commit"
