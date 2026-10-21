@@ -1,0 +1,22 @@
+# The release headline on the aarch64 host: 1.37.0 against the shipping commit on the framework-free path, where the x86 side resolved -2.5 percent.
+JOB=220-arm-hello-tip-vs-1370
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-tip-e63168bd
+SITE=hello
+DB=mysql
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="the tip is cheaper here too"
+FALSIFY="a CLAIM the other way"
