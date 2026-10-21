@@ -1,0 +1,22 @@
+# PR 781 on x86 with four blocks: 183 measured -2.65 percent against a 3.58 percent band, so the direction is right and the band is what hid it.
+JOB=216-hello-781-tight
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=freeunit-781
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the head is cheaper: 781 removes three file syscalls per request"
+FALSIFY="a CLAIM the other way, or a band that stays above 3 percent"
