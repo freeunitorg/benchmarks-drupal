@@ -146,6 +146,7 @@ image_for() {  # runtime family -> image
     # moving :master: the hot-path audit compares :master with :master-o2 and
     # :master-lto images built from one commit (42, 43, 16r).
     freeunit-master-33896f7) echo "drupal-bench-freeunit:master-33896f7" ;;
+    freeunit-master-ff694772) echo "drupal-bench-freeunit:master-ff694772" ;;
     freeunit-master-10e1a9bec) echo "drupal-bench-freeunit:master-10e1a9bec" ;;
     freeunit-master-b532b9d) echo "drupal-bench-freeunit:master-b532b9d" ;;
     freeunit-master-13effad) echo "drupal-bench-freeunit:master-13effad" ;;
@@ -365,7 +366,7 @@ start_rt() {  # runtime side -> name
     local preload_vol=()
     [ -f "$sitedir/preload.ini" ] && preload_vol=(-v "$sitedir/preload.ini:/usr/local/etc/php/conf.d/zz-preload.ini:ro")
     case "$rt" in
-    freeunit|freeunit-direct|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head|freeunit-master-33896f7|freeunit-768-base|freeunit-768-head|freeunit-master-10e1a9bec|freeunit-master-b532b9d|freeunit-master-13effad|freeunit-705-base|freeunit-705|freeunit-tip-e63168bd|freeunit-781|freeunit-musl-tip|freeunit-alog-if-heavy|freeunit-alog-if|freeunit-alog-devnull|freeunit-alog|freeunit-python|freeunit-python-asgi|freeunit-python-asgi-small|freeunit-python-1370)
+    freeunit|freeunit-direct|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head|freeunit-master-33896f7|freeunit-768-base|freeunit-768-head|freeunit-master-ff694772|freeunit-master-10e1a9bec|freeunit-master-b532b9d|freeunit-master-13effad|freeunit-705-base|freeunit-705|freeunit-tip-e63168bd|freeunit-781|freeunit-musl-tip|freeunit-alog-if-heavy|freeunit-alog-if|freeunit-alog-devnull|freeunit-alog|freeunit-python|freeunit-python-asgi|freeunit-python-asgi-small|freeunit-python-1370)
         local cfg="$RESROOT/runtimes/$rt.json"
         [ -f "$cfg" ] || cfg="$RESROOT/runtimes/freeunit.json"
         docker run -d --name "$name" --network "$net" --cpuset-cpus "$SERVER_CPUS" \
@@ -619,7 +620,7 @@ PY
     local alerts=0 alog=
     [ "$pre" = 1 ] && alerts=$((alerts + 1))
     case "$rt" in
-    freeunit|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-direct|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head|freeunit-master-33896f7|freeunit-768-base|freeunit-768-head|freeunit-master-10e1a9bec|freeunit-master-b532b9d|freeunit-master-13effad|freeunit-705-base|freeunit-705|freeunit-tip-e63168bd|freeunit-781|freeunit-musl-tip|freeunit-alog-if-heavy|freeunit-alog-if|freeunit-alog-devnull|freeunit-alog|freeunit-python|freeunit-python-asgi|freeunit-python-asgi-small|freeunit-python-1370)
+    freeunit|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-direct|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head|freeunit-master-33896f7|freeunit-768-base|freeunit-768-head|freeunit-master-ff694772|freeunit-master-10e1a9bec|freeunit-master-b532b9d|freeunit-master-13effad|freeunit-705-base|freeunit-705|freeunit-tip-e63168bd|freeunit-781|freeunit-musl-tip|freeunit-alog-if-heavy|freeunit-alog-if|freeunit-alog-devnull|freeunit-alog|freeunit-python|freeunit-python-asgi|freeunit-python-asgi-small|freeunit-python-1370)
         alog=$(docker logs "$name" 2>&1 | grep -E '\[(alert|crit|emerg)\]' || true) ;;
     *)
         alog=$(docker logs "$name" 2>&1 | grep -E '\[(crit|emerg|alert)\]|worker process is shutting down unexpectedly' || true) ;;
