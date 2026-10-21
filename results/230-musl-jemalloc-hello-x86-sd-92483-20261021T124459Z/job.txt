@@ -1,0 +1,22 @@
+# jemalloc preloaded over mallocng, at the shipping commit: the #688 prototype closed 43 percent (arm64) to 51 percent (x86) of the gap before #693, so the question is whether it still buys anything.
+JOB=230-musl-jemalloc-hello-x86
+ISSUE="https://github.com/freeunitorg/freeunit-exp/issues/118"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-musl-tip
+RUNTIME_B=freeunit-musl-jemalloc
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="jemalloc changes little now, because the mmap churn it avoided is gone"
+FALSIFY="a CLAIM in jemalloc favour, which would say the allocator is still the lever"
