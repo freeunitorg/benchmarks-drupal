@@ -1,0 +1,13 @@
+NO CLAIM php-hello-c32: inside the noise, no claim (B is 1.3 percent less server CPU per request (us), null band 3.1, 10 of 16 cells agree)
+job 222-arm-musl-hello-tight  run 222-arm-musl-hello-tight-fu-build-arm-20261021T043613Z  A None ()  B None ()  governor unknown/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  php-hello-c32  server_us                   158.105      159.327    +0.78     [-1.50, +3.06]   3.06  10/16  PASS
+null  php-hello-c32  db_us                         0.000        0.000      n/a                n/a    n/a   0/16  NO DATA
+null  php-hello-c32  p50_ms                        5.219        5.252    +0.65     [-1.99, +3.29]   3.29  10/16  PASS
+null  php-hello-c32  p99_ms                        6.336        6.533    +3.35    [-4.18, +10.88]  10.88  11/16  NOISY
+null  php-hello-c32  rps                        6185.658     6122.720    -1.01     [-3.72, +1.69]   3.72  11/16  PASS
+ab    php-hello-c32  server_us                   158.632      156.493    -1.31     [-3.08, +0.46]   3.06  10/16  NO CLAIM
+ab    php-hello-c32  db_us                         0.000        0.000      n/a                n/a    n/a   0/16  NO DATA
+ab    php-hello-c32  p50_ms                        5.227        5.104    -2.31     [-4.33, -0.28]   3.29  10/16  NO CLAIM
+ab    php-hello-c32  p99_ms                        6.391        6.144    -3.71     [-8.79, +1.37]  10.88  10/16  NOISY
+ab    php-hello-c32  rps                        6180.931     6291.208    +1.83     [-0.14, +3.80]   3.72  11/16  NO CLAIM
