@@ -1,0 +1,13 @@
+CLAIM py-work-20k-c32: B is 14.7 percent more server CPU per request (us), outside the null band of 1.7, 16 of 16 cells agree
+job 221-arm-py-work-20k-tight  run 221-arm-py-work-20k-tight-fu-build-arm-20261021T042016Z  A None ()  B None ()  governor unknown/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  py-work-20k-c32 server_us                  3738.380     3768.532    +0.81     [-0.07, +1.69]   1.69  13/16  PASS
+null  py-work-20k-c32 db_us                         0.000        0.000      n/a                n/a    n/a   0/16  NO DATA
+null  py-work-20k-c32 p50_ms                      125.994      128.143    +1.71     [-0.56, +3.98]   3.98  11/16  PASS
+null  py-work-20k-c32 p99_ms                      164.188      164.351    +0.11     [-1.75, +1.98]   1.98   8/16  PASS
+null  py-work-20k-c32 rps                         267.169      264.936    -0.83     [-1.72, +0.05]   1.72  12/16  PASS
+ab    py-work-20k-c32 server_us                  3742.989     4292.193   +14.68   [+14.02, +15.35]   1.69  16/16  CLAIM
+ab    py-work-20k-c32 db_us                         0.000        0.000      n/a                n/a    n/a   0/16  NO DATA
+ab    py-work-20k-c32 p50_ms                      125.329      145.902   +16.53   [+14.47, +18.58]   3.98  16/16  CLAIM
+ab    py-work-20k-c32 p99_ms                      163.862      193.293   +17.97   [+16.81, +19.14]   1.98  16/16  CLAIM
+ab    py-work-20k-c32 rps                         266.778      232.584   -12.81   [-13.44, -12.18]   1.72  16/16  CLAIM
