@@ -1,0 +1,22 @@
+# The same preload over glibc, the control for 230: if jemalloc helps one libc and not the other, the effect is the allocator, not the libc.
+JOB=231-glibc-jemalloc-hello-x86
+ISSUE="https://github.com/freeunitorg/freeunit-exp/issues/118"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=freeunit-jemalloc
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="jemalloc is a wash on glibc"
+FALSIFY="a CLAIM either way, which the #688 note would have to record"
