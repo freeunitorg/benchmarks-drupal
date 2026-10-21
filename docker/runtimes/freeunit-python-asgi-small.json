@@ -1,0 +1,28 @@
+{
+    "listeners": {
+        "*:80": {
+            "pass": "applications/py"
+        }
+    },
+    "applications": {
+        "py": {
+            "type": "python 3.13",
+            "processes": 4,
+            "path": "/app/py",
+            "module": "asgi",
+            "limits": {
+                "requests": 10000,
+                "timeout": 30
+            }
+        }
+    },
+    "settings": {
+        "http": {
+            "max_body_size": 8388608,
+            "header_read_timeout": 30,
+            "body_read_timeout": 30,
+            "send_timeout": 30,
+            "idle_timeout": 60
+        }
+    }
+}

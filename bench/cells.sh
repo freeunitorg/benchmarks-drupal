@@ -134,6 +134,7 @@ image_for() {  # runtime family -> image
     # The Python leg: Unit with the python module, and the two app servers behind nginx.
     freeunit-python) echo "drupal-bench-freeunit:py-tip" ;;
     freeunit-python-asgi) echo "drupal-bench-freeunit:py-tip" ;;
+    freeunit-python-asgi-small) echo "drupal-bench-freeunit:py-tip" ;;
     freeunit-python-1370) echo "drupal-bench-freeunit:py-1370" ;;
     gunicorn) echo "drupal-bench-python:gunicorn" ;;
     uvicorn)  echo "drupal-bench-python:uvicorn" ;;
@@ -364,7 +365,7 @@ start_rt() {  # runtime side -> name
     local preload_vol=()
     [ -f "$sitedir/preload.ini" ] && preload_vol=(-v "$sitedir/preload.ini:/usr/local/etc/php/conf.d/zz-preload.ini:ro")
     case "$rt" in
-    freeunit|freeunit-direct|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head|freeunit-master-33896f7|freeunit-768-base|freeunit-768-head|freeunit-master-10e1a9bec|freeunit-master-b532b9d|freeunit-master-13effad|freeunit-705-base|freeunit-705|freeunit-tip-e63168bd|freeunit-781|freeunit-musl-tip|freeunit-alog-if-heavy|freeunit-alog-if|freeunit-alog-devnull|freeunit-alog|freeunit-python|freeunit-python-asgi|freeunit-python-1370)
+    freeunit|freeunit-direct|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head|freeunit-master-33896f7|freeunit-768-base|freeunit-768-head|freeunit-master-10e1a9bec|freeunit-master-b532b9d|freeunit-master-13effad|freeunit-705-base|freeunit-705|freeunit-tip-e63168bd|freeunit-781|freeunit-musl-tip|freeunit-alog-if-heavy|freeunit-alog-if|freeunit-alog-devnull|freeunit-alog|freeunit-python|freeunit-python-asgi|freeunit-python-asgi-small|freeunit-python-1370)
         local cfg="$RESROOT/runtimes/$rt.json"
         [ -f "$cfg" ] || cfg="$RESROOT/runtimes/freeunit.json"
         docker run -d --name "$name" --network "$net" --cpuset-cpus "$SERVER_CPUS" \
@@ -377,9 +378,12 @@ start_rt() {  # runtime side -> name
             "$img" >/dev/null || die "cannot start $rt"
         ;;
     nginx-fpm|apache|nginx-src|angie-fpm|freenginx-fpm|gunicorn|uvicorn)
+        # APP_PROCS reaches the app server through the entrypoint; php-fpm's entrypoint
+        # ignores it, so the same line serves both legs and a cell can pin the pool size.
         docker run -d --name "$name" --network "$net" --cpuset-cpus "$SERVER_CPUS" \
             --label "bench-run=${RUN_ID:-manual}" --label bench-role=runtime \
             -p "127.0.0.1:$PORT:80" \
+            -e APP_PROCS="${APP_PROCS:-20}" \
             -v "$sitedir:/app" \
             -v "$RESROOT/apps:/app/apps:ro" \
             ${preload_vol[@]+"${preload_vol[@]}"} \
@@ -615,7 +619,7 @@ PY
     local alerts=0 alog=
     [ "$pre" = 1 ] && alerts=$((alerts + 1))
     case "$rt" in
-    freeunit|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-direct|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head|freeunit-master-33896f7|freeunit-768-base|freeunit-768-head|freeunit-master-10e1a9bec|freeunit-master-b532b9d|freeunit-master-13effad|freeunit-705-base|freeunit-705|freeunit-tip-e63168bd|freeunit-781|freeunit-musl-tip|freeunit-alog-if-heavy|freeunit-alog-if|freeunit-alog-devnull|freeunit-alog|freeunit-python|freeunit-python-asgi|freeunit-python-1370)
+    freeunit|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-direct|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head|freeunit-master-33896f7|freeunit-768-base|freeunit-768-head|freeunit-master-10e1a9bec|freeunit-master-b532b9d|freeunit-master-13effad|freeunit-705-base|freeunit-705|freeunit-tip-e63168bd|freeunit-781|freeunit-musl-tip|freeunit-alog-if-heavy|freeunit-alog-if|freeunit-alog-devnull|freeunit-alog|freeunit-python|freeunit-python-asgi|freeunit-python-asgi-small|freeunit-python-1370)
         alog=$(docker logs "$name" 2>&1 | grep -E '\[(alert|crit|emerg)\]' || true) ;;
     *)
         alog=$(docker logs "$name" 2>&1 | grep -E '\[(crit|emerg|alert)\]|worker process is shutting down unexpectedly' || true) ;;
