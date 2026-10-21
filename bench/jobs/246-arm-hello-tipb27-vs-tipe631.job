@@ -1,0 +1,23 @@
+# The same pair on the aarch64 host: whether the ten commits changed the 6.79 percent cost the PHP script-open rework introduced there (job 238).
+JOB=246-arm-hello-tipb27-vs-tipe631
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=freeunit-tip-b27bc76d
+SITE=hello
+NO_DB=1
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=0
+DECOMPOSE=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="the ten commits since e63168bd are level on this path, or a CLAIM names a regression or an improvement"
+FALSIFY="a CLAIM whose sign would be a release regression"
