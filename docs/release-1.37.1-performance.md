@@ -52,8 +52,7 @@ faster: job **220**, 147.19 µs (1.37.0) against 154.34 µs (shipping commit), 9
 [+3.32, +6.42], null band 1.88, **16 of 16 slots agreeing**. On x86 the same comparison is
 −3.72 % (job 210, 15/16). Two tight measurements, opposite signs.
 
-**The bisect names the commit: `#736` (`df8b9ccb0`), the first commit of the atomics
-sweep.** Eight measurements on the aarch64 host, all four blocks, all against the same
+**The bisect names the change, and it is not the one the commit title suggests.** Eight measurements on the aarch64 host, all four blocks, all against the same
 1.37.0 image:
 
 | job | commit | Δ on hello | 95 % CI | band | agree | verdict |
@@ -74,11 +73,34 @@ end.** Everything after `#736` stays in the +4 … +8 % range, i.e. the cost was
 there and never reclaimed on aarch64 — while on x86 the same range cost +3.09 % and the
 later work gave most of it back.
 
-`#736` is the atomics/thread/port commit (`auto/atomic`, `nxt_port_socket.c`, `nxt_mp.c`,
-`nxt_thread.c`), which is exactly where weak memory ordering differs from x86's. **A 1.37.1
-release note must not claim an across-the-board improvement**; the options are to ship with
-the arm64 caveat, to hold `#736` (or its aarch64-relevant part) for a 1.38 fix, or to
-re-measure the tip on aarch64 against a revert before the tag is cut.
+The step `7c54e301e..df8b9ccb0` holds **two** commits, not one:
+
+```
+5386fa9e8  php: open the script once, nonblocking, and answer 404 or 403 from that open
+df8b9ccb0  core: make the remaining mixed atomic and plain accesses atomic     (#736)
+```
+
+Job **238** measures its parent on its own:
+
+| job | commit | Δ on hello | 95 % CI | band | agree | verdict |
+|---|---|---|---|---|---|---|
+| **238** | `5386fa9e8` PHP script-open rework | **+6.79 %** | [+5.00, +8.57] | 1.67 | **16/16** | **CLAIM — the cost is here** |
+| 235 | `df8b9ccb0` (+ `#736` atomics) | +7.30 % | [+5.43, +9.17] | 0.99 | 16/16 | CLAIM |
+
+So the aarch64 cost is the **PHP worker's script-open rework**, and the atomics commit adds
+nothing measurable on top of it (the two agree inside each other's intervals). The rework
+replaced `access()` plus PHP's own open with a single nonblocking open followed by an
+`fstat` that classifies the opened object, so a FIFO cannot park the worker and 404/403 are
+answered from the open itself; that is a correctness change for a security-relevant case,
+not something to revert.
+
+**What 1.37.1 should say, and what it should do next.** The note must not claim an
+across-the-board improvement: the release is 3.7 % faster on x86 hello and **6.8 % slower on
+aarch64 hello**, and the cause is named. The follow-up is a 1.38 task, not a patch-release
+revert: keep the correctness and remove the cost — the opened stream is already in hand, so
+the open should not be repeated further down PHP's path, and opcache's `enable_file_override`
+must stay effective for the main script (this is the same area as the fixed-script hand-off
+measured in jobs 186-189/183-185).
 
 ## A stability fix that is not a performance number
 
