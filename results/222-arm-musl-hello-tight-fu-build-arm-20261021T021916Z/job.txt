@@ -1,0 +1,22 @@
+# The libc pair again at four blocks: 200 measured -0.98 percent in a 2.89 percent band, and the 12-17 percent gap is supposed to be gone; a narrower band makes that statement worth quoting.
+JOB=222-arm-musl-hello-tight
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=freeunit-musl-tip
+SITE=hello
+DB=mysql
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="no measurable musl penalty"
+FALSIFY="a musl penalty reappearing"
