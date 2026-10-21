@@ -1,0 +1,29 @@
+NO CLAIM symfony-front-c32: inside the noise, no claim (B is 0.0 percent less server instructions per request, null band 0.2, 7 of 16 cells agree)
+job 215-symfony-front-tip-vs-1370  run 215-symfony-front-tip-vs-1370-sd-91675-20261021T172107Z  A None ()  B None ()  governor powersave/balance_power  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  symfony-front-c32 s_instructions          4610954.768  4614461.131    +0.08     [-0.02, +0.17]   0.17  13/16  PASS
+null  symfony-front-c32 db_cs                         6.019        6.017    -0.03     [-0.10, +0.04]   0.10  10/16  PASS
+null  symfony-front-c32 db_cycles               1609809.490  1612085.716    +0.14     [-0.20, +0.48]   0.48   8/16  PASS
+null  symfony-front-c32 db_instructions          761367.552   761317.495    -0.01     [-0.18, +0.17]   0.18   7/16  PASS
+null  symfony-front-c32 db_migrations                 1.066        1.058    -0.81     [-2.31, +0.69]   2.31   9/16  PASS
+null  symfony-front-c32 db_us                       647.394      651.365    +0.61     [-0.18, +1.41]   1.41  10/16  PASS
+null  symfony-front-c32 p50_ms                       45.503       45.899    +0.87     [+0.04, +1.70]   1.70  13/16  PASS
+null  symfony-front-c32 p99_ms                       65.768       67.551    +3.06     [-3.64, +9.76]   9.76  10/16  NOISY
+null  symfony-front-c32 rps                         695.453      688.141    -1.05     [-2.06, -0.04]   2.06  12/16  PASS
+null  symfony-front-c32 s_cs                          7.852        8.031    +2.29     [-1.42, +6.01]   6.01  12/16  NOISY
+null  symfony-front-c32 s_cycles                7375558.287  7406150.278    +0.42     [-0.39, +1.23]   1.23  12/16  PASS
+null  symfony-front-c32 s_migrations                  0.297        0.344   +15.82    [-2.71, +34.35]  34.35  10/16  NOISY
+null  symfony-front-c32 server_us                  2871.757     2901.949    +1.05     [+0.03, +2.07]   2.07  12/16  PASS
+ab    symfony-front-c32 s_instructions          4612142.147  4612137.965    -0.00     [-0.10, +0.10]   0.17   7/16  NO CLAIM
+ab    symfony-front-c32 db_cs                         6.019        6.020    +0.02     [-0.06, +0.10]   0.10   9/16  NO CLAIM
+ab    symfony-front-c32 db_cycles               1614074.112  1612836.935    -0.08     [-0.40, +0.25]   0.48   9/16  NO CLAIM
+ab    symfony-front-c32 db_instructions          760802.532   761316.626    +0.07     [-0.02, +0.16]   0.18  10/16  NO CLAIM
+ab    symfony-front-c32 db_migrations                 1.061        1.059    -0.22     [-1.42, +0.98]   2.31   9/16  NO CLAIM
+ab    symfony-front-c32 db_us                       634.724      645.852    +1.77     [+0.50, +3.04]   1.41  16/16  CLAIM
+ab    symfony-front-c32 p50_ms                       44.829       45.445    +1.38     [-0.00, +2.76]   1.70  13/16  NO CLAIM
+ab    symfony-front-c32 p99_ms                       67.012       65.558    -1.83     [-5.97, +2.31]   9.76   9/16  NOISY
+ab    symfony-front-c32 rps                         706.442      695.949    -1.48     [-2.87, -0.10]   2.06  13/16  NO CLAIM
+ab    symfony-front-c32 s_cs                          7.985        8.030    +0.73     [-2.52, +3.98]   6.01   9/16  NOISY
+ab    symfony-front-c32 s_cycles                7432733.219  7396391.856    -0.48     [-1.20, +0.24]   1.23   9/16  NO CLAIM
+ab    symfony-front-c32 s_migrations                  0.312        0.282    -7.42    [-23.69, +8.85]  34.35  11/16  NOISY
+ab    symfony-front-c32 server_us                  2827.551     2870.277    +1.51     [+0.12, +2.91]   2.07  13/16  NO CLAIM
