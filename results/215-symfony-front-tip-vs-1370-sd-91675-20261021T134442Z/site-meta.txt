@@ -1,0 +1,7 @@
+site=symfony
+framework=7.4.20
+php=8.5.11
+tag=symfony/skeleton:7.4.*
+runroot=/data/projects/benchmarks-drupal/run
+installed=2026-10-10T08:10:04Z
+workload=front page, 50 of 200 rows from MariaDB via PDO, Twig render
