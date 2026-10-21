@@ -1,0 +1,22 @@
+# The second application's cached front page at four blocks: 193 was +0.01 percent in a 0.17 percent band.
+JOB=213-front-anon-11.4-tip-vs-1370-tight
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-tip-e63168bd
+SITE=11.4
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="level"
+FALSIFY="a CLAIM on this path"
