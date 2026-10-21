@@ -580,6 +580,13 @@ timed_cell() {  # phase side cell conns block slot runtime
     taskset -c "$LOAD_CPUS" "$OHA" -z "${DUR}s" -w "${OHA_A[@]}" --output-format json "$(url_for)" > "$R/oha.json" 2>/dev/null
     a1=$(oncpu_ns $pids); d1=$(oncpu_ns $rpids); f1=0; w1=0
     [ "${DECOMPOSE:-0}" = 1 ] && { f1=$(oncpu_ns $fpids); w1=$(oncpu_ns $wpids); }
+    # A pid set that turns over inside the window makes the delta negative, and a negative
+    # server time is never a result: it reached results.tsv once (ASGI at four processes,
+    # server_us=-15.401) because nothing checked. Count it as a bad cell instead.
+    if [ $((a1 - a0)) -lt 0 ] || [ $((d1 - d0)) -lt 0 ]; then
+        log "$ph $side $cell block $k slot $s ($rt): on-CPU time went backwards (app $a0->$a1, db $d0->$d1); the pid set changed inside the window"
+        bad=$((bad + 1))
+    fi
     perf_stop s
     perf_stop db
     perf_stop sf
