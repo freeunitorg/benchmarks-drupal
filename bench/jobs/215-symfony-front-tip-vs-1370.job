@@ -2,7 +2,7 @@
 JOB=215-symfony-front-tip-vs-1370
 ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
 PHASES="null ab"
-WORKLOAD=drupal-front
+WORKLOAD=symfony-front
 RUNTIME_A=freeunit
 RUNTIME_B=freeunit-tip-e63168bd
 SITE=symfony

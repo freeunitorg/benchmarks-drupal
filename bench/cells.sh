@@ -432,6 +432,10 @@ url_for() {
     php-body-64k) echo "http://127.0.0.1:$PORT/?mode=body&size=65536" ;;
     # The Python leg mirrors the PHP workloads: same hello, same header set, same body
     # sizes, same work loop (the two loops are arithmetically identical).
+    # Symfony answers / itself, but the preflight's Drupal page-cache requirement does not
+    # apply: a drupal-front cell on a Symfony site fails preflight and marks every cell an
+    # alert, which is how 214 came back INVALID with sixteen of sixteen slots agreeing.
+    symfony-front) echo "http://127.0.0.1:$PORT/" ;;
     py-headers)   echo "http://127.0.0.1:$PORT/?mode=headers" ;;
     py-body-1k)   echo "http://127.0.0.1:$PORT/?mode=body&size=1024" ;;
     py-body-8k)   echo "http://127.0.0.1:$PORT/?mode=body&size=8192" ;;

@@ -2,7 +2,7 @@
 JOB=214-symfony-front-vs-fpm
 ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
 PHASES="null ab"
-WORKLOAD=drupal-front
+WORKLOAD=symfony-front
 RUNTIME_A=freeunit-tip-e63168bd
 RUNTIME_B=nginx-fpm
 SITE=symfony
