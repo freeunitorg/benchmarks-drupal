@@ -52,12 +52,33 @@ faster: job **220**, 147.19 µs (1.37.0) against 154.34 µs (shipping commit), 9
 [+3.32, +6.42], null band 1.88, **16 of 16 slots agreeing**. On x86 the same comparison is
 −3.72 % (job 210, 15/16). Two tight measurements, opposite signs.
 
-An aarch64-only regression of that size is a release decision, not a footnote: it is
-plausibly the atomic and notification work, where `ldaxr/stlxr` and its memory ordering
-behave differently from x86's atomics. A bisect is running against the four commits the x86
-work already pinned — `ff694772`, `10e1a9bec`, `b532b9d`, `13effad40` (jobs 224–227). Until
-it names the commit, 1.37.1 has **one unresolved perf question on arm64**, and the release
-note must not claim an across-the-board improvement.
+**The bisect names the commit: `#736` (`df8b9ccb0`), the first commit of the atomics
+sweep.** Eight measurements on the aarch64 host, all four blocks, all against the same
+1.37.0 image:
+
+| job | commit | Δ on hello | 95 % CI | band | agree | verdict |
+|---|---|---|---|---|---|---|
+| 233 | `#705` `c70bdbd11` | −0.67 % | — | — | — | not the cost |
+| 234 | `#730` `7c54e301e` | −1.97 % | [−3.63, −0.30] | 2.63 | 12/16 | NO CLAIM (slightly faster) |
+| **235** | **`#736` `df8b9ccb0`** | **+7.30 %** | [+5.43, +9.17] | 0.99 | **16/16** | **CLAIM — the cost enters here** |
+| 236 | `#742` `1f7511a39` | (running) | | | | |
+| **237** | **`#749` `b3c5da388`** | **+6.59 %** | [+5.09, +8.09] | 1.36 | **16/16** | CLAIM — cost present |
+| 224 | `ff694772` | +6.12 % | [+4.36, +7.89] | 1.65 | 15/16 | CLAIM |
+| 225 | `10e1a9bec` | +5.38 % | [+3.48, +7.28] | 2.39 | 15/16 | CLAIM |
+| 226 | `b532b9d` | +7.79 % | — | — | — | CLAIM |
+| 227 | `13effad40` | +4.2 % | — | — | — | CLAIM |
+| 220 | `e63168bd` (tip) | **+4.87 %** | [+3.32, +6.42] | 1.88 | 16/16 | CLAIM |
+
+The step is clean: **−1.97 % at `#730` and +7.30 % at `#736`, with 16 of 16 slots at each
+end.** Everything after `#736` stays in the +4 … +8 % range, i.e. the cost was introduced
+there and never reclaimed on aarch64 — while on x86 the same range cost +3.09 % and the
+later work gave most of it back.
+
+`#736` is the atomics/thread/port commit (`auto/atomic`, `nxt_port_socket.c`, `nxt_mp.c`,
+`nxt_thread.c`), which is exactly where weak memory ordering differs from x86's. **A 1.37.1
+release note must not claim an across-the-board improvement**; the options are to ship with
+the arm64 caveat, to hold `#736` (or its aarch64-relevant part) for a 1.38 fix, or to
+re-measure the tip on aarch64 against a revert before the tag is cut.
 
 ## A stability fix that is not a performance number
 
