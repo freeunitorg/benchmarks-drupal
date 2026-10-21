@@ -1,0 +1,24 @@
+# The commit between #730 (clear) and #736 (+7.30 percent) is a PHP SAPI rework: the script is
+# opened once, nonblocking, and 404/403 are answered from that open. The range holds exactly
+# two commits, so this cell splits the PHP change from the atomics commit.
+JOB=238-arm-hello-phpopen
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-master-phpopen
+SITE=hello
+DB=mysql
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="if this commit is where the aarch64 cost was introduced, the delta is already positive here and stays positive at the tip"
+FALSIFY="a level result, which would push the cost to a later commit"
