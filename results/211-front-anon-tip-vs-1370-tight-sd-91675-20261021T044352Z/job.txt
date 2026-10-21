@@ -1,0 +1,22 @@
+# The cached Drupal 12 front page at the shipping commit, four blocks: 190 found -0.02 percent in a 0.14 percent band, which is already a strong statement of level; this repeats it.
+JOB=211-front-anon-tip-vs-1370-tight
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-tip-e63168bd
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="level, as 190 reported"
+FALSIFY="a CLAIM on this path"
