@@ -20,15 +20,20 @@ measurement is only quoted where the path is named.
 
 | job | cell | 1.37.0 | `e63168bd` | Δ | 95 % CI | band | agree | verdict |
 |---|---|---|---|---|---|---|---|---|
-| 182 | hello (framework-free) | 208 900 | 203 585 | **−2.51 %** | [−4.10, −0.92] | 2.33 | 10/12 | **claim, faster** |
+| **210** | hello (framework-free), 4 blocks | 212 990 | 205 065 | **−3.72 %** | [−4.92, −2.52] | 1.61 | **15/16** | **claim, faster** |
+| 182 | hello, 3 blocks | 208 900 | 203 585 | −2.51 % | [−4.10, −0.92] | 2.33 | 10/12 | claim, faster |
 | 175 | hello, at `13effad40` | 214 346 | 207 698 | **−3.10 %** | [−4.91, −1.29] | 2.33 | 11/12 | claim, faster |
 | 190 | Drupal 12 cached front | 4 413 620 | 4 412 843 | −0.02 % | [−0.18, +0.14] | 0.14 | 6/12 | level |
 | 176 | same, at `13effad40` | 4 415 755 | 4 412 961 | −0.06 % | [−0.19, +0.07] | 0.27 | 7/12 | level |
-| 191 | Drupal 12 authenticated | 72 430 435 | 72 501 323 | **+0.10 %** | [+0.07, +0.12] | 0.05 | 12/12 | claim, **up** |
+| **212** | Drupal 12 authenticated, 4 blocks | 72 441 149 | 72 506 104 | **+0.09 %** | [+0.07, +0.11] | 0.04 | **16/16** | claim, **up** |
+| 191 | Drupal 12 authenticated, 3 blocks | 72 430 435 | 72 501 323 | +0.10 % | [+0.07, +0.12] | 0.05 | 12/12 | claim, up |
 | 191 | same cell, router time | 293.95 µs | 283.17 µs | **−3.67 %** | [−6.11, −1.23] | 3.33 | 9/12 | claim, faster |
 | 191 | same cell, worker time | 28 244.6 µs | 28 186.8 µs | −0.19 % | [−1.36, +0.97] | 1.68 | 7/12 | level |
-| 193 | Drupal 11.4 cached front | 4 722 916 | 4 723 459 | +0.01 % | [−0.15, +0.17] | 0.17 | 8/12 | level |
+| **213** | Drupal 11.4 cached front, 4 blocks | 4 727 998 | 4 720 793 | **−0.15 %** | [−0.25, −0.05] | 0.13 | 11/16 | **claim, faster** |
+| 193 | Drupal 11.4 cached front, 3 blocks | 4 722 916 | 4 723 459 | +0.01 % | [−0.15, +0.17] | 0.17 | 8/12 | level |
 | 192 | WordPress front | 236 068 918 | 234 065 501 | −0.85 % | [−1.97, +0.27] | 1.60 | 8/12 | level |
+| **217** | WordPress front, 4 blocks | 233 503 082 | 233 296 014 | −0.09 % | [−0.87, +0.77] | 0.78 | 8/16 | level |
+| 211 | Drupal 12 cached front, 4 blocks | 4 409 762 | 4 414 851 | +0.12 % | [+0.00, +0.23] | 0.14 | 9/16 | level |
 
 **What a release note may say.** FreeUnit 1.37.1 is level with 1.37.0 on every framework
 cell measured (Drupal 12 cached, Drupal 11.4, WordPress), and cheaper on the framework-free
@@ -39,6 +44,20 @@ path — 2.5 % fewer server instructions per request at the shipping commit, 3.1
 (72 k on 72.4 M, twelve of twelve slots agreeing) while the router side of the same request
 is 3.67 % cheaper in time. The worker is unchanged. That is a real, small instruction
 increase on that path and it belongs in the note rather than in a footnote.
+
+## Blocker to decide before shipping: the aarch64 side moves the other way
+
+The same pair of commits measured on the aarch64 host is **4.87 % slower** on hello, not
+faster: job **220**, 147.19 µs (1.37.0) against 154.34 µs (shipping commit), 95 % CI
+[+3.32, +6.42], null band 1.88, **16 of 16 slots agreeing**. On x86 the same comparison is
+−3.72 % (job 210, 15/16). Two tight measurements, opposite signs.
+
+An aarch64-only regression of that size is a release decision, not a footnote: it is
+plausibly the atomic and notification work, where `ldaxr/stlxr` and its memory ordering
+behave differently from x86's atomics. A bisect is running against the four commits the x86
+work already pinned — `ff694772`, `10e1a9bec`, `b532b9d`, `13effad40` (jobs 224–227). Until
+it names the commit, 1.37.1 has **one unresolved perf question on arm64**, and the release
+note must not claim an across-the-board improvement.
 
 ## A stability fix that is not a performance number
 
@@ -74,8 +93,8 @@ WordPress row is the exception worth knowing: on that workload FPM is level with
 
 ## Null results worth not re-litigating
 
-- **musl vs glibc at the shipping commit** (200, 201): hello −0.98 %, Drupal front
-  −1.85 %, both inside the noise; page faults 1.51/req (glibc) against 0.74/req (musl) and
+- **musl vs glibc at the shipping commit** (200, 201, and 222 at four blocks: −0.23 %
+  in a 1.28 % band): hello −0.98 %, Drupal front −1.85 %, all inside the noise; page faults 1.51/req (glibc) against 0.74/req (musl) and
   17 % smaller RSS. The 12–17 % musl penalty reported before #693/#712 **is not
   measurable any more** on the cell where it was reported.
 - **The access log's `if` filter** (194–198): the write path +0.10 %, `/dev/null` +0.00 %,
