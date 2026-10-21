@@ -1,0 +1,13 @@
+CLAIM php-hello-c32: B is 6.4 percent more server CPU per request (us), outside the null band of 2.9, 16 of 16 cells agree
+job 235-arm-hello-736  run 235-arm-hello-736-fu-build-arm-20261021T134726Z  A None ()  B None ()  governor unknown/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  php-hello-c32  server_us                   144.223      146.343    +1.48     [+0.10, +2.86]   2.86  12/16  PASS
+null  php-hello-c32  db_us                         0.000        0.000      n/a                n/a    n/a   0/16  NO DATA
+null  php-hello-c32  p50_ms                        4.716        4.833    +2.48     [+0.86, +4.10]   4.10  12/16  PASS
+null  php-hello-c32  p99_ms                        5.932        5.971    +0.82     [-5.08, +6.73]   6.73  11/16  NOISY
+null  php-hello-c32  rps                        6794.642     6671.608    -1.79     [-3.33, -0.25]   3.33  11/16  PASS
+ab    php-hello-c32  server_us                   147.347      156.731    +6.36     [+4.90, +7.82]   2.86  16/16  CLAIM
+ab    php-hello-c32  db_us                         0.000        0.000      n/a                n/a    n/a   0/16  NO DATA
+ab    php-hello-c32  p50_ms                        4.831        5.151    +6.61     [+4.81, +8.41]   4.10  16/16  CLAIM
+ab    php-hello-c32  p99_ms                        5.872        6.239    +6.32     [+2.76, +9.88]   6.73  15/16  NOISY
+ab    php-hello-c32  rps                        6668.780     6258.912    -6.15     [-7.67, -4.63]   3.33  16/16  CLAIM
