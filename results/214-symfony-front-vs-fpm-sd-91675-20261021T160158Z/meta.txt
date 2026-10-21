@@ -1,0 +1,36 @@
+job=214-symfony-front-vs-fpm
+run_id=214-symfony-front-vs-fpm-sd-91675-20261021T160158Z
+host=sd-91675
+date=2026-10-21T16:21:18Z
+workload=symfony-front
+runtime_a=freeunit-tip-e63168bd
+runtime_b=nginx-fpm
+site=symfony
+db=mysql
+phases=null ab conns=32 dur=10 warm=2 reps=4 rate=
+server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=4,5
+governor=powersave
+epp=balance_power
+kernel=6.8.0-136-generic
+oha=oha 1.16.0
+perf_image=1ec7891af56e
+freeunit_image=84d7ffa3768c
+freeunit_master_sha=ff694772b0fac0875f76bcc66331389919387db3
+freeunit_master_image=f458d3861696
+freeunit_master_old_sha=8492d5ee43a99a8f1504598ed44d046b61d85131
+freeunit_master_old_image=45cb38e59501
+freeunit_master_mid_sha=dc30c8a7e76fe86f8063ce7eafcefc285137629a
+freeunit_master_mid_image=b1232db7ba0a
+fpm_image=930e3cca8161
+apache_image=7a84d1255075
+mariadb_image=0d0945c57f75
+issue=https://github.com/freeunitorg/benchmarks-drupal
+expect=the margin the cached Drupal front page shows, or better
+falsify=a margin in FPM favour, which would say the advantage does not carry to Symfony
+site=symfony
+framework=7.4.20
+php=8.5.11
+tag=symfony/skeleton:7.4.*
+runroot=/data/projects/benchmarks-drupal/run
+installed=2026-10-10T08:10:04Z
+workload=front page, 50 of 200 rows from MariaDB via PDO, Twig render
