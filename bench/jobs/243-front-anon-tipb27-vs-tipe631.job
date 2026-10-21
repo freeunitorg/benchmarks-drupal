@@ -1,0 +1,22 @@
+# The same pair on the cached Drupal 12 front page, with the front/worker split: the more of the request the router does, the more a doorbell change would show.
+JOB=243-front-anon-tipb27-vs-tipe631
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=freeunit-tip-b27bc76d
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the ten commits since e63168bd are level on this path, or a CLAIM names a regression or an improvement"
+FALSIFY="a CLAIM whose sign would be a release regression"
