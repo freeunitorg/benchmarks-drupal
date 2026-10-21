@@ -1,0 +1,29 @@
+CLAIM wp-front-c32: B is 1.5 percent less server instructions per request, outside the null band of 1.1, 13 of 16 cells agree
+job 218-wp-front-tip-vs-fpm  run 218-wp-front-tip-vs-fpm-sd-92483-20261021T003115Z  A None ()  B None ()  governor powersave/balance_power  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  wp-front-c32   s_instructions         232605959.056 231723797.174    -0.38     [-1.13, +0.37]   1.13   9/16  PASS
+null  wp-front-c32   db_cs                        33.331       33.319    -0.03     [-0.44, +0.37]   0.44   7/16  PASS
+null  wp-front-c32   db_cycles              19137715.128 19084381.693    -0.24     [-2.59, +2.11]   2.59   8/16  PASS
+null  wp-front-c32   db_instructions         8847156.128  8846874.676    -0.00     [-0.32, +0.31]   0.32   6/16  PASS
+null  wp-front-c32   db_migrations                 4.552        4.681    +2.90     [-0.14, +5.94]   5.94  11/16  NOISY
+null  wp-front-c32   db_us                      7772.585     7741.785    -0.36     [-2.75, +2.03]   2.75   7/16  PASS
+null  wp-front-c32   p50_ms                     1234.417     1232.145    +0.01     [-3.37, +3.39]   3.39   8/16  PASS
+null  wp-front-c32   p99_ms                     1970.003     1943.078    -0.64   [-11.75, +10.47]  11.75   7/16  NOISY
+null  wp-front-c32   rps                          25.567       25.612    +0.21     [-2.40, +2.82]   2.82   8/16  PASS
+null  wp-front-c32   s_cs                         60.065       59.395    -1.09     [-3.43, +1.26]   3.43  11/16  PASS
+null  wp-front-c32   s_cycles               201819395.810 200377887.316    -0.71     [-1.83, +0.41]   1.83  11/16  PASS
+null  wp-front-c32   s_migrations                  0.996        0.861   -12.83    [-28.57, +2.91]  28.57  10/16  NOISY
+null  wp-front-c32   server_us                 75814.502    75564.185    -0.33     [-1.06, +0.40]   1.06  10/16  PASS
+ab    wp-front-c32   s_instructions         232348418.757 228943022.969    -1.46     [-2.26, -0.67]   1.13  13/16  CLAIM
+ab    wp-front-c32   db_cs                        33.373       33.392    +0.06     [-0.34, +0.46]   0.44  10/16  NO CLAIM
+ab    wp-front-c32   db_cycles              19037872.654 19168348.753    +0.69     [-2.04, +3.43]   2.59  10/16  NO CLAIM
+ab    wp-front-c32   db_instructions         8851248.786  8852413.749    +0.02     [-0.35, +0.38]   0.32   8/16  NO CLAIM
+ab    wp-front-c32   db_migrations                 4.698        4.677    -0.44     [-3.80, +2.93]   5.94   8/16  NOISY
+ab    wp-front-c32   db_us                      7747.937     7809.404    +0.80     [-1.68, +3.29]   2.75  11/16  NO CLAIM
+ab    wp-front-c32   p50_ms                     1258.033     1226.059    -2.47     [-4.93, -0.00]   3.39  12/16  NO CLAIM
+ab    wp-front-c32   p99_ms                     1864.615     1866.304    +0.64    [-9.70, +10.97]  11.75   9/16  NOISY
+ab    wp-front-c32   rps                          25.716       26.379    +2.60     [+0.04, +5.15]   2.82  13/16  NO CLAIM
+ab    wp-front-c32   s_cs                         59.346       58.368    -1.65     [-3.66, +0.37]   3.43  10/16  NO CLAIM
+ab    wp-front-c32   s_cycles               200918087.768 192749018.111    -4.06     [-5.15, -2.97]   1.83  15/16  CLAIM
+ab    wp-front-c32   s_migrations                  0.939        0.798   -14.04    [-29.65, +1.56]  28.57  10/16  NOISY
+ab    wp-front-c32   server_us                 75562.540    73348.075    -2.93     [-3.48, -2.38]   1.06  16/16  CLAIM
