@@ -1,0 +1,22 @@
+# The WordPress row against nginx+FPM at the shipping commit, refreshed: the php render path is the heaviest the suite carries.
+JOB=218-wp-front-tip-vs-fpm
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=wp-front
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=nginx-fpm
+SITE=wp
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="FPM costs more per request, as the earlier rows said"
+FALSIFY="FPM cheaper on this path"
