@@ -1,0 +1,26 @@
+# The same one-PHP-per-libc pair on a compute-bound request: does the 5.1 percent libc cost on hello survive when the request spends its time in PHP rather than in the router, or is it a per-request constant?
+# the same configure flags and the same -O2, built once against glibc and once against musl,
+# with the same FreeUnit commit. Every whole-stack cell so far mixed the libc with the
+# distribution's PHP build, and the isolated libc-cost pair covered only its own image.
+JOB=240-srcphp-work-200k-x86
+ISSUE="https://github.com/freeunitorg/freeunit-exp/issues/118"
+PHASES="null ab"
+WORKLOAD=php-work-200k
+RUNTIME_A=freeunit-srcphp-debian
+RUNTIME_B=freeunit-srcphp-alpine
+SITE=hello
+DB=mysql
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the libc contribution alone, with the PHP build held constant: about 7 percent on hello if the isolated pair is right"
+FALSIFY="a gap as large as the whole-stack cell (34 percent on the front page), which would mean the PHP build was never the explanation"
