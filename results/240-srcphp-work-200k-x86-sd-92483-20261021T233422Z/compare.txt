@@ -1,0 +1,21 @@
+CLAIM php-work-200k-c32: B is 6.8 percent more server instructions per request, outside the null band of 1.1, 16 of 16 cells agree
+job 240-srcphp-work-200k-x86  run 240-srcphp-work-200k-x86-sd-92483-20261021T233422Z  A None ()  B None ()  governor powersave/balance_power  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  php-work-200k-c32 s_instructions           209482.611   209876.264    +0.19     [-0.72, +1.10]   1.10   9/16  PASS
+null  php-work-200k-c32 db_us                         0.000        0.000      n/a                n/a    n/a   0/16  NO DATA
+null  php-work-200k-c32 p50_ms                        2.639        2.515    -4.69     [-9.79, +0.40]   9.79  12/16  NOISY
+null  php-work-200k-c32 p99_ms                        7.904        8.351    +7.12    [-5.88, +20.12]  20.12   9/16  NOISY
+null  php-work-200k-c32 rps                       11242.147    11537.887    +2.69     [-2.88, +8.26]   8.26   9/16  NOISY
+null  php-work-200k-c32 s_cs                          6.125        6.199    +1.21     [-2.15, +4.58]   4.58  10/16  PASS
+null  php-work-200k-c32 s_cycles                 395726.683   398168.045    +0.62     [-1.03, +2.26]   2.26  10/16  PASS
+null  php-work-200k-c32 s_migrations                  0.027        0.023    -2.87   [-75.89, +70.15]  75.89   7/16  NOISY
+null  php-work-200k-c32 server_us                   170.268      164.084    -3.59     [-7.54, +0.36]   7.54  12/16  NOISY
+ab    php-work-200k-c32 s_instructions           208221.340   222424.741    +6.83     [+5.55, +8.11]   1.10  16/16  CLAIM
+ab    php-work-200k-c32 db_us                         0.000        0.000      n/a                n/a    n/a   0/16  NO DATA
+ab    php-work-200k-c32 p50_ms                        2.636        2.643    +0.40     [-5.93, +6.73]   9.79   8/16  NOISY
+ab    php-work-200k-c32 p99_ms                        8.667       10.012   +17.98    [+1.56, +34.40]  20.12  10/16  NOISY
+ab    php-work-200k-c32 rps                       11067.411    10600.079    -4.05     [-9.87, +1.76]   8.26   9/16  NOISY
+ab    php-work-200k-c32 s_cs                          6.051        6.439    +6.55    [+2.51, +10.59]   4.58  14/16  CLAIM
+ab    php-work-200k-c32 s_cycles                 394201.894   420359.232    +6.66     [+4.73, +8.59]   2.26  16/16  CLAIM
+ab    php-work-200k-c32 s_migrations                  0.030        0.029    +7.18   [-40.54, +54.90]  75.89   9/16  NOISY
+ab    php-work-200k-c32 server_us                   169.372      179.205    +5.92    [+1.21, +10.63]   7.54  12/16  NOISY
