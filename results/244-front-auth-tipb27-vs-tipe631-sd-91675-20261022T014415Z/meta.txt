@@ -1,0 +1,35 @@
+job=244-front-auth-tipb27-vs-tipe631
+run_id=244-front-auth-tipb27-vs-tipe631-sd-91675-20261022T014415Z
+host=sd-91675
+date=2026-10-22T02:14:27Z
+workload=drupal-auth
+runtime_a=freeunit-tip-e63168bd
+runtime_b=freeunit-tip-b27bc76d
+site=12.0
+db=mysql
+phases=null ab conns=32 dur=10 warm=2 reps=4 rate=
+server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=4,5
+governor=powersave
+epp=balance_power
+kernel=6.8.0-136-generic
+oha=oha 1.16.0
+perf_image=1ec7891af56e
+freeunit_image=84d7ffa3768c
+freeunit_master_sha=ff694772b0fac0875f76bcc66331389919387db3
+freeunit_master_image=f458d3861696
+freeunit_master_old_sha=8492d5ee43a99a8f1504598ed44d046b61d85131
+freeunit_master_old_image=45cb38e59501
+freeunit_master_mid_sha=dc30c8a7e76fe86f8063ce7eafcefc285137629a
+freeunit_master_mid_image=b1232db7ba0a
+fpm_image=930e3cca8161
+apache_image=7a84d1255075
+mariadb_image=0d0945c57f75
+issue=https://github.com/freeunitorg/benchmarks-drupal
+expect=the ten commits since e63168bd are level on this path, or a CLAIM names a regression or an improvement
+falsify=a CLAIM whose sign would be a release regression
+tag=drupal/recommended-project:12.0.0-beta1 drupal=12.0.0-beta1 php=8.5.11 profile=demo_umami drush=0 composer_opt=1 preload=0
+site-build: auth cookie verified (session cookie plus dynamic cache header)
+site=12.0
+runroot=/data/projects/benchmarks-drupal/run
+installed=2026-10-12T08:29:14Z
+user=bench-user
