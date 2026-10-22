@@ -1,0 +1,22 @@
+# The third commit of the atomics sweep (b3c5da388), which the x86 side measured at -0.0 percent on hello.
+JOB=237-arm-hello-749
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-master-749
+SITE=hello
+DB=mysql
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="if this commit is where the aarch64 cost was introduced, the delta is already positive here and stays positive at the tip"
+FALSIFY="a level result, which would push the cost to a later commit"
