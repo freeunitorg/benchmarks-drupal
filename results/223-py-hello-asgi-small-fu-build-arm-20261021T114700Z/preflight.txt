@@ -1,0 +1,456 @@
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=4707 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=4770 unit: controller  
+  pid=4771 unit: router      
+  pid=4776 unit: "py" prototype 
+  pid=4777 unit: "py" application 
+  pid=4778 unit: "py" application 
+  pid=4779 unit: "py" application 
+  pid=4780 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=5029 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=5087 unit: controller  
+  pid=5088 unit: router      
+  pid=5092 unit: "py" prototype 
+  pid=5094 unit: "py" application 
+  pid=5095 unit: "py" application 
+  pid=5096 unit: "py" application 
+  pid=5097 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=5371 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=5431 unit: controller  
+  pid=5432 unit: router      
+  pid=5437 unit: "py" prototype 
+  pid=5438 unit: "py" application 
+  pid=5439 unit: "py" application 
+  pid=5440 unit: "py" application 
+  pid=5441 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=5685 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=5743 unit: controller  
+  pid=5744 unit: router      
+  pid=5748 unit: "py" prototype 
+  pid=5749 unit: "py" application 
+  pid=5750 unit: "py" application 
+  pid=5751 unit: "py" application 
+  pid=5752 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=5994 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=6053 unit: controller  
+  pid=6054 unit: router      
+  pid=6057 unit: "py" prototype 
+  pid=6060 unit: "py" application 
+  pid=6061 unit: "py" application 
+  pid=6062 unit: "py" application 
+  pid=6063 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=6312 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=6371 unit: controller  
+  pid=6373 unit: router      
+  pid=6377 unit: "py" prototype 
+  pid=6378 unit: "py" application 
+  pid=6379 unit: "py" application 
+  pid=6380 unit: "py" application 
+  pid=6381 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=6627 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=6684 unit: controller  
+  pid=6686 unit: router      
+  pid=6690 unit: "py" prototype 
+  pid=6691 unit: "py" application 
+  pid=6692 unit: "py" application 
+  pid=6693 unit: "py" application 
+  pid=6694 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=6940 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=7000 unit: controller  
+  pid=7003 unit: router      
+  pid=7006 unit: "py" prototype 
+  pid=7009 unit: "py" application 
+  pid=7010 unit: "py" application 
+  pid=7011 unit: "py" application 
+  pid=7012 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=7285 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=7344 unit: controller  
+  pid=7345 unit: router      
+  pid=7346 unit: "py" prototype 
+  pid=7348 unit: "py" application 
+  pid=7352 unit: "py" application 
+  pid=7353 unit: "py" application 
+  pid=7354 unit: "py" application 
+runtime=rt-4612-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=7595 bash /usr/local/bin/entrypoint-python.sh 
+  pid=7653 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 4 --log-level warning asgi:application 
+  pid=7654 nginx: master process nginx -g daemon off; 
+  pid=7655 nginx: worker process 
+  pid=7657 nginx: worker process 
+  pid=7662 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=7663 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=7664 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=7665 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=7666 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+runtime=rt-4612-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=7912 bash /usr/local/bin/entrypoint-python.sh 
+  pid=7967 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 4 --log-level warning asgi:application 
+  pid=7968 nginx: master process nginx -g daemon off; 
+  pid=7973 nginx: worker process 
+  pid=7974 nginx: worker process 
+  pid=7976 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=7977 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=7978 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=7979 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=7980 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=8223 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=8281 unit: controller  
+  pid=8282 unit: router      
+  pid=8285 unit: "py" prototype 
+  pid=8286 unit: "py" application 
+  pid=8289 unit: "py" application 
+  pid=8290 unit: "py" application 
+  pid=8291 unit: "py" application 
+runtime=rt-4612-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=8532 bash /usr/local/bin/entrypoint-python.sh 
+  pid=8588 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 4 --log-level warning asgi:application 
+  pid=8589 nginx: master process nginx -g daemon off; 
+  pid=8594 nginx: worker process 
+  pid=8595 nginx: worker process 
+  pid=8597 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=8598 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=8599 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=8600 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=8601 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=8844 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=8903 unit: controller  
+  pid=8904 unit: router      
+  pid=8908 unit: "py" prototype 
+  pid=8909 unit: "py" application 
+  pid=8912 unit: "py" application 
+  pid=8913 unit: "py" application 
+  pid=8914 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=9186 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=9245 unit: controller  
+  pid=9246 unit: router      
+  pid=9249 unit: "py" prototype 
+  pid=9251 unit: "py" application 
+  pid=9253 unit: "py" application 
+  pid=9254 unit: "py" application 
+  pid=9255 unit: "py" application 
+runtime=rt-4612-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=9503 bash /usr/local/bin/entrypoint-python.sh 
+  pid=9559 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 4 --log-level warning asgi:application 
+  pid=9560 nginx: master process nginx -g daemon off; 
+  pid=9565 nginx: worker process 
+  pid=9566 nginx: worker process 
+  pid=9569 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=9570 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=9571 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=9572 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=9573 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=9811 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=9873 unit: controller  
+  pid=9874 unit: router      
+  pid=9879 unit: "py" prototype 
+  pid=9880 unit: "py" application 
+  pid=9881 unit: "py" application 
+  pid=9882 unit: "py" application 
+  pid=9883 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=10122 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=10181 unit: controller  
+  pid=10182 unit: router      
+  pid=10187 unit: "py" prototype 
+  pid=10188 unit: "py" application 
+  pid=10189 unit: "py" application 
+  pid=10190 unit: "py" application 
+  pid=10191 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=10431 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=10489 unit: controller  
+  pid=10490 unit: router      
+  pid=10494 unit: "py" prototype 
+  pid=10496 unit: "py" application 
+  pid=10497 unit: "py" application 
+  pid=10498 unit: "py" application 
+  pid=10499 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=10750 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=10809 unit: controller  
+  pid=10810 unit: router      
+  pid=10815 unit: "py" prototype 
+  pid=10816 unit: "py" application 
+  pid=10817 unit: "py" application 
+  pid=10818 unit: "py" application 
+  pid=10819 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=11094 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=11152 unit: controller  
+  pid=11153 unit: router      
+  pid=11157 unit: "py" prototype 
+  pid=11160 unit: "py" application 
+  pid=11161 unit: "py" application 
+  pid=11162 unit: "py" application 
+  pid=11163 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=11404 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=11462 unit: controller  
+  pid=11464 unit: router      
+  pid=11467 unit: "py" prototype 
+  pid=11468 unit: "py" application 
+  pid=11470 unit: "py" application 
+  pid=11471 unit: "py" application 
+  pid=11472 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=11714 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=11774 unit: controller  
+  pid=11775 unit: router      
+  pid=11779 unit: "py" prototype 
+  pid=11780 unit: "py" application 
+  pid=11781 unit: "py" application 
+  pid=11782 unit: "py" application 
+  pid=11783 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=12029 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=12090 unit: controller  
+  pid=12091 unit: router      
+  pid=12093 unit: "py" prototype 
+  pid=12095 unit: "py" application 
+  pid=12099 unit: "py" application 
+  pid=12100 unit: "py" application 
+  pid=12101 unit: "py" application 
+runtime=rt-4612-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=12345 bash /usr/local/bin/entrypoint-python.sh 
+  pid=12400 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 4 --log-level warning asgi:application 
+  pid=12401 nginx: master process nginx -g daemon off; 
+  pid=12406 nginx: worker process 
+  pid=12407 nginx: worker process 
+  pid=12410 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=12411 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=12412 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=12413 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=12414 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=12661 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=12720 unit: controller  
+  pid=12721 unit: router      
+  pid=12724 unit: "py" prototype 
+  pid=12726 unit: "py" application 
+  pid=12728 unit: "py" application 
+  pid=12729 unit: "py" application 
+  pid=12730 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=13004 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=13063 unit: controller  
+  pid=13064 unit: router      
+  pid=13069 unit: "py" prototype 
+  pid=13070 unit: "py" application 
+  pid=13071 unit: "py" application 
+  pid=13072 unit: "py" application 
+  pid=13073 unit: "py" application 
+runtime=rt-4612-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=13317 bash /usr/local/bin/entrypoint-python.sh 
+  pid=13372 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 4 --log-level warning asgi:application 
+  pid=13373 nginx: master process nginx -g daemon off; 
+  pid=13378 nginx: worker process 
+  pid=13379 nginx: worker process 
+  pid=13381 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=13382 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=13383 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=13384 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=13385 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=13627 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=13685 unit: controller  
+  pid=13686 unit: router      
+  pid=13690 unit: "py" prototype 
+  pid=13692 unit: "py" application 
+  pid=13693 unit: "py" application 
+  pid=13694 unit: "py" application 
+  pid=13695 unit: "py" application 
+runtime=rt-4612-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=13934 bash /usr/local/bin/entrypoint-python.sh 
+  pid=13991 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 4 --log-level warning asgi:application 
+  pid=13992 nginx: master process nginx -g daemon off; 
+  pid=13995 nginx: worker process 
+  pid=13996 nginx: worker process 
+  pid=14001 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=14002 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=14003 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=14004 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=14005 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+runtime=rt-4612-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=14247 bash /usr/local/bin/entrypoint-python.sh 
+  pid=14304 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 4 --log-level warning asgi:application 
+  pid=14305 nginx: master process nginx -g daemon off; 
+  pid=14311 nginx: worker process 
+  pid=14312 nginx: worker process 
+  pid=14314 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=14315 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=14316 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=14317 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=14318 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=14565 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=14625 unit: controller  
+  pid=14627 unit: router      
+  pid=14631 unit: "py" prototype 
+  pid=14632 unit: "py" application 
+  pid=14633 unit: "py" application 
+  pid=14634 unit: "py" application 
+  pid=14635 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=14910 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=14969 unit: controller  
+  pid=14970 unit: router      
+  pid=14974 unit: "py" prototype 
+  pid=14976 unit: "py" application 
+  pid=14977 unit: "py" application 
+  pid=14978 unit: "py" application 
+  pid=14979 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=15219 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=15278 unit: controller  
+  pid=15279 unit: router      
+  pid=15283 unit: "py" prototype 
+  pid=15285 unit: "py" application 
+  pid=15286 unit: "py" application 
+  pid=15287 unit: "py" application 
+  pid=15288 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=15527 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=15588 unit: controller  
+  pid=15589 unit: router      
+  pid=15593 unit: "py" prototype 
+  pid=15594 unit: "py" application 
+  pid=15595 unit: "py" application 
+  pid=15596 unit: "py" application 
+  pid=15597 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=15839 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=15897 unit: controller  
+  pid=15898 unit: router      
+  pid=15901 unit: "py" prototype 
+  pid=15903 unit: "py" application 
+  pid=15907 unit: "py" application 
+  pid=15908 unit: "py" application 
+  pid=15909 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=16149 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=16205 unit: controller  
+  pid=16206 unit: router      
+  pid=16211 unit: "py" prototype 
+  pid=16212 unit: "py" application 
+  pid=16213 unit: "py" application 
+  pid=16214 unit: "py" application 
+  pid=16215 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=16469 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=16527 unit: controller  
+  pid=16528 unit: router      
+  pid=16532 unit: "py" prototype 
+  pid=16533 unit: "py" application 
+  pid=16536 unit: "py" application 
+  pid=16537 unit: "py" application 
+  pid=16538 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=16809 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=16866 unit: controller  
+  pid=16868 unit: router      
+  pid=16872 unit: "py" prototype 
+  pid=16873 unit: "py" application 
+  pid=16875 unit: "py" application 
+  pid=16876 unit: "py" application 
+  pid=16877 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=17121 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=17182 unit: controller  
+  pid=17183 unit: router      
+  pid=17186 unit: "py" prototype 
+  pid=17187 unit: "py" application 
+  pid=17191 unit: "py" application 
+  pid=17192 unit: "py" application 
+  pid=17193 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=17445 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=17505 unit: controller  
+  pid=17506 unit: router      
+  pid=17511 unit: "py" prototype 
+  pid=17512 unit: "py" application 
+  pid=17513 unit: "py" application 
+  pid=17514 unit: "py" application 
+  pid=17515 unit: "py" application 
+runtime=rt-4612-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=17758 bash /usr/local/bin/entrypoint-python.sh 
+  pid=17814 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 4 --log-level warning asgi:application 
+  pid=17815 nginx: master process nginx -g daemon off; 
+  pid=17821 nginx: worker process 
+  pid=17822 nginx: worker process 
+  pid=17823 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=17824 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=17825 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=17826 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=17827 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+runtime=rt-4612-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=18070 bash /usr/local/bin/entrypoint-python.sh 
+  pid=18126 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 4 --log-level warning asgi:application 
+  pid=18127 nginx: master process nginx -g daemon off; 
+  pid=18133 nginx: worker process 
+  pid=18134 nginx: worker process 
+  pid=18135 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=18136 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=18137 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=18138 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=18139 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=18387 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=18445 unit: controller  
+  pid=18446 unit: router      
+  pid=18450 unit: "py" prototype 
+  pid=18451 unit: "py" application 
+  pid=18454 unit: "py" application 
+  pid=18455 unit: "py" application 
+  pid=18456 unit: "py" application 
+runtime=rt-4612-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=18728 bash /usr/local/bin/entrypoint-python.sh 
+  pid=18784 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 4 --log-level warning asgi:application 
+  pid=18785 nginx: master process nginx -g daemon off; 
+  pid=18791 nginx: worker process 
+  pid=18792 nginx: worker process 
+  pid=18793 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=18794 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=18795 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=18796 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=18797 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=19059 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=19119 unit: controller  
+  pid=19121 unit: router      
+  pid=19124 unit: "py" prototype 
+  pid=19125 unit: "py" application 
+  pid=19127 unit: "py" application 
+  pid=19128 unit: "py" application 
+  pid=19129 unit: "py" application 
+runtime=rt-4612-freeunit-python-asgi-small url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=19373 unit: main v1.37.0 [unitd --no-daemon] 
+  pid=19430 unit: controller  
+  pid=19431 unit: router      
+  pid=19434 unit: "py" prototype 
+  pid=19435 unit: "py" application 
+  pid=19438 unit: "py" application 
+  pid=19439 unit: "py" application 
+  pid=19440 unit: "py" application 
+runtime=rt-4612-uvicorn url=http://127.0.0.1:8081/ workload=py-hello http=200 bytes=12
+  pid=19682 bash /usr/local/bin/entrypoint-python.sh 
+  pid=19738 /usr/local/bin/python3.13 /usr/local/bin/uvicorn --host 127.0.0.1 --port 8000 --workers 4 --log-level warning asgi:application 
+  pid=19739 nginx: master process nginx -g daemon off; 
+  pid=19744 nginx: worker process 
+  pid=19745 nginx: worker process 
+  pid=19747 /usr/local/bin/python3.13 -c from multiprocessing.resource_tracker import main;main(6) 
+  pid=19748 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=9) --multiprocessing-fork 
+  pid=19749 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=13) --multiprocessing-fork 
+  pid=19750 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=17) --multiprocessing-fork 
+  pid=19751 /usr/local/bin/python3.13 -c from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=7, pipe_handle=21) --multiprocessing-fork 

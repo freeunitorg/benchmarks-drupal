@@ -1,0 +1,26 @@
+# The ASGI hello at four processes a side: at twenty the cell's null band came back at 96
+# percent, which is Unit's ASGI path thrashing a two-core guest rather than a property of
+# the app. A smaller pool is the honest way to ask the same question, and both sides get
+# the same count (Unit's processes, uvicorn's workers via APP_PROCS).
+JOB=223-py-hello-asgi-small
+ISSUE="https://github.com/freeunitorg/freeunit-exp/issues/113"
+PHASES="null ab"
+WORKLOAD=py-hello
+RUNTIME_A=freeunit-python-asgi-small
+RUNTIME_B=uvicorn
+SITE=py-hello
+DB=mysql
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=0
+APP_PROCS=4
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="ASGI behaves like WSGI: a per-request constant in Unit's favour"
+FALSIFY="a null band over the limit, which would say four processes is still too many for this guest"

@@ -1,0 +1,13 @@
+NO CLAIM py-hello-c32: inside the noise, no claim (B is 3089.3 percent less server CPU per request (us), null band 4.3, 0 of 12 cells agree)
+job 223-py-hello-asgi-small  run 223-py-hello-asgi-small-fu-build-arm-20261021T114700Z  A None ()  B None ()  governor unknown/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  py-hello-c32   server_us                   -14.411      -14.337    -0.51     [-4.28, +3.25]   4.28   6/12  PASS
+null  py-hello-c32   db_us                         0.000        0.000      n/a                n/a    n/a   0/12  NO DATA
+null  py-hello-c32   p50_ms                        2.818        2.820    +0.09     [-1.27, +1.46]   1.46   5/12  PASS
+null  py-hello-c32   p99_ms                        6.147        6.414    +4.42     [-0.37, +9.21]   9.21   8/12  NOISY
+null  py-hello-c32   rps                       10218.938    10202.623    -0.16     [-2.28, +1.96]   2.28   6/12  PASS
+ab    py-hello-c32   server_us                   -14.151      422.778 -3089.28 [-3133.37, -3045.19]   4.28   0/12  NO CLAIM
+ab    py-hello-c32   db_us                         0.000        0.000      n/a                n/a    n/a   0/12  NO DATA
+ab    py-hello-c32   p50_ms                        2.822       12.941  +358.63 [+352.33, +364.93]   1.46  12/12  CLAIM
+ab    py-hello-c32   p99_ms                        6.336       31.965  +404.59 [+394.16, +415.02]   9.21  12/12  NOISY
+ab    py-hello-c32   rps                       10291.593     2361.021   -77.06   [-78.98, -75.13]   2.28  12/12  CLAIM
