@@ -1,0 +1,22 @@
+# The release comparison at the new tip: the shipping commit was 3.72 percent below 1.37.0 on this cell (job 210), and this says whether the ten commits moved it.
+JOB=245-hello-tipb27-vs-1370
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-tip-b27bc76d
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the ten commits since e63168bd are level on this path, or a CLAIM names a regression or an improvement"
+FALSIFY="a CLAIM whose sign would be a release regression"
