@@ -1,0 +1,29 @@
+job=240-srcphp-work-200k-x86
+run_id=240-srcphp-work-200k-x86-sd-92483-20261022T010953Z
+host=sd-92483
+date=2026-10-22T01:28:06Z
+workload=php-work-200k
+runtime_a=freeunit-srcphp-debian
+runtime_b=freeunit-srcphp-alpine
+site=hello
+db=mysql
+phases=null ab conns=32 dur=10 warm=2 reps=4 rate=
+server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=
+governor=powersave
+epp=balance_power
+kernel=6.8.0-136-generic
+oha=oha 1.16.0
+perf_image=1ec7891af56e
+freeunit_image=74dd70a7cf9e
+freeunit_master_sha=ff694772b0fac0875f76bcc66331389919387db3
+freeunit_master_image=4e6e25d20d84
+freeunit_master_old_sha=8492d5ee43a99a8f1504598ed44d046b61d85131
+freeunit_master_old_image=19ef413f8beb
+freeunit_master_mid_sha=dc30c8a7e76fe86f8063ce7eafcefc285137629a
+freeunit_master_mid_image=43fe5a4d8c16
+fpm_image=66fb62e7b832
+apache_image=bb77a5207f92
+mariadb_image=0d0945c57f75
+issue=https://github.com/freeunitorg/freeunit-exp/issues/118
+expect=the libc contribution alone, with the PHP build held constant: about 7 percent on hello if the isolated pair is right
+falsify=a gap as large as the whole-stack cell (34 percent on the front page), which would mean the PHP build was never the explanation
