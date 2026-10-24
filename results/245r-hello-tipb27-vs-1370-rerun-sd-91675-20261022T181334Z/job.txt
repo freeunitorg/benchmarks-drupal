@@ -1,0 +1,22 @@
+# Rerun of job 245 on current images (1.37.0=0c570293bc72, tip-b27bc76d=12dd20ec1fe8), reconstructed from 245 job.txt.
+JOB=245r-hello-tipb27-vs-1370-rerun
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-tip-b27bc76d
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="rerun of 245: B about 3.4 percent fewer server instructions than 1.37.0"
+FALSIFY="no instruction delta between tip-b27bc76d and the current 1.37.0 image"
