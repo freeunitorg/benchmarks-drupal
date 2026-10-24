@@ -1,0 +1,22 @@
+# Rank 1 test from harness run/agent-findings/drupal-auth-vs-fpm-research-2026-10-10.md:
+# the same FreeUnit 1.37.0 image, libphp.so rebuilt from the same 8.5.11 source and
+# configure options with -Wl,-Bsymbolic (docker/Dockerfile.freeunit-symbolic). Run on pro4s-4.
+JOB=41-auth-libphp-symbolic
+ISSUE=https://github.com/freeunitorg/benchmarks-drupal
+PHASES="null ab"
+WORKLOAD=drupal-auth
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-symbolic
+SITE=11.4
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_cycles
+NULL_LIMIT_PCT=5
+EXPECT="B: s_cycles -2..-6 percent, s_instructions -0.4..-1.2 percent"
+FALSIFY="s_cycles NO CLAIM at a band under 1.5 percent and s_instructions within 0.2 percent"
