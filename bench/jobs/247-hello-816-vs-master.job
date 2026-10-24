@@ -1,6 +1,9 @@
-# Master moved to 4a0271cc (the close-on-exec series and the nofile test fix) and PR 816
-# is one commit on the older base 4beef78f7, so the pair is master vs the GitHub merge
-# ref refs/pull/816/merge (master + 816), not master vs the diverged head.
+# CORRECTION (job 250 supersedes this): the GitHub merge ref used here,
+# 082032480c2c3655d42db000d6de61c4908b4050, is based on the older master 4beef78f7, not
+# on 4a0271cc as this comment first said. So B below is "old master + 816" and the delta
+# also carries the three master commits. Job 250 measures the clean pair on nd
+# (synthetic merge 7f949ef0 on 4a0271cc): +0.06 % s_instructions, band 0.37, NO CLAIM.
+# Read this run's +1.10 % (band 1.61) as the old-base comparison, not as PR 816's cost.
 JOB=247-hello-816-vs-master
 ISSUE="https://github.com/freeunitorg/freeunit/pull/816"
 PHASES="null ab"
