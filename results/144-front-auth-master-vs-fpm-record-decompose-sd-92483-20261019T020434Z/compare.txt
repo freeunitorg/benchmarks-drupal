@@ -1,0 +1,49 @@
+CLAIM drupal-auth-c32: B is 0.3 percent less server instructions per request, outside the null band of 0.0, 12 of 12 cells agree
+job 144-front-auth-master-vs-fpm-record-decompose  run 144-front-auth-master-vs-fpm-record-decompose-sd-92483-20261019T020434Z  A None ()  B None ()  governor powersave/balance_power  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  drupal-auth-c32 s_instructions         72562580.129 72566254.473    +0.01     [-0.04, +0.05]   0.05   7/12  PASS
+null  drupal-auth-c32 db_cs                        41.593       40.025    -3.72     [-7.85, +0.42]   7.85   8/12  NOISY
+null  drupal-auth-c32 db_cycles              17341923.415 17285466.040    -0.31     [-3.30, +2.67]   3.30   8/12  PASS
+null  drupal-auth-c32 db_instructions         8840821.027  8798588.067    -0.48     [-1.12, +0.17]   1.12   8/12  PASS
+null  drupal-auth-c32 db_migrations                 6.872        6.623    -3.59     [-7.50, +0.32]   7.50   8/12  NOISY
+null  drupal-auth-c32 db_us                      6733.898     6700.627    -0.48     [-4.46, +3.50]   4.46   6/12  PASS
+null  drupal-auth-c32 front_cs                      4.778        4.867    +1.88     [-2.42, +6.18]   6.18   7/12  NOISY
+null  drupal-auth-c32 front_cycles             639058.849   642696.366    +0.58     [-2.09, +3.24]   3.24   7/12  PASS
+null  drupal-auth-c32 front_instructions       247759.752   246860.541    -0.34     [-2.03, +1.35]   2.03   8/12  PASS
+null  drupal-auth-c32 front_migrations              0.717        0.698    -3.16   [-33.63, +27.31]  33.63   7/12  NOISY
+null  drupal-auth-c32 front_us                    297.640      300.190    +0.87     [-2.34, +4.09]   4.09   6/12  PASS
+null  drupal-auth-c32 p50_ms                      488.524      482.683    -1.20     [-4.43, +2.04]   4.43   8/12  PASS
+null  drupal-auth-c32 p99_ms                      966.382      866.780   -10.33   [-31.79, +11.12]  31.79   8/12  NOISY
+null  drupal-auth-c32 rps                          62.231       63.320    +1.74     [-3.75, +7.22]   7.22   8/12  NOISY
+null  drupal-auth-c32 s_cs                         41.999       42.147    +0.35     [-0.70, +1.41]   1.41   8/12  PASS
+null  drupal-auth-c32 s_cycles               80098651.449 80287852.265    +0.24     [-0.68, +1.15]   1.15   6/12  PASS
+null  drupal-auth-c32 s_migrations                  0.974        0.941    -3.94   [-25.90, +18.01]  25.90   7/12  NOISY
+null  drupal-auth-c32 server_us                 30262.048    30165.816    -0.32     [-1.77, +1.13]   1.77   5/12  PASS
+null  drupal-auth-c32 worker_cs                    37.350       37.401    +0.14     [-0.92, +1.19]   1.19   8/12  PASS
+null  drupal-auth-c32 worker_cycles          79463501.122 79648573.178    +0.23     [-0.67, +1.14]   1.14   6/12  PASS
+null  drupal-auth-c32 worker_instructions    72316097.842 72320415.726    +0.01     [-0.03, +0.05]   0.05   8/12  PASS
+null  drupal-auth-c32 worker_migrations             0.272        0.263    -2.78   [-30.54, +24.97]  30.54   7/12  NOISY
+null  drupal-auth-c32 worker_us                 29964.408    29865.604    -0.33     [-1.78, +1.12]   1.78   5/12  PASS
+ab    drupal-auth-c32 s_instructions         72799096.129 72553288.772    -0.34     [-0.37, -0.30]   0.05  12/12  CLAIM
+ab    drupal-auth-c32 db_cs                        40.751       41.448    +1.73     [-2.57, +6.03]   7.85   6/12  NOISY
+ab    drupal-auth-c32 db_cycles              17301360.781 17551242.593    +1.50     [-0.90, +3.91]   3.30   6/12  NO CLAIM
+ab    drupal-auth-c32 db_instructions         8850065.962  8835655.130    -0.16     [-0.72, +0.40]   1.12   8/12  NO CLAIM
+ab    drupal-auth-c32 db_migrations                 6.586        6.876    +4.48     [-0.14, +9.09]   7.50   9/12  NOISY
+ab    drupal-auth-c32 db_us                      6648.756     6794.133    +2.25     [-1.01, +5.52]   4.46   6/12  NO CLAIM
+ab    drupal-auth-c32 front_cs                      4.670        2.287   -51.00   [-56.20, -45.79]   6.18  12/12  NOISY
+ab    drupal-auth-c32 front_cycles             633666.590  1156365.830   +82.50   [+79.22, +85.79]   3.24  12/12  CLAIM
+ab    drupal-auth-c32 front_instructions       245032.645   524571.074  +114.11 [+112.16, +116.06]   2.03  12/12  CLAIM
+ab    drupal-auth-c32 front_migrations              0.631        0.291   -53.57   [-76.82, -30.31]  33.63  11/12  NOISY
+ab    drupal-auth-c32 front_us                    291.147      465.780   +60.03   [+56.43, +63.64]   4.09  12/12  CLAIM
+ab    drupal-auth-c32 p50_ms                      498.709      491.940    -1.35     [-4.15, +1.44]   4.43   8/12  NO CLAIM
+ab    drupal-auth-c32 p99_ms                     1235.133     1194.511    -0.35   [-24.11, +23.41]  31.79   5/12  NOISY
+ab    drupal-auth-c32 rps                          58.242       60.480    +4.09    [-1.94, +10.12]   7.22   7/12  NOISY
+ab    drupal-auth-c32 s_cs                         42.041       39.075    -7.04     [-8.31, -5.77]   1.41  12/12  CLAIM
+ab    drupal-auth-c32 s_cycles               81076360.293 77727870.134    -4.13     [-4.91, -3.35]   1.15  12/12  CLAIM
+ab    drupal-auth-c32 s_migrations                  0.932        0.688   -26.11    [-45.76, -6.47]  25.90   9/12  NOISY
+ab    drupal-auth-c32 server_us                 30743.236    29617.801    -3.66     [-4.88, -2.44]   1.77  12/12  CLAIM
+ab    drupal-auth-c32 worker_cs                    37.529       36.798    -1.94     [-2.92, -0.95]   1.19   8/12  NO CLAIM
+ab    drupal-auth-c32 worker_cycles          80447304.340 76572141.095    -4.82     [-5.58, -4.05]   1.14  12/12  CLAIM
+ab    drupal-auth-c32 worker_instructions    72555469.053 72028856.004    -0.73     [-0.76, -0.69]   0.05  12/12  CLAIM
+ab    drupal-auth-c32 worker_migrations             0.332        0.400   +21.49   [-15.35, +58.34]  30.54   5/12  NOISY
+ab    drupal-auth-c32 worker_us                 30452.081    29152.021    -4.27     [-5.49, -3.05]   1.78  12/12  CLAIM
