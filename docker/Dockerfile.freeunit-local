@@ -1,0 +1,36 @@
+# FreeUnit from a local source archive, for a tree that does not exist on GitHub
+# (the merge of several open pull requests, measured before any of them is merged).
+#
+#   git archive --format=tar.gz --prefix=freeunit-<tag>/ -o freeunit.tar.gz <merge-commit>
+#   docker build -f docker/Dockerfile.freeunit-local -t drupal-bench-freeunit:<tag> <dir>
+#
+# <dir> is the directory holding freeunit.tar.gz; the archive must have one top
+# directory (the prefix above) because the build strips it. The final stage reuses
+# the released runtime image, so PHP, its extensions and the entrypoint are
+# byte-identical to it and only unitd and the modules come from the local tree.
+# Record the merge commit, the archive sha256 and this tag in the run's notes: a
+# result built this way is reproducible only from those three.
+ARG BASE=php:8.5.11-cli-trixie
+FROM ${BASE} AS build
+RUN set -eux; \
+    sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends build-essential curl ca-certificates \
+        libssl-dev libpcre2-dev zlib1g-dev libzstd-dev libbrotli-dev; \
+    rm -rf /var/lib/apt/lists/*
+COPY freeunit.tar.gz /tmp/freeunit.tar.gz
+RUN set -eux; \
+    mkdir /usr/src/freeunit; \
+    tar -xzf /tmp/freeunit.tar.gz -C /usr/src/freeunit --strip-components=1; \
+    cd /usr/src/freeunit; \
+    ./configure --prefix=/usr --statedir=/var/lib/unit --control=unix:/var/run/control.unit.sock \
+        --runstatedir=/var/run --pid=/var/run/unit.pid --logdir=/var/log --log=/var/log/unit.log \
+        --tmpdir=/var/tmp --user=www-data --group=www-data --modulesdir=/usr/lib/unit/modules \
+        --openssl --zlib --zstd --brotli; \
+    ./configure php; \
+    make -j"$(nproc)"; \
+    make install
+
+FROM drupal-bench-freeunit:1.37.0
+COPY --from=build /usr/sbin/unitd /usr/sbin/unitd
+COPY --from=build /usr/lib/unit/modules /usr/lib/unit/modules
