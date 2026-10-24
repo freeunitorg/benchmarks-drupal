@@ -11,6 +11,10 @@
 # Record the merge commit, the archive sha256 and this tag in the run's notes: a
 # result built this way is reproducible only from those three.
 ARG BASE=php:8.5.11-cli-trixie
+# The released runtime image is the default final stage; pass another FreeUnit image
+# (for example the same master built normally) when the pair must differ only by the
+# local tree.
+ARG RUNTIME_BASE=drupal-bench-freeunit:1.37.0
 FROM ${BASE} AS build
 RUN set -eux; \
     sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources; \
@@ -31,6 +35,6 @@ RUN set -eux; \
     make -j"$(nproc)"; \
     make install
 
-FROM drupal-bench-freeunit:1.37.0
+FROM ${RUNTIME_BASE}
 COPY --from=build /usr/sbin/unitd /usr/sbin/unitd
 COPY --from=build /usr/lib/unit/modules /usr/lib/unit/modules
