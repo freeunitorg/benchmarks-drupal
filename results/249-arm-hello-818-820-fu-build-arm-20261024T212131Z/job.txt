@@ -1,0 +1,27 @@
+# The 818-820 wave measured before any of them landed: master 4a0271cc with the three
+# open bug-fix PRs merged on top (merge commit 44147b78, image built from a local
+# archive with docker/Dockerfile.freeunit-local). Same cell and anchor as job 248, so
+# the two deltas and the two absolute server_us means are directly comparable.
+JOB=249-arm-hello-818-820
+ISSUE="https://github.com/freeunitorg/freeunit/pull/819"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-master-818-820
+SITE=hello
+DB=mysql
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=0
+DECOMPOSE=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+OHA=/home/alpine/bin/oha
+EXPECT="the wave is bug fixes on the compression, chunked-body and language paths: level on this php-hello path, delta and absolute server_us inside the job 248 baseline"
+FALSIFY="a CLAIM whose sign would be a regression introduced by 818, 819 or 820"
