@@ -1,0 +1,28 @@
+# PR 816 on the current master tip, measured on the quiet 2-core laptop (nd) instead of
+# the shared x86 box: job 247 compared master with the GitHub merge ref, which turned out
+# to sit on the older base 4beef78f7, so its delta also carried the three master commits.
+# Here B is a synthetic merge of d7743ff3 on 4a0271cc (7f949ef0), so the pair differs by
+# PR 816 only. PERF=1 keeps PRIMARY=s_instructions comparable with job 247.
+JOB=250-nd-hello-816-vs-master
+ISSUE="https://github.com/freeunitorg/freeunit/pull/816"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-master-4a0271cc
+RUNTIME_B=freeunit-816-master-merge
+SITE=hello
+DB=mysql
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+OHA=/usr/local/bin/oha
+EXPECT="the two sender gates on the main port add a per-message check and nothing else: level on this path, or a CLAIM that names a cost"
+FALSIFY="a CLAIM whose sign would be a regression caused by the gate"
