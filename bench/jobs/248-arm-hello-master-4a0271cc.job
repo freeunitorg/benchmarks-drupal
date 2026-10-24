@@ -1,0 +1,27 @@
+# Baseline before the 818-820 bug-fix wave: current master (4a0271cc) against the
+# 1.37.0 release anchor on the aarch64 host. The later "after 818-820" run uses the
+# same cell and the same anchor, so the two deltas are comparable and a regression
+# shows up as a moved delta, not as cross-run noise.
+JOB=248-arm-hello-master-4a0271cc
+ISSUE="https://github.com/freeunitorg/freeunit/pull/818"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-master-4a0271cc
+SITE=hello
+DB=mysql
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=0
+DECOMPOSE=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+OHA=/home/alpine/bin/oha
+EXPECT="the master baseline: a stable server_us against the 1.37.0 anchor, with the null phase passing on this 2-core host"
+FALSIFY="a null phase that does not pass, which makes every later comparison on this host void"
