@@ -1,0 +1,29 @@
+job=248-arm-hello-master-4a0271cc
+run_id=248-arm-hello-master-4a0271cc-fu-build-arm-20261024T205449Z
+host=fu-build-arm
+date=2026-10-24T21:09:14Z
+workload=php-hello
+runtime_a=freeunit
+runtime_b=freeunit-master-4a0271cc
+site=hello
+db=mysql
+phases=null ab conns=32 dur=10 warm=2 reps=4 rate=
+server_cpus=0 load_cpus=1 db_cpus=
+governor=unknown
+epp=unknown
+kernel=6.18.54-0-virt
+oha=oha 1.16.0
+perf_image=
+freeunit_image=e1bc85bc1a10
+freeunit_master_sha=cc94deb2d12a874b225bba503b64aa26cf0b62cf
+freeunit_master_image=dc81e83f630b
+freeunit_master_old_sha=unknown
+freeunit_master_old_image=
+freeunit_master_mid_sha=unknown
+freeunit_master_mid_image=
+fpm_image=057503d6c5b7
+apache_image=085e1725bd44
+mariadb_image=7db29378d4fd
+issue=https://github.com/freeunitorg/freeunit/pull/818
+expect=the master baseline: a stable server_us against the 1.37.0 anchor, with the null phase passing on this 2-core host
+falsify=a null phase that does not pass, which makes every later comparison on this host void
