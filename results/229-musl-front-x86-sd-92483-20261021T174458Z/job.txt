@@ -1,0 +1,22 @@
+# The same pair on a cached Drupal 12 front page with the front/worker split: the hello cell is allocation-dominated, this one does real application work.
+JOB=229-musl-front-x86
+ISSUE="https://github.com/freeunitorg/freeunit-exp/issues/118"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=freeunit-musl-tip
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="no measurable musl penalty on an application cell"
+FALSIFY="a musl penalty reappearing"
