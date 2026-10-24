@@ -1,0 +1,22 @@
+# The libc pair on the x86 host at the shipping commit, hello: the 12-17 percent musl penalty was first measured here, and the aarch64 side says it is gone (200, 222). This is the other architecture, `s_instructions` primary.
+JOB=228-musl-hello-x86
+ISSUE="https://github.com/freeunitorg/freeunit-exp/issues/118"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-tip-e63168bd
+RUNTIME_B=freeunit-musl-tip
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="musl is not more expensive than glibc any more"
+FALSIFY="a musl penalty reappearing on x86"
