@@ -1,0 +1,20 @@
+# Ladder step 1: the release against master at ff694772, the commit the suite's master-to-master pairs measured 11 percent cheaper than master-old. Server-only cell, so the whole request is the server layer.
+JOB=128-hello-ff694772-vs-1370
+ISSUE="https://github.com/freeunitorg/freeunit"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-742-base
+SITE=hello
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="master at ff694772 is at or below 1.37.0 on the server-only request"
+FALSIFY="a CLAIM above the band: master was already above the release before the atomic sweep"
