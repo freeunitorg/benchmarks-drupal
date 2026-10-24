@@ -1,0 +1,27 @@
+# drupal-front, FreeUnit master (A) vs nginx-fpm (B), Drupal 11.4, hot-path audit
+# record job: PERF_RECORD=1 keeps each side's last ab cell as perf record data
+# (perf.rec.<side>-{s,sf,sw}.data) for kernel/user attribution; DECOMPOSE=1 splits
+# front (unitd router / nginx) from PHP workers; PERF_EVENTS adds Intel icache/iTLB
+# diagnostics on top of the default set. PRIMARY stays s_instructions.
+JOB=16r-front-anon-master-vs-fpm-record-11.4
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-master
+RUNTIME_B=nginx-fpm
+SITE=11.4
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+DECOMPOSE=1
+PERF_RECORD=1
+PERF_EVENTS="cycles,instructions,branch-misses,context-switches,cpu-migrations,L1-icache-load-misses,itlb_misses.miss_causes_a_walk"
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="master keeps the FreeUnit advantage measured on 1.37.0; record data attributes the remaining gap"
+FALSIFY="NO CLAIM, or master loses to nginx-fpm"
