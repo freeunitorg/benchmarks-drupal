@@ -131,6 +131,10 @@ image_for() {  # runtime family -> image
     # One PHP tarball built per libc, for the isolation question.
     # The tip after the ten commits measured against e63168bd.
     freeunit-tip-b27bc76d) echo "drupal-bench-freeunit:tip-b27bc76d" ;;
+    # Master tip 4a0271cc (with the close-on-exec series) and PR 816 as the GitHub
+    # merge ref on top of it, for job 247.
+    freeunit-master-4a0271cc) echo "drupal-bench-freeunit:master-4a0271cc" ;;
+    freeunit-816-merge) echo "drupal-bench-freeunit:816-merge" ;;
     freeunit-srcphp-debian) echo "drupal-bench-freeunit:srcphp-debian" ;;
     freeunit-srcphp-alpine) echo "drupal-bench-freeunit:srcphp-alpine" ;;
     freeunit-jemalloc) echo "drupal-bench-freeunit:jemalloc" ;;
