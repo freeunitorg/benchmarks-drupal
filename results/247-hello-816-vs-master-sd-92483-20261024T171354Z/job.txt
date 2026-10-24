@@ -1,0 +1,24 @@
+# Master moved to 4a0271cc (the close-on-exec series and the nofile test fix) and PR 816
+# is one commit on the older base 4beef78f7, so the pair is master vs the GitHub merge
+# ref refs/pull/816/merge (master + 816), not master vs the diverged head.
+JOB=247-hello-816-vs-master
+ISSUE="https://github.com/freeunitorg/freeunit/pull/816"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-master-4a0271cc
+RUNTIME_B=freeunit-816-merge
+SITE=hello
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="two sender gates on the main port add a per-message check and nothing else: level on this path, or a CLAIM that names a cost"
+FALSIFY="a CLAIM whose sign would be a regression caused by the gate"

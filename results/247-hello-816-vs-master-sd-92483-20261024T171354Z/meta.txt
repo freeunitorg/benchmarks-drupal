@@ -1,0 +1,29 @@
+job=247-hello-816-vs-master
+run_id=247-hello-816-vs-master-sd-92483-20261024T171354Z
+host=sd-92483
+date=2026-10-24T17:33:00Z
+workload=php-hello
+runtime_a=freeunit-master-4a0271cc
+runtime_b=freeunit-816-merge
+site=hello
+db=mysql
+phases=null ab conns=32 dur=10 warm=2 reps=4 rate=
+server_cpus=0,1 load_cpus=2,3,6,7 db_cpus=4,5
+governor=powersave
+epp=balance_power
+kernel=6.8.0-136-generic
+oha=oha 1.16.0
+perf_image=b44db1b28915
+freeunit_image=
+freeunit_master_sha=ff694772b0fac0875f76bcc66331389919387db3
+freeunit_master_image=
+freeunit_master_old_sha=8492d5ee43a99a8f1504598ed44d046b61d85131
+freeunit_master_old_image=
+freeunit_master_mid_sha=dc30c8a7e76fe86f8063ce7eafcefc285137629a
+freeunit_master_mid_image=
+fpm_image=
+apache_image=
+mariadb_image=0d0945c57f75
+issue=https://github.com/freeunitorg/freeunit/pull/816
+expect=two sender gates on the main port add a per-message check and nothing else: level on this path, or a CLAIM that names a cost
+falsify=a CLAIM whose sign would be a regression caused by the gate
