@@ -1,0 +1,31 @@
+# PR 827 skips the case fold on equal bytes in nxt_memcasecmp()/nxt_strncasecmp(). The
+# hot path is the Accept-Encoding token scan (each token compared case-insensitively
+# against identity, deflate, gzip, zstd and br) plus one compare per known request field.
+# Mixed case: the first byte of every token differs, so the fold still runs there and the
+# saving is smaller than in job 253. The pair bounds the PR from both sides.
+JOB=254-nd-hello-827-case-mixed
+ISSUE="https://github.com/freeunitorg/freeunit/pull/827"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-master-825011f5
+RUNTIME_B=freeunit-master-827
+SITE=hello
+DB=mysql
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=
+PRIMARY=s_cycles
+NULL_LIMIT_PCT=5
+OHA=/usr/local/bin/oha
+AE="GZip, DeFLaTe, Br, ZSTD, IdEnTiTy, GZip, DeFLaTe, Br, ZSTD, IdEnTiTy, GZip, DeFLaTe, Br, ZSTD, IdEnTiTy, GZip, DeFLaTe, Br, ZSTD, IdEnTiTy, GZip, DeFLaTe, Br, ZSTD, IdEnTiTy, GZip, DeFLaTe, Br, ZSTD, IdEnTiTy, GZip, DeFLaTe, Br, ZSTD, IdEnTiTy, GZip, DeFLaTe, Br, ZSTD, IdEnTiTy"
+EXTRA_HEADERS_FILE=/home/andypost/bench/bench/headers/mixed-case.txt
+PERF_EVENTS=cycles,instructions,branch-misses,context-switches
+EXPECT="the fold on equal bytes is the only difference: a CLAIM in s_cycles with the same sign in instructions and no change in rps or p99 beyond the band"
+FALSIFY="a CLAIM in rps or p99 without s_cycles moving, which would mean the load changed rather than the server"
