@@ -1,0 +1,12 @@
+connection: keep-alive
+accept: */*
+accept-language: en
+if-none-match: "abc"
+range: bytes=0-1
+referer: http://localhost/
+user-agent: bench
+cache-control: no-cache
+pragma: no-cache
+x-forwarded-for: 127.0.0.1
+x-request-id: 0123456789abcdef
+x-bench: 1

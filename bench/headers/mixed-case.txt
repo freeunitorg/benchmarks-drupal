@@ -1,0 +1,12 @@
+CoNnEcTiOn: keep-alive
+AcCePt: */*
+AcCePt-LaNgUaGe: en
+If-NoNe-MaTcH: "abc"
+RaNgE: bytes=0-1
+ReFeReR: http://localhost/
+UsEr-AgEnT: bench
+CaChE-CoNtRoL: no-cache
+PrAgMa: no-cache
+X-FoRwArDeD-FoR: 127.0.0.1
+X-ReQuEsT-Id: 0123456789abcdef
+X-BeNcH: 1
