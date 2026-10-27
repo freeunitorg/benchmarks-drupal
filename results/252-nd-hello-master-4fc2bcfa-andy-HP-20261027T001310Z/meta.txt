@@ -1,0 +1,29 @@
+job=252-nd-hello-master-4fc2bcfa
+run_id=252-nd-hello-master-4fc2bcfa-andy-HP-20261027T001310Z
+host=andy-HP
+date=2026-10-27T00:29:25Z
+workload=php-hello
+runtime_a=freeunit-master-4a0271cc
+runtime_b=freeunit-master-4fc2bcfa
+site=hello
+db=mysql
+phases=null ab conns=32 dur=10 warm=2 reps=4 rate=
+server_cpus=0 load_cpus=1 db_cpus=
+governor=performance
+epp=performance
+kernel=7.3.0-9-generic
+oha=oha 1.16.0
+perf_image=40a21c212500
+freeunit_image=
+freeunit_master_sha=unknown
+freeunit_master_image=
+freeunit_master_old_sha=unknown
+freeunit_master_old_image=
+freeunit_master_mid_sha=unknown
+freeunit_master_mid_image=
+fpm_image=
+apache_image=
+mariadb_image=
+issue=https://github.com/freeunitorg/freeunit/commits/master
+expect=the merged wave is bug fixes and dependency bumps: level on this path, or a CLAIM that names a cost
+falsify=a CLAIM whose sign would be a regression introduced since 4a0271cc
