@@ -1,0 +1,29 @@
+job=253-nd-hello-827-case
+run_id=253-nd-hello-827-case-andy-HP-20261027T103358Z
+host=andy-HP
+date=2026-10-27T10:50:14Z
+workload=php-hello
+runtime_a=freeunit-master-825011f5
+runtime_b=freeunit-master-827
+site=hello
+db=mysql
+phases=null ab conns=32 dur=10 warm=2 reps=4 rate=
+server_cpus=0 load_cpus=1 db_cpus=
+governor=performance
+epp=performance
+kernel=7.3.0-9-generic
+oha=oha 1.16.0
+perf_image=40a21c212500
+freeunit_image=
+freeunit_master_sha=unknown
+freeunit_master_image=
+freeunit_master_old_sha=unknown
+freeunit_master_old_image=
+freeunit_master_mid_sha=unknown
+freeunit_master_mid_image=
+fpm_image=
+apache_image=
+mariadb_image=
+issue=https://github.com/freeunitorg/freeunit/pull/827
+expect=the fold on equal bytes is the only difference: a CLAIM in s_cycles with the same sign in instructions and no change in rps or p99 beyond the band
+falsify=a CLAIM in rps or p99 without s_cycles moving, which would mean the load changed rather than the server
