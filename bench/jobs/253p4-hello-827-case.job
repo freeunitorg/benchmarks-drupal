@@ -1,0 +1,31 @@
+# PR 827 skips the case fold on equal bytes in nxt_memcasecmp()/nxt_strncasecmp(). The
+# hot path is the Accept-Encoding token scan (each token compared case-insensitively
+# against identity, deflate, gzip, zstd and br) plus one compare per known request field.
+# This cell maximises equal-byte compares: 40 canonical coding tokens in one value and 12
+# canonical known-name headers; job 254 repeats it in mixed case.
+JOB=253p4-hello-827-case
+ISSUE="https://github.com/freeunitorg/freeunit/pull/827"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-master-825011f5
+RUNTIME_B=freeunit-master-827
+SITE=hello
+DB=mysql
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_cycles
+NULL_LIMIT_PCT=5
+OHA=/data/projects/cache/cargo/bin/oha
+AE="gzip, deflate, br, zstd, identity, gzip, deflate, br, zstd, identity, gzip, deflate, br, zstd, identity, gzip, deflate, br, zstd, identity, gzip, deflate, br, zstd, identity, gzip, deflate, br, zstd, identity, gzip, deflate, br, zstd, identity, gzip, deflate, br, zstd, identity"
+EXTRA_HEADERS_FILE=/data/projects/benchmarks-drupal/bench/headers/canonical.txt
+PERF_EVENTS=cycles,instructions,branch-misses,context-switches
+EXPECT="the fold on equal bytes is the only difference: a CLAIM in s_cycles with the same sign in instructions and no change in rps or p99 beyond the band"
+FALSIFY="a CLAIM in rps or p99 without s_cycles moving, which would mean the load changed rather than the server"
