@@ -1,0 +1,27 @@
+# What the nine commits since 4a0271cc cost on the quiet laptop: 4a0271cc (the ARM and
+# nd baselines) against the current master 4fc2bcfa, which carries the merged 818-820
+# wave plus dependency bumps. PERF=1 keeps PRIMARY=s_instructions comparable with job
+# 250, whose null band on this host was 0.37 percent.
+JOB=252-nd-hello-master-4fc2bcfa
+ISSUE="https://github.com/freeunitorg/freeunit/commits/master"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-master-4a0271cc
+RUNTIME_B=freeunit-master-4fc2bcfa
+SITE=hello
+DB=mysql
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+OHA=/usr/local/bin/oha
+EXPECT="the merged wave is bug fixes and dependency bumps: level on this path, or a CLAIM that names a cost"
+FALSIFY="a CLAIM whose sign would be a regression introduced since 4a0271cc"
