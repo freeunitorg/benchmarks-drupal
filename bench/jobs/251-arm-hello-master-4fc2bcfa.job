@@ -1,0 +1,26 @@
+# Current master (4fc2bcfa: the 818-820 wave merged, plus dependency bumps) against the
+# 1.37.0 anchor on the same aarch64 cell as the job 248 baseline. Job 248 was +5.59 %
+# [+4.23, +6.96] for 4a0271cc; a regression would move this run's CI off that one.
+JOB=251-arm-hello-master-4fc2bcfa
+ISSUE="https://github.com/freeunitorg/freeunit/commits/master"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-master-4fc2bcfa
+SITE=hello
+DB=mysql
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=0
+DECOMPOSE=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+OHA=/home/alpine/bin/oha
+EXPECT="the merged 818-820 wave and the dependency bumps leave the aarch64 php-hello cost where job 248 and job 249 put it, about +4.7 to +5.6 percent over 1.37.0"
+FALSIFY="a CLAIM that moves the delta outside the job 248 CI [+4.23, +6.96]"
