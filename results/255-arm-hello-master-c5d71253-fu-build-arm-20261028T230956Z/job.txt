@@ -1,0 +1,26 @@
+# Release-readiness run for 1.37.1: current master (c5d71253, the 1.37.1 changelog
+# commit on top of the merged 818-820 wave and dependency bumps) against the 1.37.0
+# anchor, on the same aarch64 cell as the job 248 baseline (+5.59 %) and job 251.
+JOB=255-arm-hello-master-c5d71253
+ISSUE="https://github.com/freeunitorg/freeunit/commits/master"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-master-c5d71253
+SITE=hello
+DB=mysql
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=0
+DECOMPOSE=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+OHA=/home/alpine/bin/oha
+EXPECT="the 1.37.1 tree stays where 1.37.0-to-master was on this host: about +4.7 to +5.6 percent server CPU, no new cost from the release prep"
+FALSIFY="a CLAIM that moves the delta outside the job 248 CI [+4.23, +6.96]"

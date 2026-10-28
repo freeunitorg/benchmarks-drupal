@@ -1,0 +1,29 @@
+job=255-arm-hello-master-c5d71253
+run_id=255-arm-hello-master-c5d71253-fu-build-arm-20261028T230956Z
+host=fu-build-arm
+date=2026-10-28T23:24:19Z
+workload=php-hello
+runtime_a=freeunit
+runtime_b=freeunit-master-c5d71253
+site=hello
+db=mysql
+phases=null ab conns=32 dur=10 warm=2 reps=4 rate=
+server_cpus=0 load_cpus=1 db_cpus=
+governor=unknown
+epp=unknown
+kernel=6.18.54-0-virt
+oha=oha 1.16.0
+perf_image=
+freeunit_image=e1bc85bc1a10
+freeunit_master_sha=cc94deb2d12a874b225bba503b64aa26cf0b62cf
+freeunit_master_image=
+freeunit_master_old_sha=unknown
+freeunit_master_old_image=
+freeunit_master_mid_sha=unknown
+freeunit_master_mid_image=
+fpm_image=
+apache_image=
+mariadb_image=7db29378d4fd
+issue=https://github.com/freeunitorg/freeunit/commits/master
+expect=the 1.37.1 tree stays where 1.37.0-to-master was on this host: about +4.7 to +5.6 percent server CPU, no new cost from the release prep
+falsify=a CLAIM that moves the delta outside the job 248 CI [+4.23, +6.96]
