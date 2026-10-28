@@ -1,0 +1,25 @@
+# The x86 half of the 1.37.1 release measurement: 1.37.0 against current master
+# c5d71253 on the quiet laptop (null band ~0.4-0.8 percent), unlike the busy 8-core box.
+JOB=256p4-hello-1f371
+ISSUE="https://github.com/freeunitorg/freeunit/commits/master"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-master-c5d71253
+SITE=hello
+DB=mysql
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=0
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+OHA=/data/projects/cache/cargo/bin/oha
+EXPECT="the 1.37.1 tree against the release: a CLAIM of the release-to-master cost with the sign of a regression only if the count moved"
+FALSIFY="a CLAIM in rps or p99 without s_instructions moving"
