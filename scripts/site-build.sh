@@ -100,7 +100,15 @@ if site_installed && [ "$FORCE" != "--force" ]; then
     echo "site-build: $SITEDIR already installed (use --force to rebuild)"
     exit 0
 fi
-if { [ "$FORCE" = "--force" ] || [ -d "$SITEDIR" ]; } && ! site_installed; then
+if [ "$FORCE" = "--force" ] && [ -d "$SITEDIR" ]; then
+    # An explicit --force rebuilds even a site that still looks installed. Before
+    # this, --force only removed an incomplete tree, so a site whose database
+    # volume had been removed kept its old settings.php and the installer failed
+    # with the old database URL (AlreadyInstalledException for sqlite, the old
+    # host for mysql) instead of rebuilding.
+    echo "site-build: --force, removing $SITEDIR"
+    docker run --rm -v "$RUNROOT:/run" alpine:3 sh -c "rm -rf /run/site/$SITEKEY"
+elif [ -d "$SITEDIR" ] && ! site_installed; then
     echo "site-build: removing incomplete $SITEDIR"
     docker run --rm -v "$RUNROOT:/run" alpine:3 sh -c "rm -rf /run/site/$SITEKEY"
 fi
