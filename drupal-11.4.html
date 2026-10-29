@@ -1,0 +1,1282 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drupal 11.4 benchmarks</title>
+<meta name="description" content="Reproducible comparison of Drupal, Symfony, WordPress and framework-free PHP on Apache+mod_php, nginx+PHP-FPM, Angie, FreeNginx and FreeUnit, with a null band beside every comparison.">
+<style>
+ body { font: 15px/1.5 system-ui, sans-serif; max-width: 68rem; margin: 2rem auto; padding: 0 1rem; color: #222; }
+ h1 { font-size: 1.6rem; margin-bottom: .2rem; }
+ h2 { font-size: 1.15rem; margin-top: 2.5rem; border-top: 1px solid #ddd; padding-top: 1rem; }
+ h3 { font-size: 1rem; margin: 1.4rem 0 .4rem; }
+ table { border-collapse: collapse; width: 100%; margin: .5rem 0 1rem; font-size: 14px; }
+ th, td { text-align: right; padding: .3rem .5rem; border-bottom: 1px solid #eee; vertical-align: top; }
+ th:first-child, td:first-child { text-align: left; }
+ table.index td, table.index th { font-size: 13px; }
+ .meta, .data { color: #666; font-size: 13px; font-weight: normal; }
+ .headline { font-weight: 600; }
+ .note { background: #f6f8fa; border-left: 3px solid #888; padding: .6rem .9rem; }
+ tr.best td { font-weight: 600; background: #f0fbf4; }
+ code { background: #f6f8fa; padding: .1rem .3rem; }
+ .badge { font-size: 11px; font-weight: 700; padding: .1rem .45rem; border-radius: .7rem; white-space: nowrap; }
+ .badge.claim { background: #e6f4ea; color: #136a2f; }
+ .badge.noclaim { background: #eef1f4; color: #4a5568; }
+ .badge.invalid { background: #fdecea; color: #a12b20; }
+ .badge.nodata { background: #fff4e5; color: #8a5a00; }
+ .badge.pass { background: #e8f0fe; color: #1a4b8c; }
+ ul.verdicts { margin: .3rem 0 1rem; padding-left: 1.1rem; }
+ ul.verdicts li { margin: .2rem 0; }
+ details.run { border: 1px solid #e6e6e6; border-radius: .5rem; padding: .4rem .7rem; margin: .5rem 0; }
+ details.run > summary { cursor: pointer; display: block; }
+ .run-title { font-weight: 600; margin: 0 .5rem 0 .4rem; }
+ details[open].run { background: #fcfcfd; }
+ :target { scroll-margin-top: 1rem; background: #fffbe6; }
+ nav.pages { margin: .8rem 0 1.2rem; display: flex; flex-wrap: wrap; gap: .4rem; }
+ nav.pages a, nav.pages span.here { border: 1px solid #d7dbe0; border-radius: .4rem; padding: .25rem .6rem; font-size: 13px; }
+ nav.pages a { text-decoration: none; }
+ nav.pages span.here { background: #eef1f4; font-weight: 600; border-color: #c3c9d1; }
+ nav.pages a:hover { background: #f6f8fa; }
+ nav.toc ol { margin: .3rem 0 0; padding-left: 1.2rem; }
+ p.lede { color: #444; }
+ @media print { details.run { break-inside: avoid; } }
+</style></head><body>
+<h1>Drupal 11.4 benchmarks</h1>
+<p class="lede">Drupal 11.4, demo_umami profile on Apache+mod_php, nginx+PHP-FPM, the two nginx forks built from source, and FreeUnit, across the database axis.</p>
+<nav class="pages">
+<a href="index.html">Overview <span class="meta">(344)</span></a>
+<span class="here">Drupal 11.4 <span class="meta">(27)</span></span>
+<a href="drupal-12.0.html">Drupal 12.0 <span class="meta">(74)</span></a>
+<a href="symfony.html">Symfony <span class="meta">(30)</span></a>
+<a href="wordpress.html">WordPress <span class="meta">(40)</span></a>
+<a href="php.html">Framework-free PHP <span class="meta">(64)</span></a>
+<a href="arm64.html">ARM64 (Oracle A1) <span class="meta">(109)</span></a>
+</nav>
+<p class="note">Everything here is rebuilt from committed <code>results/&lt;run-id&gt;/summary.json</code> files. The <strong>null band</strong> is printed beside every comparison: it is the same job run with both sides identical (A against a copy of A), so a delta smaller than the band is noise and is reported as <em>no claim</em>. Host class, governor, PHP, Drupal tag, database and runtime versions are in each run's header.</p>
+<h2 id="short">The short version</h2>
+<p class="note">This page holds <strong>27 published comparisons</strong> across <strong>2 application sites</strong>, measured on pro4s-2, sd-91675, sd-92483. Each comparison is one job: the same cells against two runtimes, with a null phase that bounds the noise first. A <span class="badge claim">CLAIM</span> appears only when the delta is outside that band. Start with the summary tables, then open a run for its numbers; every run links to its raw <code>results/&lt;run-id&gt;/</code> directory.</p>
+<h3>CLAIM <span class="meta">(16)</span></h3>
+<ul class="verdicts">
+<li><span class="badge claim">CLAIM</span> <a href="#02-front-anon-freeunit-vs-fpm-11.4-20261010T054857Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit 1.37.0 vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-front-c32: B is 7.7 percent more server instructions per request, outside the null band of 0.1, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#03-front-anon-fpm-vs-apache-11.4-20261010T072319Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · nginx + PHP-FPM vs Apache + mod_php</a> <span class="meta">CLAIM drupal-front-c32: B is 54.7 percent more server instructions per request, outside the null band of 0.1, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#04-front-auth-freeunit-vs-fpm-11.4-20261010T060133Z">Drupal 11.4, demo_umami profile · Front page, authenticated (page cache bypassed) · FreeUnit 1.37.0 vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-auth-c32: B is 0.6 percent less server instructions per request, outside the null band of 0.3, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#16-front-anon-master-vs-fpm-11.4-20261010T125416Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-front-c32: B is 7.7 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#16-front-anon-master-vs-fpm-11.4-sd-91675-20261015T211042Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-front-c32: B is 8.3 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#16i-front-anon-master-vs-fpm-icache-11.4-sd-91675-20261015T205748Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-front-c32: B is 8.2 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#16i-front-anon-master-vs-fpm-icache-11.4-sd-91675-20261016T114806Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-front-c32: B is 8.3 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#16r-front-anon-master-vs-fpm-record-11.4-sd-91675-20261015T231548Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-front-c32: B is 8.2 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#16r-front-anon-master-vs-fpm-record-11.4-sd-91675-20261016T055432Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-front-c32: B is 8.3 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#16r-front-anon-master-vs-fpm-record-11.4-sd-92483-20261017T102106Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-front-c32: B is 7.5 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#16r-front-anon-master-vs-fpm-record-11.4-sd-92483-20261017T113513Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-front-c32: B is 7.6 percent more server instructions per request, outside the null band of 0.3, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#16r-front-anon-master-vs-fpm-record-11.4-sd-92483-20261017T202944Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-front-c32: B is 7.7 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#18-front-anon-master-vs-apache-11.4-20261010T132008Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit master vs Apache + mod_php</a> <span class="meta">CLAIM drupal-front-c32: B is 66.8 percent more server instructions per request, outside the null band of 0.1, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#41-auth-libphp-symbolic-20261010T155337Z">Drupal 11.4, demo_umami profile · Front page, authenticated (page cache bypassed) · FreeUnit 1.37.0 vs freeunit-symbolic</a> <span class="meta">CLAIM drupal-auth-c32: B is 4.8 percent less server cycles per request, outside the null band of 1.1, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#42-auth-symbolic-vs-fpm-11.4-20261010T160737Z">Drupal 11.4, demo_umami profile · Front page, authenticated (page cache bypassed) · freeunit-symbolic vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-auth-c32: B is 0.6 percent more server instructions per request, outside the null band of 0.6, 12 of 12 cells agree</span></li>
+<li><span class="badge claim">CLAIM</span> <a href="#21-drupal-front-freeunit-vs-fpm-11.4-standard-sd-91675-20261010T200119Z">Drupal 11.4, standard profile · Front page, anonymous (page-cache hit) · FreeUnit 1.37.0 vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-front-c32: B is 6.8 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</span></li>
+</ul>
+<h3>NO CLAIM <span class="meta">(10)</span></h3>
+<ul class="verdicts">
+<li><span class="badge noclaim">no claim</span> <a href="#05-share-probe-freeunit-11.4-20261010T074309Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit 1.37.0 vs FreeUnit 1.37.0, direct routes</a> <span class="meta">NO CLAIM drupal-front-c32: inside the noise, no claim (B is 0.0 percent less server instructions per request, null band 0.2, 6 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#06-front-anon-master-vs-1370-11.4-20261010T063845Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit 1.37.0 vs FreeUnit master</a> <span class="meta">NO CLAIM drupal-front-c32: inside the noise, no claim (B is 0.0 percent less server instructions per request, null band 0.2, 6 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#07-front-auth-master-vs-1370-11.4-20261010T065118Z">Drupal 11.4, demo_umami profile · Front page, authenticated (page cache bypassed) · FreeUnit 1.37.0 vs FreeUnit master</a> <span class="meta">NO CLAIM drupal-auth-c32: inside the noise, no claim (B is 0.2 percent less server instructions per request, null band 0.3, 8 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#168-front-anon-master-b532b9d-vs-1370-11.4-sd-92483-20261019T030320Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit 1.37.0 vs freeunit-master-b532b9d</a> <span class="meta">NO CLAIM drupal-front-c32: inside the noise, no claim (B is 0.0 percent more server instructions per request, null band 0.1, 6 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#17-front-auth-master-vs-fpm-11.4-20261010T130654Z">Drupal 11.4, demo_umami profile · Front page, authenticated (page cache bypassed) · FreeUnit master vs nginx + PHP-FPM</a> <span class="meta">NO CLAIM drupal-auth-c32: inside the noise, no claim (B is 0.3 percent less server instructions per request, null band 0.4, 11 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#193-drupal-front-11.4-tip-vs-1370-11.4-sd-91675-20261020T125247Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit 1.37.0 vs freeunit-tip-e63168bd</a> <span class="meta">NO CLAIM drupal-front-c32: inside the noise, no claim (B is 0.0 percent more server instructions per request, null band 0.2, 8 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#213-front-anon-11.4-tip-vs-1370-tight-sd-91675-20261020T235608Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit 1.37.0 vs freeunit-tip-e63168bd</a> <span class="meta">NO CLAIM drupal-front-c32: inside the noise, no claim (B is 0.2 percent less server instructions per request, null band 0.1, 11 of 16 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#213-front-anon-11.4-tip-vs-1370-tight-sd-91675-20261021T054408Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit 1.37.0 vs freeunit-tip-e63168bd</a> <span class="meta">NO CLAIM drupal-front-c32: inside the noise, no claim (B is 0.1 percent more server instructions per request, null band 0.2, 11 of 16 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#43-auth-fpm-vs-symbolic-11.4-20261010T162052Z">Drupal 11.4, demo_umami profile · Front page, authenticated (page cache bypassed) · nginx + PHP-FPM vs freeunit-symbolic</a> <span class="meta">NO CLAIM drupal-auth-c32: inside the noise, no claim (B is 0.3 percent less server instructions per request, null band 0.3, 11 of 12 cells agree)</span></li>
+<li><span class="badge noclaim">no claim</span> <a href="#22-drupal-auth-freeunit-vs-fpm-11.4-standard-sd-91675-20261010T201420Z">Drupal 11.4, standard profile · Front page, authenticated (page cache bypassed) · FreeUnit 1.37.0 vs nginx + PHP-FPM</a> <span class="meta">NO CLAIM drupal-auth-c32: inside the noise, no claim (B is 0.6 percent more server instructions per request, null band 0.7, 12 of 12 cells agree)</span></li>
+</ul>
+<h3>PASS <span class="meta">(1)</span></h3>
+<ul class="verdicts">
+<li><span class="badge pass">pass</span> <a href="#01-null-front-anon-11.4-20261010T052707Z">Drupal 11.4, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit 1.37.0 vs FreeUnit 1.37.0</a> <span class="meta">PASS drupal-front-c32: null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-0.0, 0.1], null band 0.1, limit 5.0: PASS</span></li>
+</ul>
+<h2 id="summary">Summary: the primary metric per runtime</h2>
+<p class="note">Primary metric: s cycles, s instructions (lower is better), measured c32 on one host in one window. The ratio is against the best runtime in that row. Each comparison has its null band printed in the run sections below; a ratio smaller than the band is not a difference. Caveat: this table pools absolute means from runs taken hours apart under a powersave governor, so use it for the order, not for a percentage; the per-run tables are the controlled measurement.</p>
+<h3>Front page, authenticated (page cache bypassed) <span class="meta">(drupal-auth-c32, mysql, pro4s-2, s cycles)</span></h3>
+<table><thead><tr><th>runtime</th><th>s cycles</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>freeunit-symbolic</td><td>94,707,085</td><td>1.00x</td></tr>
+<tr><td>FreeUnit 1.37.0</td><td>99,497,195</td><td>1.05x</td></tr>
+</tbody></table>
+<h3>Front page, authenticated (page cache bypassed) <span class="meta">(drupal-auth-c32, mysql, pro4s-2, s instructions)</span></h3>
+<table><thead><tr><th>runtime</th><th>s instructions</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>freeunit-symbolic</td><td>82,274,701</td><td>1.00x</td></tr>
+<tr><td>nginx + PHP-FPM</td><td>82,627,592</td><td>1.00x</td></tr>
+<tr><td>FreeUnit master</td><td>82,894,145</td><td>1.01x</td></tr>
+<tr><td>FreeUnit 1.37.0</td><td>83,046,027</td><td>1.01x</td></tr>
+</tbody></table>
+<h3>Front page, authenticated (page cache bypassed) <span class="meta">(drupal-auth-c32, mysql, sd-91675, s instructions)</span></h3>
+<table><thead><tr><th>runtime</th><th>s instructions</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>FreeUnit 1.37.0</td><td>30,313,591</td><td>1.00x</td></tr>
+<tr><td>nginx + PHP-FPM</td><td>30,487,232</td><td>1.01x</td></tr>
+</tbody></table>
+<h3>Front page, anonymous (page-cache hit) <span class="meta">(drupal-front-c32, mysql, pro4s-2, s instructions)</span></h3>
+<table><thead><tr><th>runtime</th><th>s instructions</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>FreeUnit master</td><td>4,820,713</td><td>1.00x</td></tr>
+<tr><td>FreeUnit 1.37.0, direct routes</td><td>4,824,470</td><td>1.00x</td></tr>
+<tr><td>FreeUnit 1.37.0</td><td>4,824,664</td><td>1.00x</td></tr>
+<tr><td>nginx + PHP-FPM</td><td>5,194,108</td><td>1.08x</td></tr>
+<tr><td>Apache + mod_php</td><td>8,035,744</td><td>1.67x</td></tr>
+</tbody></table>
+<h3>Front page, anonymous (page-cache hit) <span class="meta">(drupal-front-c32, mysql, sd-91675, s instructions)</span></h3>
+<table><thead><tr><th>runtime</th><th>s instructions</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>FreeUnit 1.37.0</td><td>4,619,737</td><td>1.00x</td></tr>
+<tr><td>FreeUnit master</td><td>4,707,016</td><td>1.02x</td></tr>
+<tr><td>freeunit-tip-e63168bd</td><td>4,723,893</td><td>1.02x</td></tr>
+<tr><td>nginx + PHP-FPM</td><td>5,012,391</td><td>1.08x</td></tr>
+</tbody></table>
+<h3>Front page, anonymous (page-cache hit) <span class="meta">(drupal-front-c32, mysql, sd-92483, s instructions)</span></h3>
+<table><thead><tr><th>runtime</th><th>s instructions</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>FreeUnit 1.37.0</td><td>4,729,902</td><td>1.00x</td></tr>
+<tr><td>freeunit-master-b532b9d</td><td>4,731,179</td><td>1.00x</td></tr>
+<tr><td>FreeUnit master</td><td>4,752,629</td><td>1.00x</td></tr>
+<tr><td>nginx + PHP-FPM</td><td>5,112,599</td><td>1.08x</td></tr>
+</tbody></table>
+<h2 id="runs">Every run</h2>
+<p class="note">One row per comparison. The run id is the directory name under <code>results/</code> and the anchor of its detail block below; the date is the run's own start time. Open a row to read its metrics.</p>
+<table class="index"><thead><tr><th>run</th><th>date</th><th>site</th><th>workload</th><th>runtimes</th><th>verdict</th></tr></thead><tbody>
+<tr><td><a href="#01-null-front-anon-11.4-20261010T052707Z"><code>01-null-front-anon-11.4-20261010T052707Z</code></a></td><td>2026-10-10T05:35</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit 1.37.0 vs FreeUnit 1.37.0</td><td><span class="badge pass">pass</span></td></tr>
+<tr><td><a href="#02-front-anon-freeunit-vs-fpm-11.4-20261010T054857Z"><code>02-front-anon-freeunit-vs-fpm-11.4-20261010T0548</code></a></td><td>2026-10-10T06:01</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit 1.37.0 vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#03-front-anon-fpm-vs-apache-11.4-20261010T072319Z"><code>03-front-anon-fpm-vs-apache-11.4-20261010T072319</code></a></td><td>2026-10-10T07:36</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>nginx + PHP-FPM vs Apache + mod_php</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#04-front-auth-freeunit-vs-fpm-11.4-20261010T060133Z"><code>04-front-auth-freeunit-vs-fpm-11.4-20261010T0601</code></a></td><td>2026-10-10T06:14</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, authenticated (page cache bypassed)</td><td>FreeUnit 1.37.0 vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#05-share-probe-freeunit-11.4-20261010T074309Z"><code>05-share-probe-freeunit-11.4-20261010T074309Z</code></a></td><td>2026-10-10T07:55</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit 1.37.0 vs FreeUnit 1.37.0, direct routes</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#06-front-anon-master-vs-1370-11.4-20261010T063845Z"><code>06-front-anon-master-vs-1370-11.4-20261010T06384</code></a></td><td>2026-10-10T06:51</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit 1.37.0 vs FreeUnit master</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#07-front-auth-master-vs-1370-11.4-20261010T065118Z"><code>07-front-auth-master-vs-1370-11.4-20261010T06511</code></a></td><td>2026-10-10T07:04</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, authenticated (page cache bypassed)</td><td>FreeUnit 1.37.0 vs FreeUnit master</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#16-front-anon-master-vs-fpm-11.4-20261010T125416Z"><code>16-front-anon-master-vs-fpm-11.4-20261010T125416</code></a></td><td>2026-10-10T13:06</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit master vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#16-front-anon-master-vs-fpm-11.4-sd-91675-20261015T211042Z"><code>16-front-anon-master-vs-fpm-11.4-sd-91675-202610</code></a></td><td>2026-10-15T21:24</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit master vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#168-front-anon-master-b532b9d-vs-1370-11.4-sd-92483-20261019T030320Z"><code>168-front-anon-master-b532b9d-vs-1370-11.4-sd-92</code></a></td><td>2026-10-19T03:16</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit 1.37.0 vs freeunit-master-b532b9d</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#16i-front-anon-master-vs-fpm-icache-11.4-sd-91675-20261015T205748Z"><code>16i-front-anon-master-vs-fpm-icache-11.4-sd-9167</code></a></td><td>2026-10-15T21:10</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit master vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#16i-front-anon-master-vs-fpm-icache-11.4-sd-91675-20261016T114806Z"><code>16i-front-anon-master-vs-fpm-icache-11.4-sd-9167</code></a></td><td>2026-10-16T12:01</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit master vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#16r-front-anon-master-vs-fpm-record-11.4-sd-91675-20261015T231548Z"><code>16r-front-anon-master-vs-fpm-record-11.4-sd-9167</code></a></td><td>2026-10-15T23:29</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit master vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#16r-front-anon-master-vs-fpm-record-11.4-sd-91675-20261016T055432Z"><code>16r-front-anon-master-vs-fpm-record-11.4-sd-9167</code></a></td><td>2026-10-16T06:08</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit master vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#16r-front-anon-master-vs-fpm-record-11.4-sd-92483-20261017T102106Z"><code>16r-front-anon-master-vs-fpm-record-11.4-sd-9248</code></a></td><td>2026-10-17T10:35</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit master vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#16r-front-anon-master-vs-fpm-record-11.4-sd-92483-20261017T113513Z"><code>16r-front-anon-master-vs-fpm-record-11.4-sd-9248</code></a></td><td>2026-10-17T11:50</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit master vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#16r-front-anon-master-vs-fpm-record-11.4-sd-92483-20261017T202944Z"><code>16r-front-anon-master-vs-fpm-record-11.4-sd-9248</code></a></td><td>2026-10-17T20:43</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit master vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#17-front-auth-master-vs-fpm-11.4-20261010T130654Z"><code>17-front-auth-master-vs-fpm-11.4-20261010T130654</code></a></td><td>2026-10-10T13:20</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, authenticated (page cache bypassed)</td><td>FreeUnit master vs nginx + PHP-FPM</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#18-front-anon-master-vs-apache-11.4-20261010T132008Z"><code>18-front-anon-master-vs-apache-11.4-20261010T132</code></a></td><td>2026-10-10T13:33</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit master vs Apache + mod_php</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#193-drupal-front-11.4-tip-vs-1370-11.4-sd-91675-20261020T125247Z"><code>193-drupal-front-11.4-tip-vs-1370-11.4-sd-91675-</code></a></td><td>2026-10-20T13:13</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit 1.37.0 vs freeunit-tip-e63168bd</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#213-front-anon-11.4-tip-vs-1370-tight-sd-91675-20261020T235608Z"><code>213-front-anon-11.4-tip-vs-1370-tight-sd-91675-2</code></a></td><td>2026-10-21T00:26</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit 1.37.0 vs freeunit-tip-e63168bd</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#213-front-anon-11.4-tip-vs-1370-tight-sd-91675-20261021T054408Z"><code>213-front-anon-11.4-tip-vs-1370-tight-sd-91675-2</code></a></td><td>2026-10-21T06:13</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit 1.37.0 vs freeunit-tip-e63168bd</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#41-auth-libphp-symbolic-20261010T155337Z"><code>41-auth-libphp-symbolic-20261010T155337Z</code></a></td><td>2026-10-10T16:06</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, authenticated (page cache bypassed)</td><td>FreeUnit 1.37.0 vs freeunit-symbolic</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#42-auth-symbolic-vs-fpm-11.4-20261010T160737Z"><code>42-auth-symbolic-vs-fpm-11.4-20261010T160737Z</code></a></td><td>2026-10-10T16:20</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, authenticated (page cache bypassed)</td><td>freeunit-symbolic vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#43-auth-fpm-vs-symbolic-11.4-20261010T162052Z"><code>43-auth-fpm-vs-symbolic-11.4-20261010T162052Z</code></a></td><td>2026-10-10T16:34</td><td>Drupal 11.4, demo_umami profile</td><td>Front page, authenticated (page cache bypassed)</td><td>nginx + PHP-FPM vs freeunit-symbolic</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#21-drupal-front-freeunit-vs-fpm-11.4-standard-sd-91675-20261010T200119Z"><code>21-drupal-front-freeunit-vs-fpm-11.4-standard-sd</code></a></td><td>2026-10-10T20:14</td><td>Drupal 11.4, standard profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit 1.37.0 vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#22-drupal-auth-freeunit-vs-fpm-11.4-standard-sd-91675-20261010T201420Z"><code>22-drupal-auth-freeunit-vs-fpm-11.4-standard-sd-</code></a></td><td>2026-10-10T20:27</td><td>Drupal 11.4, standard profile</td><td>Front page, authenticated (page cache bypassed)</td><td>FreeUnit 1.37.0 vs nginx + PHP-FPM</td><td><span class="badge noclaim">no claim</span></td></tr>
+</tbody></table>
+<h2 id="details">Run detail</h2>
+<p class="note">Grouped by application site. Nothing is hidden: the summary line carries the verdict, the body has the metrics, and the null-phase row that bounds the job is one click further.</p>
+<h3 id="site-11.4">Drupal 11.4, demo_umami profile <span class="meta">(25 runs)</span></h3>
+<details class="run" id="01-null-front-anon-11.4-20261010T052707Z">
+<summary><span class="badge pass">pass</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit 1.37.0 vs FreeUnit 1.37.0</span><span class="meta">Drupal 11.4, demo_umami profile · 01-null-front-anon-11.4-20261010T052707Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host pro4s-2 · date 2026-10-10T05:35:27Z</p>
+<p class="headline">PASS drupal-front-c32: null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-0.0, 0.1], null band 0.1, limit 5.0: PASS</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>freeunit</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-0.0, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_cs, 95 percent CI [-0.1, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.4 percent in db_cycles, 95 percent CI [-0.7, -0.1], null band 0.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_instructions, 95 percent CI [-0.2, 0.1], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.4 percent in db_migrations, 95 percent CI [-5.1, 2.3], null band 5.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_us, 95 percent CI [-0.5, 0.7], null band 0.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in p50 latency (ms), 95 percent CI [-0.2, 0.8], null band 0.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -4.9 percent in p99 latency (ms), 95 percent CI [-8.6, -1.2], null band 8.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in requests per second, 95 percent CI [-0.6, 0.6], null band 0.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in server cs per request, 95 percent CI [-1.2, 2.7], null band 2.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in server cycles per request, 95 percent CI [-1.0, -0.1], null band 1.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 9.4 percent in server migrations per request, 95 percent CI [-23.9, 42.6], null band 42.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in server CPU per request (us), 95 percent CI [-0.6, 0.6], null band 0.6, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>01-null-front-anon-11.4-20261010T052707Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="02-front-anon-freeunit-vs-fpm-11.4-20261010T054857Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit 1.37.0 vs nginx + PHP-FPM</span><span class="meta">Drupal 11.4, demo_umami profile · 02-front-anon-freeunit-vs-fpm-11.4-20261010T054857Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host pro4s-2 · date 2026-10-10T06:01:32Z</p>
+<p class="headline">CLAIM drupal-front-c32: B is 7.7 percent more server instructions per request, outside the null band of 0.1, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4823512.7858</td><td>5194809.2477</td><td>7.7%</td><td>[7.61, 7.78]</td><td>0.15</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.3669</td><td>11.376</td><td>0.08%</td><td>[-0.05, 0.21]</td><td>0.8</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4683353.7809</td><td>4757094.1243</td><td>1.57%</td><td>[0.97, 2.18]</td><td>1.4</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_instructions</td><td>2215404.7818</td><td>2220790.4989</td><td>0.24%</td><td>[0.15, 0.34]</td><td>0.23</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.7062</td><td>1.8638</td><td>9.29%</td><td>[6.66, 11.92]</td><td>5.35</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>1976.1557</td><td>2009.3706</td><td>1.71%</td><td>[0.03, 3.39]</td><td>3.24</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>60.0864</td><td>62.6474</td><td>4.28%</td><td>[2.94, 5.62]</td><td>2.71</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>85.6026</td><td>85.1434</td><td>-0.51%</td><td>[-3.96, 2.94]</td><td>6.91</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>530.6208</td><td>512.6733</td><td>-3.35%</td><td>[-4.95, -1.76]</td><td>2.65</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cs per request</td><td>14.4758</td><td>13.961</td><td>-3.53%</td><td>[-5.73, -1.32]</td><td>4.45</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>8997436.1177</td><td>9293675.3179</td><td>3.29%</td><td>[2.38, 4.2]</td><td>2.15</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.3406</td><td>0.5656</td><td>67.1%</td><td>[43.92, 90.28]</td><td>26.19</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>3766.0282</td><td>3896.3349</td><td>3.49%</td><td>[1.91, 5.07]</td><td>2.6</td><td>12/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.0 percent in server instructions per request, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.3 percent in db_cs, 95 percent CI [-0.8, 0.2], null band 0.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in db_cycles, 95 percent CI [-1.4, 0.5], null band 1.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_instructions, 95 percent CI [-0.2, 0.1], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.3 percent in db_migrations, 95 percent CI [-5.3, 2.8], null band 5.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in db_us, 95 percent CI [-1.7, 3.2], null band 3.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in p50 latency (ms), 95 percent CI [-1.8, 2.7], null band 2.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.9 percent in p99 latency (ms), 95 percent CI [-3.1, 6.9], null band 6.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in requests per second, 95 percent CI [-2.7, 1.7], null band 2.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.1 percent in server cs per request, 95 percent CI [-4.5, 2.3], null band 4.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.7 percent in server cycles per request, 95 percent CI [-2.2, 0.7], null band 2.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.4 percent in server migrations per request, 95 percent CI [-23.4, 26.2], null band 26.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in server CPU per request (us), 95 percent CI [-1.6, 2.6], null band 2.6, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>02-front-anon-freeunit-vs-fpm-11.4-20261010T054857Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="03-front-anon-fpm-vs-apache-11.4-20261010T072319Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, anonymous (page-cache hit) — nginx + PHP-FPM vs Apache + mod_php</span><span class="meta">Drupal 11.4, demo_umami profile · 03-front-anon-fpm-vs-apache-11.4-20261010T072319Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host pro4s-2 · date 2026-10-10T07:36:06Z</p>
+<p class="headline">CLAIM drupal-front-c32: B is 54.7 percent more server instructions per request, outside the null band of 0.1, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>nginx-fpm</th><th>apache</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>5194460.1955</td><td>8035921.5507</td><td>54.7%</td><td>[54.64, 54.76]</td><td>0.15</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.3735</td><td>11.2309</td><td>-1.25%</td><td>[-1.43, -1.08]</td><td>0.22</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4765683.3427</td><td>4680573.4771</td><td>-1.78%</td><td>[-2.84, -0.73]</td><td>2.61</td><td>11/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>2220828.1402</td><td>2224583.7204</td><td>0.17%</td><td>[0.03, 0.31]</td><td>0.13</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.8546</td><td>1.8231</td><td>-1.7%</td><td>[-3.61, 0.22]</td><td>2.12</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>2012.8834</td><td>1878.0311</td><td>-6.7%</td><td>[-8.96, -4.44]</td><td>7.48</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>62.4851</td><td>45.4535</td><td>-27.26%</td><td>[-28.57, -25.95]</td><td>7.59</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>85.2525</td><td>73.3593</td><td>-13.89%</td><td>[-19.25, -8.53]</td><td>5.48</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>512.325</td><td>436.0933</td><td>-14.88%</td><td>[-16.76, -13.0]</td><td>6.73</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>13.9385</td><td>11.6162</td><td>-16.66%</td><td>[-17.35, -15.96]</td><td>1.36</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>9298946.4565</td><td>11605374.8002</td><td>24.81%</td><td>[23.13, 26.49]</td><td>3.63</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.5609</td><td>0.036</td><td>-93.28%</td><td>[-101.88, -84.68]</td><td>17.87</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>3898.8424</td><td>4584.4006</td><td>17.58%</td><td>[15.23, 19.94]</td><td>6.57</td><td>12/12</td><td>NOISY</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-0.0, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_cs, 95 percent CI [-0.2, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.0 percent in db_cycles, 95 percent CI [-2.6, 0.6], null band 2.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_instructions, 95 percent CI [-0.0, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.3 percent in db_migrations, 95 percent CI [-2.1, 1.5], null band 2.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 3.1 percent in db_us, 95 percent CI [-1.3, 7.5], null band 7.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 3.1 percent in p50 latency (ms), 95 percent CI [-1.3, 7.6], null band 7.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.7 percent in p99 latency (ms), 95 percent CI [-2.1, 5.5], null band 5.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -2.8 percent in requests per second, 95 percent CI [-6.7, 1.1], null band 6.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.4 percent in server cs per request, 95 percent CI [-0.6, 1.4], null band 1.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.4 percent in server cycles per request, 95 percent CI [-3.6, 0.8], null band 3.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 8.4 percent in server migrations per request, 95 percent CI [-1.0, 17.9], null band 17.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 2.8 percent in server CPU per request (us), 95 percent CI [-1.1, 6.6], null band 6.6, limit 5.0: NOISY</li>
+</ul></details>
+<p class="data">raw: <code>03-front-anon-fpm-vs-apache-11.4-20261010T072319Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="04-front-auth-freeunit-vs-fpm-11.4-20261010T060133Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, authenticated (page cache bypassed) — FreeUnit 1.37.0 vs nginx + PHP-FPM</span><span class="meta">Drupal 11.4, demo_umami profile · 04-front-auth-freeunit-vs-fpm-11.4-20261010T060133Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host pro4s-2 · date 2026-10-10T06:14:30Z</p>
+<p class="headline">CLAIM drupal-auth-c32: B is 0.6 percent less server instructions per request, outside the null band of 0.3, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>83052109.5854</td><td>82541407.4878</td><td>-0.61%</td><td>[-0.87, -0.36]</td><td>0.29</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>67.6733</td><td>66.881</td><td>-1.17%</td><td>[-3.51, 1.17]</td><td>2.73</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>29835226.1392</td><td>29634039.7603</td><td>-0.67%</td><td>[-1.44, 0.09]</td><td>0.65</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>13564938.1026</td><td>13525277.5087</td><td>-0.29%</td><td>[-0.77, 0.19]</td><td>0.8</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>12.3203</td><td>12.5404</td><td>1.79%</td><td>[0.64, 2.94]</td><td>2.1</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>9844.1307</td><td>10024.1148</td><td>1.83%</td><td>[-0.6, 4.26]</td><td>4.54</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>509.4527</td><td>503.0044</td><td>-1.27%</td><td>[-4.11, 1.58]</td><td>5.09</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>803.9021</td><td>764.2723</td><td>-4.87%</td><td>[-13.79, 4.05]</td><td>10.05</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>60.7858</td><td>62.3167</td><td>2.52%</td><td>[-0.79, 5.83]</td><td>4.55</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>68.319</td><td>65.5177</td><td>-4.1%</td><td>[-4.96, -3.24]</td><td>1.33</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>101106130.2719</td><td>95467896.716</td><td>-5.58%</td><td>[-6.77, -4.38]</td><td>1.43</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.9849</td><td>1.0479</td><td>6.15%</td><td>[-16.95, 29.25]</td><td>41.69</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>32524.4764</td><td>31485.7428</td><td>-3.19%</td><td>[-4.97, -1.41]</td><td>3.63</td><td>9/12</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-0.1, 0.3], null band 0.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.7 percent in db_cs, 95 percent CI [-1.3, 2.7], null band 2.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_cycles, 95 percent CI [-0.6, 0.6], null band 0.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in db_instructions, 95 percent CI [-0.2, 0.8], null band 0.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.4 percent in db_migrations, 95 percent CI [-1.2, 2.1], null band 2.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in db_us, 95 percent CI [-3.5, 4.5], null band 4.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in p50 latency (ms), 95 percent CI [-3.4, 5.1], null band 5.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in p99 latency (ms), 95 percent CI [-10.0, 9.1], null band 10.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.3 percent in requests per second, 95 percent CI [-4.5, 3.9], null band 4.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in server cs per request, 95 percent CI [-0.3, 1.3], null band 1.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server cycles per request, 95 percent CI [-1.4, 1.2], null band 1.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 11.8 percent in server migrations per request, 95 percent CI [-18.0, 41.7], null band 41.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in server CPU per request (us), 95 percent CI [-2.7, 3.6], null band 3.6, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>04-front-auth-freeunit-vs-fpm-11.4-20261010T060133Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="05-share-probe-freeunit-11.4-20261010T074309Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit 1.37.0 vs FreeUnit 1.37.0, direct routes</span><span class="meta">Drupal 11.4, demo_umami profile · 05-share-probe-freeunit-11.4-20261010T074309Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host pro4s-2 · date 2026-10-10T07:55:34Z</p>
+<p class="headline">NO CLAIM drupal-front-c32: inside the noise, no claim (B is 0.0 percent less server instructions per request, null band 0.2, 6 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>freeunit-direct</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4824695.9071</td><td>4824469.8352</td><td>-0.0%</td><td>[-0.12, 0.12]</td><td>0.16</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.3654</td><td>11.3677</td><td>0.02%</td><td>[-0.12, 0.16]</td><td>0.17</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4668939.961</td><td>4687712.8603</td><td>0.4%</td><td>[0.07, 0.74]</td><td>1.97</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>2214781.1062</td><td>2216216.2571</td><td>0.06%</td><td>[-0.05, 0.18]</td><td>0.12</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.6902</td><td>1.738</td><td>2.89%</td><td>[-0.25, 6.02]</td><td>8.15</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>1999.1982</td><td>1985.1122</td><td>-0.7%</td><td>[-1.55, 0.15]</td><td>5.11</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>60.658</td><td>60.6061</td><td>-0.08%</td><td>[-0.94, 0.78]</td><td>4.61</td><td>4/12</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>88.028</td><td>83.5432</td><td>-4.77%</td><td>[-12.08, 2.55]</td><td>11.79</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>524.5767</td><td>526.9883</td><td>0.46%</td><td>[-0.51, 1.44]</td><td>4.38</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>14.4802</td><td>14.6014</td><td>0.84%</td><td>[-2.28, 3.95]</td><td>4.92</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>8959551.1961</td><td>9019922.3855</td><td>0.67%</td><td>[0.06, 1.28]</td><td>3.19</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.3614</td><td>0.3275</td><td>-7.71%</td><td>[-35.24, 19.83]</td><td>51.74</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>3806.5652</td><td>3790.4153</td><td>-0.42%</td><td>[-1.37, 0.53]</td><td>4.02</td><td>7/12</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.0 percent in server instructions per request, 95 percent CI [-0.2, 0.1], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_cs, 95 percent CI [-0.2, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.4 percent in db_cycles, 95 percent CI [-2.0, 1.1], null band 2.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_instructions, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -3.0 percent in db_migrations, 95 percent CI [-8.2, 2.2], null band 8.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in db_us, 95 percent CI [-3.4, 5.1], null band 5.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.0 percent in p50 latency (ms), 95 percent CI [-2.6, 4.6], null band 4.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -4.3 percent in p99 latency (ms), 95 percent CI [-11.8, 3.3], null band 11.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.6 percent in requests per second, 95 percent CI [-4.4, 3.1], null band 4.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.7 percent in server cs per request, 95 percent CI [-4.9, 1.6], null band 4.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.8 percent in server cycles per request, 95 percent CI [-3.2, 1.6], null band 3.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 16.1 percent in server migrations per request, 95 percent CI [-19.5, 51.7], null band 51.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in server CPU per request (us), 95 percent CI [-3.1, 4.0], null band 4.0, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>05-share-probe-freeunit-11.4-20261010T074309Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="06-front-anon-master-vs-1370-11.4-20261010T063845Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit 1.37.0 vs FreeUnit master</span><span class="meta">Drupal 11.4, demo_umami profile · 06-front-anon-master-vs-1370-11.4-20261010T063845Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host pro4s-2 · date 2026-10-10T06:51:17Z</p>
+<p class="headline">NO CLAIM drupal-front-c32: inside the noise, no claim (B is 0.0 percent less server instructions per request, null band 0.2, 6 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>freeunit-master</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4825782.4056</td><td>4823665.7012</td><td>-0.04%</td><td>[-0.19, 0.1]</td><td>0.19</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.3766</td><td>11.3738</td><td>-0.02%</td><td>[-0.2, 0.15]</td><td>0.18</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4684580.3781</td><td>4694026.5016</td><td>0.21%</td><td>[-0.37, 0.78]</td><td>1.3</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>2214610.1102</td><td>2212847.8898</td><td>-0.08%</td><td>[-0.24, 0.09]</td><td>0.16</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.6841</td><td>1.6392</td><td>-2.28%</td><td>[-8.08, 3.51]</td><td>5.03</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>2000.6817</td><td>1974.0773</td><td>-1.33%</td><td>[-3.88, 1.22]</td><td>4.12</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>60.5532</td><td>59.5254</td><td>-1.7%</td><td>[-4.24, 0.84]</td><td>3.92</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>85.6627</td><td>84.2722</td><td>-1.63%</td><td>[-5.27, 2.01]</td><td>5.12</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>525.345</td><td>532.7992</td><td>1.42%</td><td>[-1.22, 4.05]</td><td>4.12</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>14.6736</td><td>14.7178</td><td>0.3%</td><td>[-3.1, 3.71]</td><td>3.69</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>8964915.4313</td><td>8991524.5442</td><td>0.3%</td><td>[-0.69, 1.3]</td><td>1.99</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.3258</td><td>0.4323</td><td>65.43%</td><td>[1.98, 128.88]</td><td>59.85</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>3801.2037</td><td>3752.9958</td><td>-1.27%</td><td>[-3.63, 1.09]</td><td>3.77</td><td>7/12</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.1 percent in server instructions per request, 95 percent CI [-0.2, 0.0], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_cs, 95 percent CI [-0.2, 0.0], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in db_cycles, 95 percent CI [-0.3, 1.3], null band 1.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_instructions, 95 percent CI [-0.2, 0.1], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.3 percent in db_migrations, 95 percent CI [-5.0, 2.4], null band 5.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -2.0 percent in db_us, 95 percent CI [-4.1, 0.1], null band 4.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.8 percent in p50 latency (ms), 95 percent CI [-3.9, 0.3], null band 3.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in p99 latency (ms), 95 percent CI [-4.5, 5.1], null band 5.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 2.1 percent in requests per second, 95 percent CI [0.0, 4.1], null band 4.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.3 percent in server cs per request, 95 percent CI [-3.7, 1.1], null band 3.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.7 percent in server cycles per request, 95 percent CI [-0.6, 2.0], null band 2.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 24.2 percent in server migrations per request, 95 percent CI [-11.5, 59.8], null band 59.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.9 percent in server CPU per request (us), 95 percent CI [-3.8, 0.0], null band 3.8, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>06-front-anon-master-vs-1370-11.4-20261010T063845Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="07-front-auth-master-vs-1370-11.4-20261010T065118Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">Front page, authenticated (page cache bypassed) — FreeUnit 1.37.0 vs FreeUnit master</span><span class="meta">Drupal 11.4, demo_umami profile · 07-front-auth-master-vs-1370-11.4-20261010T065118Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host pro4s-2 · date 2026-10-10T07:04:11Z</p>
+<p class="headline">NO CLAIM drupal-auth-c32: inside the noise, no claim (B is 0.2 percent less server instructions per request, null band 0.3, 8 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>freeunit-master</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>83039944.5971</td><td>82897952.5199</td><td>-0.17%</td><td>[-0.41, 0.07]</td><td>0.29</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>66.4153</td><td>67.7444</td><td>2.02%</td><td>[-0.81, 4.85]</td><td>12.16</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>db_cycles</td><td>29626610.7552</td><td>29587779.3172</td><td>-0.13%</td><td>[-0.79, 0.53]</td><td>0.7</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>13496876.8616</td><td>13530804.1456</td><td>0.25%</td><td>[-0.12, 0.62]</td><td>0.83</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>12.1978</td><td>12.5223</td><td>2.67%</td><td>[-1.48, 6.82]</td><td>18.02</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>9901.8504</td><td>9964.1858</td><td>0.64%</td><td>[-1.08, 2.37]</td><td>2.38</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>516.264</td><td>519.1523</td><td>0.57%</td><td>[-1.66, 2.79]</td><td>3.93</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>788.7348</td><td>774.6949</td><td>-1.49%</td><td>[-8.23, 5.25]</td><td>12.93</td><td>4/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>60.2008</td><td>60.1825</td><td>-0.02%</td><td>[-2.36, 2.33]</td><td>2.24</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>68.2643</td><td>68.5781</td><td>0.46%</td><td>[-0.3, 1.23]</td><td>1.12</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>100674699.7509</td><td>99968366.4485</td><td>-0.7%</td><td>[-1.67, 0.27]</td><td>1.58</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>1.07</td><td>0.9261</td><td>-9.75%</td><td>[-31.46, 11.97]</td><td>35.4</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>32772.0373</td><td>32782.4768</td><td>0.05%</td><td>[-1.27, 1.36]</td><td>2.0</td><td>8/12</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-0.1, 0.3], null band 0.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 4.5 percent in db_cs, 95 percent CI [-3.1, 12.2], null band 12.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_cycles, 95 percent CI [-0.5, 0.7], null band 0.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in db_instructions, 95 percent CI [-0.2, 0.8], null band 0.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 6.2 percent in db_migrations, 95 percent CI [-5.6, 18.0], null band 18.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_us, 95 percent CI [-2.4, 2.2], null band 2.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.3 percent in p50 latency (ms), 95 percent CI [-1.4, 3.9], null band 3.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 5.7 percent in p99 latency (ms), 95 percent CI [-1.5, 12.9], null band 12.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in requests per second, 95 percent CI [-2.2, 1.8], null band 2.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.4 percent in server cs per request, 95 percent CI [-0.2, 1.1], null band 1.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.6 percent in server cycles per request, 95 percent CI [-1.6, 0.3], null band 1.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 7.9 percent in server migrations per request, 95 percent CI [-19.6, 35.4], null band 35.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.6 percent in server CPU per request (us), 95 percent CI [-2.0, 0.8], null band 2.0, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>07-front-auth-master-vs-1370-11.4-20261010T065118Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="16-front-anon-master-vs-fpm-11.4-20261010T125416Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit master vs nginx + PHP-FPM</span><span class="meta">Drupal 11.4, demo_umami profile · 16-front-anon-master-vs-fpm-11.4-20261010T125416Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host pro4s-2 · date 2026-10-10T13:06:53Z</p>
+<p class="headline">CLAIM drupal-front-c32: B is 7.7 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4820893.9402</td><td>5193055.2029</td><td>7.72%</td><td>[7.64, 7.8]</td><td>0.18</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.3634</td><td>11.3706</td><td>0.06%</td><td>[-0.06, 0.18]</td><td>0.27</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4675049.516</td><td>4788926.8957</td><td>2.44%</td><td>[1.11, 3.76]</td><td>0.91</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_instructions</td><td>2214638.6806</td><td>2218261.5002</td><td>0.16%</td><td>[0.05, 0.28]</td><td>0.24</td><td>11/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.6838</td><td>1.8596</td><td>10.53%</td><td>[6.77, 14.29]</td><td>7.83</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>1990.5691</td><td>1992.4093</td><td>0.09%</td><td>[-3.23, 3.41]</td><td>2.87</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>60.3112</td><td>61.8436</td><td>2.54%</td><td>[-0.68, 5.76]</td><td>3.11</td><td>11/12</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>82.9671</td><td>85.4248</td><td>2.97%</td><td>[-0.56, 6.5]</td><td>3.77</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>requests per second</td><td>528.0083</td><td>518.8767</td><td>-1.73%</td><td>[-5.05, 1.6]</td><td>2.7</td><td>11/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>14.5056</td><td>13.9139</td><td>-4.06%</td><td>[-6.22, -1.91]</td><td>3.85</td><td>10/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>8952315.6894</td><td>9343818.0237</td><td>4.38%</td><td>[2.48, 6.27]</td><td>1.43</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.4126</td><td>0.5674</td><td>39.01%</td><td>[22.9, 55.12]</td><td>38.58</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>3782.5929</td><td>3858.3205</td><td>2.0%</td><td>[-1.02, 5.02]</td><td>2.51</td><td>11/12</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.1 percent in server instructions per request, 95 percent CI [-0.2, 0.0], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_cs, 95 percent CI [-0.0, 0.3], null band 0.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_cycles, 95 percent CI [-0.9, 0.8], null band 0.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_instructions, 95 percent CI [-0.1, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.9 percent in db_migrations, 95 percent CI [-6.0, 7.8], null band 7.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in db_us, 95 percent CI [-2.4, 2.9], null band 2.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.4 percent in p50 latency (ms), 95 percent CI [-2.3, 3.1], null band 3.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in p99 latency (ms), 95 percent CI [-2.8, 3.8], null band 3.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in requests per second, 95 percent CI [-2.7, 2.2], null band 2.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.3 percent in server cs per request, 95 percent CI [-3.9, 1.2], null band 3.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server cycles per request, 95 percent CI [-1.4, 1.3], null band 1.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -8.2 percent in server migrations per request, 95 percent CI [-38.6, 22.1], null band 38.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in server CPU per request (us), 95 percent CI [-2.2, 2.5], null band 2.5, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>16-front-anon-master-vs-fpm-11.4-20261010T125416Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="16-front-anon-master-vs-fpm-11.4-sd-91675-20261015T211042Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit master vs nginx + PHP-FPM</span><span class="meta">Drupal 11.4, demo_umami profile · 16-front-anon-master-vs-fpm-11.4-sd-91675-20261015T211042Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-15T21:24:09Z</p>
+<p class="headline">CLAIM drupal-front-c32: B is 8.3 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4708060.9128</td><td>5097074.5307</td><td>8.26%</td><td>[8.14, 8.38]</td><td>0.18</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.3845</td><td>11.3795</td><td>-0.04%</td><td>[-0.17, 0.08]</td><td>0.24</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4719484.4537</td><td>4768144.3862</td><td>1.04%</td><td>[0.05, 2.02]</td><td>0.75</td><td>9/12</td><td>CLAIM</td></tr>
+<tr><td>db_instructions</td><td>2216349.8973</td><td>2219119.0416</td><td>0.13%</td><td>[0.04, 0.21]</td><td>0.1</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.6784</td><td>1.8596</td><td>10.84%</td><td>[8.68, 13.01]</td><td>3.04</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_us</td><td>1943.2702</td><td>2051.6829</td><td>5.61%</td><td>[1.69, 9.54]</td><td>2.07</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>58.6254</td><td>63.2382</td><td>7.91%</td><td>[4.04, 11.77]</td><td>1.43</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>85.3472</td><td>90.3977</td><td>6.16%</td><td>[-3.18, 15.5]</td><td>10.48</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>543.385</td><td>505.7508</td><td>-6.9%</td><td>[-10.67, -3.14]</td><td>1.94</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cs per request</td><td>14.8181</td><td>13.9392</td><td>-5.92%</td><td>[-7.65, -4.18]</td><td>3.88</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>9007347.1707</td><td>9233733.0087</td><td>2.52%</td><td>[1.08, 3.97]</td><td>1.13</td><td>10/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.437</td><td>0.5542</td><td>27.14%</td><td>[12.0, 42.27]</td><td>25.99</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>3683.8087</td><td>3949.1098</td><td>7.23%</td><td>[3.65, 10.81]</td><td>1.87</td><td>12/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.0 percent in server instructions per request, 95 percent CI [-0.2, 0.1], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_cs, 95 percent CI [-0.2, 0.1], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in db_cycles, 95 percent CI [-0.3, 0.7], null band 0.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_instructions, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in db_migrations, 95 percent CI [-2.4, 3.0], null band 3.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.6 percent in db_us, 95 percent CI [-2.1, 0.9], null band 2.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.6 percent in p50 latency (ms), 95 percent CI [-1.4, 0.2], null band 1.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.2 percent in p99 latency (ms), 95 percent CI [-8.0, 10.5], null band 10.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.6 percent in requests per second, 95 percent CI [-0.7, 1.9], null band 1.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in server cs per request, 95 percent CI [-3.9, 3.4], null band 3.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in server cycles per request, 95 percent CI [-0.7, 1.1], null band 1.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -8.7 percent in server migrations per request, 95 percent CI [-26.0, 8.6], null band 26.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.6 percent in server CPU per request (us), 95 percent CI [-1.9, 0.7], null band 1.9, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>16-front-anon-master-vs-fpm-11.4-sd-91675-20261015T211042Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="168-front-anon-master-b532b9d-vs-1370-11.4-sd-92483-20261019T030320Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit 1.37.0 vs freeunit-master-b532b9d</span><span class="meta">Drupal 11.4, demo_umami profile · 168-front-anon-master-b532b9d-vs-1370-11.4-sd-92483-20261019T030320Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-92483 · date 2026-10-19T03:16:33Z</p>
+<p class="headline">NO CLAIM drupal-front-c32: inside the noise, no claim (B is 0.0 percent more server instructions per request, null band 0.1, 6 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>freeunit-master-b532b9d</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4729901.6028</td><td>4731178.7985</td><td>0.03%</td><td>[-0.11, 0.17]</td><td>0.15</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.3892</td><td>11.3957</td><td>0.06%</td><td>[-0.12, 0.23]</td><td>0.34</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4777494.7524</td><td>4713478.3847</td><td>-1.29%</td><td>[-3.87, 1.28]</td><td>3.25</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>2215166.6553</td><td>2215537.2972</td><td>0.02%</td><td>[-0.12, 0.15]</td><td>0.22</td><td>4/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.6748</td><td>1.6632</td><td>-0.65%</td><td>[-5.43, 4.14]</td><td>8.25</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>2194.0671</td><td>2156.0403</td><td>-1.72%</td><td>[-3.81, 0.36]</td><td>3.29</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>65.1821</td><td>64.2987</td><td>-1.34%</td><td>[-2.88, 0.19]</td><td>2.63</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>119.1519</td><td>105.24</td><td>-10.9%</td><td>[-32.15, 10.35]</td><td>30.23</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>478.3183</td><td>488.695</td><td>2.2%</td><td>[-0.53, 4.94]</td><td>4.42</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>14.1844</td><td>14.4712</td><td>2.08%</td><td>[-0.97, 5.12]</td><td>3.6</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>8765964.8106</td><td>8807283.3456</td><td>0.47%</td><td>[-0.55, 1.49]</td><td>1.67</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.2915</td><td>0.3686</td><td>27.31%</td><td>[-12.2, 66.82]</td><td>57.84</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>4013.9403</td><td>4011.1519</td><td>-0.06%</td><td>[-1.32, 1.19]</td><td>2.4</td><td>6/12</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>INVALID: 1 cell(s) failed, first: A drupal-front-c32 block 0 slot 3 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A drupal-front-c32 block 0 slot 3 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A drupal-front-c32 block 0 slot 3 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A drupal-front-c32 block 0 slot 3 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A drupal-front-c32 block 0 slot 3 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A drupal-front-c32 block 0 slot 3 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A drupal-front-c32 block 0 slot 3 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A drupal-front-c32 block 0 slot 3 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A drupal-front-c32 block 0 slot 3 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A drupal-front-c32 block 0 slot 3 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A drupal-front-c32 block 0 slot 3 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A drupal-front-c32 block 0 slot 3 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A drupal-front-c32 block 0 slot 3 alerts=1</li>
+</ul></details>
+<p class="data">raw: <code>168-front-anon-master-b532b9d-vs-1370-11.4-sd-92483-20261019T030320Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="16i-front-anon-master-vs-fpm-icache-11.4-sd-91675-20261015T205748Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit master vs nginx + PHP-FPM</span><span class="meta">Drupal 11.4, demo_umami profile · 16i-front-anon-master-vs-fpm-icache-11.4-sd-91675-20261015T205748Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-15T21:10:41Z</p>
+<p class="headline">CLAIM drupal-front-c32: B is 8.2 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4710458.0669</td><td>5098213.5024</td><td>8.23%</td><td>[8.15, 8.32]</td><td>0.16</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.3966</td><td>11.3768</td><td>-0.17%</td><td>[-0.31, -0.04]</td><td>0.18</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4692225.4822</td><td>4855585.1209</td><td>3.48%</td><td>[2.21, 4.75]</td><td>1.28</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_instructions</td><td>2212433.5362</td><td>2216554.1923</td><td>0.19%</td><td>[0.06, 0.31]</td><td>0.18</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.6259</td><td>1.862</td><td>14.55%</td><td>[12.09, 17.01]</td><td>5.47</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>2044.8527</td><td>2025.7713</td><td>-0.93%</td><td>[-4.21, 2.36]</td><td>3.31</td><td>4/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>61.1754</td><td>61.8711</td><td>1.14%</td><td>[-2.43, 4.71]</td><td>2.68</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>86.3753</td><td>87.0331</td><td>0.69%</td><td>[-7.58, 8.96]</td><td>13.25</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>521.8808</td><td>515.4358</td><td>-1.23%</td><td>[-4.32, 1.86]</td><td>2.86</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>14.5646</td><td>13.9622</td><td>-4.1%</td><td>[-5.46, -2.74]</td><td>3.71</td><td>10/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>8874531.8474</td><td>9420459.0845</td><td>6.15%</td><td>[4.41, 7.89]</td><td>2.06</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.4722</td><td>0.579</td><td>25.1%</td><td>[11.03, 39.17]</td><td>26.13</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>3825.3594</td><td>3882.4237</td><td>1.5%</td><td>[-1.55, 4.55]</td><td>2.66</td><td>8/12</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.0 percent in server instructions per request, 95 percent CI [-0.1, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_cs, 95 percent CI [-0.1, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in db_cycles, 95 percent CI [-0.2, 1.3], null band 1.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_instructions, 95 percent CI [-0.0, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.3 percent in db_migrations, 95 percent CI [-2.8, 5.5], null band 5.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.4 percent in db_us, 95 percent CI [-3.3, 0.5], null band 3.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.0 percent in p50 latency (ms), 95 percent CI [-2.7, 0.7], null band 2.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 4.5 percent in p99 latency (ms), 95 percent CI [-4.2, 13.3], null band 13.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.1 percent in requests per second, 95 percent CI [-0.7, 2.9], null band 2.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.9 percent in server cs per request, 95 percent CI [-1.8, 3.7], null band 3.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.9 percent in server cycles per request, 95 percent CI [-0.2, 2.1], null band 2.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -6.7 percent in server migrations per request, 95 percent CI [-26.1, 12.8], null band 26.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.0 percent in server CPU per request (us), 95 percent CI [-2.7, 0.7], null band 2.7, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>16i-front-anon-master-vs-fpm-icache-11.4-sd-91675-20261015T205748Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="16i-front-anon-master-vs-fpm-icache-11.4-sd-91675-20261016T114806Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit master vs nginx + PHP-FPM</span><span class="meta">Drupal 11.4, demo_umami profile · 16i-front-anon-master-vs-fpm-icache-11.4-sd-91675-20261016T114806Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-16T12:01:03Z</p>
+<p class="headline">CLAIM drupal-front-c32: B is 8.3 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4707126.6546</td><td>5097654.8843</td><td>8.3%</td><td>[8.17, 8.43]</td><td>0.23</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_branch_misses</td><td>21732.3034</td><td>22948.6419</td><td>5.6%</td><td>[5.25, 5.94]</td><td>0.57</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.3816</td><td>11.3728</td><td>-0.08%</td><td>[-0.2, 0.05]</td><td>0.16</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4749241.5126</td><td>4840104.0734</td><td>1.91%</td><td>[-0.07, 3.9]</td><td>1.1</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>2211844.8407</td><td>2215994.5816</td><td>0.19%</td><td>[0.09, 0.28]</td><td>0.13</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_itlb_miss_walks</td><td>2882.7322</td><td>2981.359</td><td>3.42%</td><td>[2.74, 4.11]</td><td>0.86</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_l1_icache_misses</td><td>172542.9598</td><td>174625.1238</td><td>1.21%</td><td>[0.95, 1.46]</td><td>0.25</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.65</td><td>1.8775</td><td>13.84%</td><td>[11.94, 15.74]</td><td>3.4</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_us</td><td>1979.2025</td><td>2014.1912</td><td>1.77%</td><td>[-3.71, 7.25]</td><td>2.85</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>59.6116</td><td>61.8304</td><td>3.72%</td><td>[-1.74, 9.19]</td><td>1.86</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>86.4983</td><td>87.2942</td><td>0.9%</td><td>[-7.86, 9.66]</td><td>6.52</td><td>5/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>535.725</td><td>517.4692</td><td>-3.41%</td><td>[-8.45, 1.64]</td><td>2.7</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>server branch_misses per request</td><td>70897.9311</td><td>65905.9653</td><td>-7.04%</td><td>[-8.26, -5.81]</td><td>1.19</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cs per request</td><td>14.4145</td><td>13.8807</td><td>-3.68%</td><td>[-5.44, -1.93]</td><td>5.11</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>9055741.9881</td><td>9428628.131</td><td>4.12%</td><td>[1.37, 6.87]</td><td>1.55</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>server itlb_miss_walks per request</td><td>4880.9956</td><td>5282.7075</td><td>8.23%</td><td>[1.74, 14.73]</td><td>5.98</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>server l1_icache_misses per request</td><td>351878.8628</td><td>373357.5394</td><td>6.11%</td><td>[5.56, 6.65]</td><td>0.79</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.4238</td><td>0.5602</td><td>33.44%</td><td>[16.19, 50.68]</td><td>26.02</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>3729.7318</td><td>3875.5336</td><td>3.91%</td><td>[-1.06, 8.88]</td><td>2.68</td><td>9/12</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-0.0, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_branch_misses, 95 percent CI [-0.5, 0.6], null band 0.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_cs, 95 percent CI [-0.2, 0.1], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_cycles, 95 percent CI [-1.1, 0.8], null band 1.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_instructions, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_itlb_miss_walks, 95 percent CI [-0.9, 0.8], null band 0.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_l1_icache_misses, 95 percent CI [-0.2, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_migrations, 95 percent CI [-3.4, 3.4], null band 3.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in db_us, 95 percent CI [-1.3, 2.9], null band 2.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.4 percent in p50 latency (ms), 95 percent CI [-1.0, 1.9], null band 1.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in p99 latency (ms), 95 percent CI [-5.5, 6.5], null band 6.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.8 percent in requests per second, 95 percent CI [-2.7, 1.0], null band 2.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server branch_misses per request, 95 percent CI [-1.2, 0.9], null band 1.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.8 percent in server cs per request, 95 percent CI [-1.4, 5.1], null band 5.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in server cycles per request, 95 percent CI [-1.6, 1.2], null band 1.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 2.6 percent in server itlb_miss_walks per request, 95 percent CI [-0.8, 6.0], null band 6.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in server l1_icache_misses per request, 95 percent CI [-0.5, 0.8], null band 0.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 2.9 percent in server migrations per request, 95 percent CI [-20.2, 26.0], null band 26.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in server CPU per request (us), 95 percent CI [-1.0, 2.7], null band 2.7, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>16i-front-anon-master-vs-fpm-icache-11.4-sd-91675-20261016T114806Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="16r-front-anon-master-vs-fpm-record-11.4-sd-91675-20261015T231548Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit master vs nginx + PHP-FPM</span><span class="meta">Drupal 11.4, demo_umami profile · 16r-front-anon-master-vs-fpm-record-11.4-sd-91675-20261015T231548Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-15T23:29:20Z</p>
+<p class="headline">CLAIM drupal-front-c32: B is 8.2 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4706597.7665</td><td>5091891.0486</td><td>8.19%</td><td>[8.03, 8.35]</td><td>0.17</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_branch_misses</td><td>22058.2775</td><td>23133.835</td><td>4.88%</td><td>[4.4, 5.36]</td><td>0.57</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.3801</td><td>11.3892</td><td>0.08%</td><td>[-0.12, 0.28]</td><td>0.22</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4761573.5034</td><td>4867354.7463</td><td>2.22%</td><td>[0.85, 3.6]</td><td>1.95</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_instructions</td><td>2216213.465</td><td>2219246.2512</td><td>0.14%</td><td>[0.02, 0.25]</td><td>0.14</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_itlb_miss_walks</td><td>2938.5906</td><td>3010.6019</td><td>2.45%</td><td>[1.93, 2.97]</td><td>1.11</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_l1_icache_misses</td><td>173369.9275</td><td>175333.4228</td><td>1.13%</td><td>[0.95, 1.31]</td><td>0.41</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.7043</td><td>1.8681</td><td>9.62%</td><td>[7.93, 11.31]</td><td>3.96</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_us</td><td>1971.5076</td><td>1964.3593</td><td>-0.34%</td><td>[-5.65, 4.97]</td><td>5.88</td><td>4/12</td><td>NOISY</td></tr>
+<tr><td>front_us</td><td>0.0</td><td>0.0</td><td>-%</td><td>[-, -]</td><td>-</td><td>0/12</td><td>NO DATA</td></tr>
+<tr><td>p50 latency (ms)</td><td>59.9145</td><td>60.4377</td><td>0.89%</td><td>[-5.01, 6.79]</td><td>6.4</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>83.8089</td><td>79.9627</td><td>-4.59%</td><td>[-7.67, -1.5]</td><td>14.31</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>537.2433</td><td>532.2592</td><td>-0.91%</td><td>[-6.14, 4.31]</td><td>5.37</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>server branch_misses per request</td><td>71255.2628</td><td>65807.8154</td><td>-7.64%</td><td>[-8.76, -6.52]</td><td>2.25</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cs per request</td><td>14.6703</td><td>13.7383</td><td>-6.35%</td><td>[-8.46, -4.24]</td><td>3.98</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>9090285.787</td><td>9465031.932</td><td>4.13%</td><td>[2.11, 6.14]</td><td>3.04</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>server itlb_miss_walks per request</td><td>5127.9832</td><td>5359.2963</td><td>4.68%</td><td>[-7.23, 16.59]</td><td>7.36</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>server l1_icache_misses per request</td><td>352498.1537</td><td>373211.65</td><td>5.88%</td><td>[5.38, 6.37]</td><td>1.31</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.3792</td><td>0.5395</td><td>42.49%</td><td>[21.43, 63.56]</td><td>29.56</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>3721.3026</td><td>3767.2777</td><td>1.25%</td><td>[-3.64, 6.14]</td><td>4.9</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>worker_us</td><td>0.0</td><td>0.0</td><td>-%</td><td>[-, -]</td><td>-</td><td>0/12</td><td>NO DATA</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.0 percent in server instructions per request, 95 percent CI [-0.2, 0.1], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.3 percent in db_branch_misses, 95 percent CI [-0.6, -0.0], null band 0.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_cs, 95 percent CI [-0.1, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.6 percent in db_cycles, 95 percent CI [-2.0, 0.8], null band 2.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_instructions, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in db_itlb_miss_walks, 95 percent CI [-1.1, 0.1], null band 1.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_l1_icache_misses, 95 percent CI [-0.4, 0.2], null band 0.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_migrations, 95 percent CI [-4.0, 3.7], null band 4.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.0 percent in db_us, 95 percent CI [-4.0, 5.9], null band 5.9, limit 5.0: NOISY</li>
+<li>no data for front_us</li>
+<li>null gate: A and a copy of A differ by 1.8 percent in p50 latency (ms), 95 percent CI [-2.9, 6.4], null band 6.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -4.6 percent in p99 latency (ms), 95 percent CI [-14.3, 5.1], null band 14.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.9 percent in requests per second, 95 percent CI [-5.4, 3.5], null band 5.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in server branch_misses per request, 95 percent CI [-2.3, 1.8], null band 2.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.0 percent in server cs per request, 95 percent CI [-4.0, 1.9], null band 4.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.8 percent in server cycles per request, 95 percent CI [-3.0, 1.5], null band 3.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 2.7 percent in server itlb_miss_walks per request, 95 percent CI [-2.0, 7.4], null band 7.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.4 percent in server l1_icache_misses per request, 95 percent CI [-1.3, 0.5], null band 1.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 9.6 percent in server migrations per request, 95 percent CI [-10.4, 29.6], null band 29.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.7 percent in server CPU per request (us), 95 percent CI [-3.5, 4.9], null band 4.9, limit 5.0: PASS</li>
+<li>no data for worker_us</li>
+</ul></details>
+<p class="data">raw: <code>16r-front-anon-master-vs-fpm-record-11.4-sd-91675-20261015T231548Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="16r-front-anon-master-vs-fpm-record-11.4-sd-91675-20261016T055432Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit master vs nginx + PHP-FPM</span><span class="meta">Drupal 11.4, demo_umami profile · 16r-front-anon-master-vs-fpm-record-11.4-sd-91675-20261016T055432Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-16T06:08:41Z</p>
+<p class="headline">CLAIM drupal-front-c32: B is 8.3 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4702835.6328</td><td>5092126.3303</td><td>8.28%</td><td>[8.15, 8.41]</td><td>0.24</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_branch_misses</td><td>21932.8855</td><td>23080.4158</td><td>5.23%</td><td>[4.59, 5.88]</td><td>0.43</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.3871</td><td>11.3707</td><td>-0.14%</td><td>[-0.3, 0.01]</td><td>0.19</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4754105.4523</td><td>4912828.393</td><td>3.35%</td><td>[1.58, 5.11]</td><td>1.39</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_instructions</td><td>2214743.7431</td><td>2219638.9631</td><td>0.22%</td><td>[0.14, 0.3]</td><td>0.12</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_itlb_miss_walks</td><td>2735.3235</td><td>2833.4516</td><td>3.59%</td><td>[3.01, 4.17]</td><td>0.71</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_l1_icache_misses</td><td>173591.697</td><td>175925.1142</td><td>1.34%</td><td>[1.15, 1.54]</td><td>0.29</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.6583</td><td>1.8907</td><td>14.02%</td><td>[11.69, 16.35]</td><td>4.39</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_us</td><td>1970.6993</td><td>1915.109</td><td>-2.76%</td><td>[-9.06, 3.53]</td><td>3.42</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>front_us</td><td>0.0</td><td>0.0</td><td>-%</td><td>[-, -]</td><td>-</td><td>0/12</td><td>NO DATA</td></tr>
+<tr><td>p50 latency (ms)</td><td>59.3674</td><td>59.2098</td><td>-0.22%</td><td>[-6.79, 6.36]</td><td>3.04</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>85.2261</td><td>79.3637</td><td>-6.63%</td><td>[-11.5, -1.75]</td><td>5.76</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>540.7458</td><td>544.7</td><td>0.77%</td><td>[-5.35, 6.9]</td><td>3.13</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>server branch_misses per request</td><td>70549.363</td><td>66248.4998</td><td>-6.09%</td><td>[-7.46, -4.71]</td><td>1.66</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cs per request</td><td>14.2115</td><td>13.7621</td><td>-3.14%</td><td>[-5.82, -0.46]</td><td>4.8</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>9038285.2818</td><td>9604890.3416</td><td>6.29%</td><td>[3.65, 8.93]</td><td>1.97</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>server itlb_miss_walks per request</td><td>4962.5785</td><td>5337.3723</td><td>7.67%</td><td>[4.34, 10.99]</td><td>5.45</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>server l1_icache_misses per request</td><td>350439.7562</td><td>373754.3031</td><td>6.66%</td><td>[5.9, 7.41]</td><td>0.54</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.376</td><td>0.5487</td><td>47.69%</td><td>[26.74, 68.65]</td><td>32.82</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>3697.2503</td><td>3692.6114</td><td>-0.09%</td><td>[-5.86, 5.68]</td><td>3.03</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>worker_us</td><td>0.0</td><td>0.0</td><td>-%</td><td>[-, -]</td><td>-</td><td>0/12</td><td>NO DATA</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-0.1, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_branch_misses, 95 percent CI [-0.3, 0.4], null band 0.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_cs, 95 percent CI [-0.2, 0.1], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in db_cycles, 95 percent CI [-1.4, 0.5], null band 1.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_instructions, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_itlb_miss_walks, 95 percent CI [-0.6, 0.7], null band 0.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_l1_icache_misses, 95 percent CI [-0.3, 0.2], null band 0.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.2 percent in db_migrations, 95 percent CI [-4.4, 2.1], null band 4.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in db_us, 95 percent CI [-1.8, 3.4], null band 3.4, limit 5.0: PASS</li>
+<li>no data for front_us</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in p50 latency (ms), 95 percent CI [-1.4, 3.0], null band 3.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.9 percent in p99 latency (ms), 95 percent CI [-4.0, 5.8], null band 5.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.8 percent in requests per second, 95 percent CI [-3.1, 1.5], null band 3.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in server branch_misses per request, 95 percent CI [-1.7, 0.6], null band 1.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 2.1 percent in server cs per request, 95 percent CI [-0.5, 4.8], null band 4.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.6 percent in server cycles per request, 95 percent CI [-2.0, 0.7], null band 2.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.1 percent in server itlb_miss_walks per request, 95 percent CI [-3.2, 5.5], null band 5.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in server l1_icache_misses per request, 95 percent CI [-0.5, 0.5], null band 0.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 6.5 percent in server migrations per request, 95 percent CI [-19.9, 32.8], null band 32.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in server CPU per request (us), 95 percent CI [-1.5, 3.0], null band 3.0, limit 5.0: PASS</li>
+<li>no data for worker_us</li>
+</ul></details>
+<p class="data">raw: <code>16r-front-anon-master-vs-fpm-record-11.4-sd-91675-20261016T055432Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="16r-front-anon-master-vs-fpm-record-11.4-sd-92483-20261017T102106Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit master vs nginx + PHP-FPM</span><span class="meta">Drupal 11.4, demo_umami profile · 16r-front-anon-master-vs-fpm-record-11.4-sd-92483-20261017T102106Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-92483 · date 2026-10-17T10:35:39Z</p>
+<p class="headline">CLAIM drupal-front-c32: B is 7.5 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4754360.131</td><td>5110254.1422</td><td>7.49%</td><td>[7.31, 7.66]</td><td>0.17</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_branch_misses</td><td>22658.4406</td><td>23638.3147</td><td>4.33%</td><td>[2.8, 5.85]</td><td>2.44</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.3761</td><td>11.3747</td><td>-0.01%</td><td>[-0.3, 0.27]</td><td>0.3</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4755935.8413</td><td>4877523.5033</td><td>2.56%</td><td>[-0.34, 5.45]</td><td>4.57</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>2216768.9519</td><td>2222152.7618</td><td>0.24%</td><td>[0.13, 0.36]</td><td>0.17</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_itlb_miss_walks</td><td>2942.7388</td><td>3018.6686</td><td>2.58%</td><td>[1.41, 3.75]</td><td>1.24</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_l1_icache_misses</td><td>173011.1645</td><td>174652.341</td><td>0.95%</td><td>[0.61, 1.29]</td><td>0.45</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.6913</td><td>1.8532</td><td>9.6%</td><td>[4.65, 14.55]</td><td>5.08</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>2223.5749</td><td>2200.2588</td><td>-1.04%</td><td>[-4.53, 2.46]</td><td>6.71</td><td>5/12</td><td>NOISY</td></tr>
+<tr><td>front_us</td><td>0.0</td><td>0.0</td><td>-%</td><td>[-, -]</td><td>-</td><td>0/12</td><td>NO DATA</td></tr>
+<tr><td>p50 latency (ms)</td><td>68.0695</td><td>68.3006</td><td>0.35%</td><td>[-3.18, 3.88]</td><td>6.48</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>101.7646</td><td>114.6268</td><td>13.02%</td><td>[-22.7, 48.74]</td><td>44.37</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>465.6133</td><td>464.7517</td><td>-0.17%</td><td>[-4.39, 4.05]</td><td>7.47</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>server branch_misses per request</td><td>69536.514</td><td>64858.2936</td><td>-6.73%</td><td>[-7.91, -5.55]</td><td>1.88</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cs per request</td><td>14.3024</td><td>13.6316</td><td>-4.69%</td><td>[-7.28, -2.1]</td><td>4.41</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>8894277.1244</td><td>9237476.1848</td><td>3.86%</td><td>[2.07, 5.65]</td><td>2.25</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server itlb_miss_walks per request</td><td>5078.0971</td><td>5126.8574</td><td>1.09%</td><td>[-3.04, 5.22]</td><td>4.84</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>server l1_icache_misses per request</td><td>357157.2581</td><td>372845.3747</td><td>4.39%</td><td>[3.6, 5.19]</td><td>0.85</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.3963</td><td>0.4895</td><td>23.89%</td><td>[-1.83, 49.62]</td><td>40.25</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>4205.5117</td><td>4205.3673</td><td>0.0%</td><td>[-2.94, 2.95]</td><td>4.43</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>worker_us</td><td>0.0</td><td>0.0</td><td>-%</td><td>[-, -]</td><td>-</td><td>0/12</td><td>NO DATA</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-0.1, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.1 percent in db_branch_misses, 95 percent CI [-0.2, 2.4], null band 2.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_cs, 95 percent CI [-0.3, 0.2], null band 0.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.7 percent in db_cycles, 95 percent CI [-1.2, 4.6], null band 4.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_instructions, 95 percent CI [-0.1, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in db_itlb_miss_walks, 95 percent CI [-0.3, 1.2], null band 1.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_l1_icache_misses, 95 percent CI [-0.4, 0.5], null band 0.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.6 percent in db_migrations, 95 percent CI [-3.9, 5.1], null band 5.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 2.2 percent in db_us, 95 percent CI [-2.3, 6.7], null band 6.7, limit 5.0: NOISY</li>
+<li>no data for front_us</li>
+<li>null gate: A and a copy of A differ by 2.6 percent in p50 latency (ms), 95 percent CI [-1.4, 6.5], null band 6.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 18.2 percent in p99 latency (ms), 95 percent CI [-8.0, 44.4], null band 44.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -2.7 percent in requests per second, 95 percent CI [-7.5, 2.2], null band 7.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server branch_misses per request, 95 percent CI [-1.9, 1.7], null band 1.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.9 percent in server cs per request, 95 percent CI [-0.6, 4.4], null band 4.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.3 percent in server cycles per request, 95 percent CI [-2.2, 1.7], null band 2.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in server itlb_miss_walks per request, 95 percent CI [-4.4, 4.8], null band 4.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in server l1_icache_misses per request, 95 percent CI [-0.7, 0.9], null band 0.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -12.8 percent in server migrations per request, 95 percent CI [-40.3, 14.7], null band 40.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.7 percent in server CPU per request (us), 95 percent CI [-3.0, 4.4], null band 4.4, limit 5.0: PASS</li>
+<li>no data for worker_us</li>
+</ul></details>
+<p class="data">raw: <code>16r-front-anon-master-vs-fpm-record-11.4-sd-92483-20261017T102106Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="16r-front-anon-master-vs-fpm-record-11.4-sd-92483-20261017T113513Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit master vs nginx + PHP-FPM</span><span class="meta">Drupal 11.4, demo_umami profile · 16r-front-anon-master-vs-fpm-record-11.4-sd-92483-20261017T113513Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-92483 · date 2026-10-17T11:50:00Z</p>
+<p class="headline">CLAIM drupal-front-c32: B is 7.6 percent more server instructions per request, outside the null band of 0.3, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4756003.6265</td><td>5116324.3194</td><td>7.58%</td><td>[7.39, 7.76]</td><td>0.27</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_branch_misses</td><td>22985.2489</td><td>24019.9958</td><td>4.5%</td><td>[2.97, 6.04]</td><td>1.61</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.3926</td><td>11.3865</td><td>-0.05%</td><td>[-0.3, 0.2]</td><td>0.53</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4856552.4481</td><td>4925364.5199</td><td>1.44%</td><td>[-2.1, 4.97]</td><td>2.91</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>2219388.7763</td><td>2224748.9026</td><td>0.24%</td><td>[0.14, 0.35]</td><td>0.24</td><td>11/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_itlb_miss_walks</td><td>2930.2867</td><td>2984.3739</td><td>1.85%</td><td>[1.01, 2.69]</td><td>1.67</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_l1_icache_misses</td><td>173162.1055</td><td>175245.489</td><td>1.2%</td><td>[0.88, 1.53]</td><td>0.68</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.6677</td><td>1.8634</td><td>11.78%</td><td>[9.47, 14.09]</td><td>7.85</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>2228.3643</td><td>2230.3079</td><td>0.09%</td><td>[-3.55, 3.72]</td><td>5.63</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>front_us</td><td>0.0</td><td>0.0</td><td>-%</td><td>[-, -]</td><td>-</td><td>0/12</td><td>NO DATA</td></tr>
+<tr><td>p50 latency (ms)</td><td>67.9529</td><td>69.1211</td><td>1.71%</td><td>[-3.0, 6.42]</td><td>6.07</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>110.1886</td><td>111.5409</td><td>2.17%</td><td>[-18.18, 22.52]</td><td>29.51</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>459.8525</td><td>453.5542</td><td>-1.35%</td><td>[-5.11, 2.41]</td><td>6.43</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>server branch_misses per request</td><td>69342.9146</td><td>65059.3026</td><td>-6.18%</td><td>[-7.37, -4.98]</td><td>2.07</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cs per request</td><td>14.2769</td><td>13.7253</td><td>-3.86%</td><td>[-6.48, -1.23]</td><td>3.69</td><td>10/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>8939916.9963</td><td>9287339.0603</td><td>3.88%</td><td>[2.21, 5.56]</td><td>2.23</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>server itlb_miss_walks per request</td><td>4976.3059</td><td>5158.4502</td><td>3.66%</td><td>[0.41, 6.91]</td><td>4.08</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>server l1_icache_misses per request</td><td>357930.5446</td><td>374988.8209</td><td>4.77%</td><td>[3.97, 5.57]</td><td>1.06</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.4023</td><td>0.4843</td><td>20.56%</td><td>[-4.23, 45.35]</td><td>33.63</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>4180.2513</td><td>4276.506</td><td>2.3%</td><td>[-1.81, 6.41]</td><td>4.57</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>worker_us</td><td>0.0</td><td>0.0</td><td>-%</td><td>[-, -]</td><td>-</td><td>0/12</td><td>NO DATA</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-0.1, 0.3], null band 0.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in db_branch_misses, 95 percent CI [-1.6, 1.3], null band 1.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in db_cs, 95 percent CI [-0.2, 0.5], null band 0.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_cycles, 95 percent CI [-2.8, 2.9], null band 2.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_instructions, 95 percent CI [-0.2, 0.1], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.6 percent in db_itlb_miss_walks, 95 percent CI [-1.7, 0.4], null band 1.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in db_l1_icache_misses, 95 percent CI [-0.7, 0.2], null band 0.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -3.1 percent in db_migrations, 95 percent CI [-7.9, 1.6], null band 7.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.1 percent in db_us, 95 percent CI [-5.6, 3.5], null band 5.6, limit 5.0: NOISY</li>
+<li>no data for front_us</li>
+<li>null gate: A and a copy of A differ by -1.6 percent in p50 latency (ms), 95 percent CI [-6.1, 2.9], null band 6.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 4.4 percent in p99 latency (ms), 95 percent CI [-20.6, 29.5], null band 29.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.3 percent in requests per second, 95 percent CI [-3.7, 6.4], null band 6.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server branch_misses per request, 95 percent CI [-2.1, 1.9], null band 2.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in server cs per request, 95 percent CI [-3.7, 3.7], null band 3.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in server cycles per request, 95 percent CI [-2.1, 2.2], null band 2.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in server itlb_miss_walks per request, 95 percent CI [-4.1, 4.1], null band 4.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server l1_icache_misses per request, 95 percent CI [-1.1, 0.8], null band 1.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 6.7 percent in server migrations per request, 95 percent CI [-20.2, 33.6], null band 33.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.2 percent in server CPU per request (us), 95 percent CI [-4.6, 2.1], null band 4.6, limit 5.0: PASS</li>
+<li>no data for worker_us</li>
+</ul></details>
+<p class="data">raw: <code>16r-front-anon-master-vs-fpm-record-11.4-sd-92483-20261017T113513Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="16r-front-anon-master-vs-fpm-record-11.4-sd-92483-20261017T202944Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit master vs nginx + PHP-FPM</span><span class="meta">Drupal 11.4, demo_umami profile · 16r-front-anon-master-vs-fpm-record-11.4-sd-92483-20261017T202944Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-92483 · date 2026-10-17T20:43:59Z</p>
+<p class="headline">CLAIM drupal-front-c32: B is 7.7 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4747521.9951</td><td>5111219.2917</td><td>7.66%</td><td>[7.46, 7.86]</td><td>0.23</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_branch_misses</td><td>22708.3958</td><td>23789.7408</td><td>4.76%</td><td>[3.36, 6.16]</td><td>2.18</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.3872</td><td>11.3809</td><td>-0.06%</td><td>[-0.37, 0.26]</td><td>0.35</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4813434.4586</td><td>4933332.4777</td><td>2.49%</td><td>[-0.9, 5.89]</td><td>3.16</td><td>11/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>2215909.3665</td><td>2222533.3202</td><td>0.3%</td><td>[0.19, 0.4]</td><td>0.25</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_itlb_miss_walks</td><td>2944.1982</td><td>3041.1527</td><td>3.3%</td><td>[2.47, 4.12]</td><td>1.68</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_l1_icache_misses</td><td>172649.8234</td><td>174353.868</td><td>0.99%</td><td>[0.66, 1.32]</td><td>0.57</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.679</td><td>1.8701</td><td>11.4%</td><td>[7.83, 14.96]</td><td>9.01</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>2194.8344</td><td>2237.4935</td><td>2.01%</td><td>[-2.52, 6.55]</td><td>6.65</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>front_us</td><td>0.0</td><td>0.0</td><td>-%</td><td>[-, -]</td><td>-</td><td>0/12</td><td>NO DATA</td></tr>
+<tr><td>p50 latency (ms)</td><td>66.5947</td><td>68.9987</td><td>3.69%</td><td>[-1.25, 8.64]</td><td>6.38</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>128.0223</td><td>138.8081</td><td>8.53%</td><td>[-37.51, 54.57]</td><td>35.18</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>471.905</td><td>455.1033</td><td>-3.49%</td><td>[-8.7, 1.73]</td><td>7.18</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>server branch_misses per request</td><td>69429.8997</td><td>64859.4527</td><td>-6.57%</td><td>[-7.74, -5.4]</td><td>1.5</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cs per request</td><td>14.2992</td><td>13.7387</td><td>-3.91%</td><td>[-6.71, -1.12]</td><td>4.45</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>8918523.1524</td><td>9212679.6189</td><td>3.31%</td><td>[1.86, 4.77]</td><td>1.81</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>server itlb_miss_walks per request</td><td>4996.8869</td><td>5298.6673</td><td>6.01%</td><td>[2.84, 9.17]</td><td>4.99</td><td>10/12</td><td>CLAIM</td></tr>
+<tr><td>server l1_icache_misses per request</td><td>356744.8144</td><td>372960.0224</td><td>4.55%</td><td>[3.9, 5.19]</td><td>0.75</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.4346</td><td>0.4996</td><td>16.52%</td><td>[-7.06, 40.09]</td><td>44.42</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>4110.8173</td><td>4233.2424</td><td>3.02%</td><td>[-1.24, 7.29]</td><td>5.26</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>worker_us</td><td>0.0</td><td>0.0</td><td>-%</td><td>[-, -]</td><td>-</td><td>0/12</td><td>NO DATA</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.0 percent in server instructions per request, 95 percent CI [-0.2, 0.1], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.9 percent in db_branch_misses, 95 percent CI [-0.5, 2.2], null band 2.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_cs, 95 percent CI [-0.3, 0.2], null band 0.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in db_cycles, 95 percent CI [-2.1, 3.2], null band 3.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_instructions, 95 percent CI [-0.1, 0.3], null band 0.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.6 percent in db_itlb_miss_walks, 95 percent CI [-0.6, 1.7], null band 1.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_l1_icache_misses, 95 percent CI [-0.3, 0.6], null band 0.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 3.3 percent in db_migrations, 95 percent CI [-2.4, 9.0], null band 9.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 2.8 percent in db_us, 95 percent CI [-1.0, 6.6], null band 6.6, limit 5.0: NOISY</li>
+<li>no data for front_us</li>
+<li>null gate: A and a copy of A differ by 2.2 percent in p50 latency (ms), 95 percent CI [-2.0, 6.4], null band 6.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 11.3 percent in p99 latency (ms), 95 percent CI [-12.6, 35.2], null band 35.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -2.8 percent in requests per second, 95 percent CI [-7.2, 1.7], null band 7.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in server branch_misses per request, 95 percent CI [-1.5, 1.4], null band 1.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.2 percent in server cs per request, 95 percent CI [-4.4, 2.1], null band 4.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.6 percent in server cycles per request, 95 percent CI [-1.8, 0.6], null band 1.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in server itlb_miss_walks per request, 95 percent CI [-5.0, 4.0], null band 5.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server l1_icache_misses per request, 95 percent CI [-0.8, 0.6], null band 0.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -17.0 percent in server migrations per request, 95 percent CI [-44.4, 10.4], null band 44.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.7 percent in server CPU per request (us), 95 percent CI [-1.9, 5.3], null band 5.3, limit 5.0: NOISY</li>
+<li>no data for worker_us</li>
+</ul></details>
+<p class="data">raw: <code>16r-front-anon-master-vs-fpm-record-11.4-sd-92483-20261017T202944Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="17-front-auth-master-vs-fpm-11.4-20261010T130654Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">Front page, authenticated (page cache bypassed) — FreeUnit master vs nginx + PHP-FPM</span><span class="meta">Drupal 11.4, demo_umami profile · 17-front-auth-master-vs-fpm-11.4-20261010T130654Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host pro4s-2 · date 2026-10-10T13:20:07Z</p>
+<p class="headline">NO CLAIM drupal-auth-c32: inside the noise, no claim (B is 0.3 percent less server instructions per request, null band 0.4, 11 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>82890338.2804</td><td>82654027.1305</td><td>-0.29%</td><td>[-0.54, -0.03]</td><td>0.43</td><td>11/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>65.943</td><td>67.0526</td><td>1.69%</td><td>[-0.07, 3.44]</td><td>2.33</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>29487039.8152</td><td>29451643.9012</td><td>-0.12%</td><td>[-0.82, 0.58]</td><td>0.71</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>13464315.3519</td><td>13465209.7736</td><td>0.01%</td><td>[-0.33, 0.35]</td><td>0.55</td><td>5/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>12.1879</td><td>12.6366</td><td>3.68%</td><td>[1.73, 5.63]</td><td>1.33</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_us</td><td>9879.8242</td><td>10003.0073</td><td>1.24%</td><td>[-0.72, 3.21]</td><td>2.78</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>517.0225</td><td>505.004</td><td>-2.33%</td><td>[-5.08, 0.42]</td><td>3.32</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>775.6106</td><td>785.7981</td><td>1.33%</td><td>[-4.33, 6.98]</td><td>9.12</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>60.245</td><td>62.1683</td><td>3.19%</td><td>[0.82, 5.56]</td><td>3.22</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>68.0067</td><td>65.3943</td><td>-3.84%</td><td>[-4.32, -3.36]</td><td>0.7</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>100520951.7689</td><td>95221254.4434</td><td>-5.27%</td><td>[-6.41, -4.13]</td><td>0.93</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.9353</td><td>1.1021</td><td>18.57%</td><td>[-1.96, 39.1]</td><td>27.37</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>32787.4685</td><td>31576.3531</td><td>-3.7%</td><td>[-5.32, -2.07]</td><td>2.12</td><td>11/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.1 percent in server instructions per request, 95 percent CI [-0.2, 0.4], null band 0.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.9 percent in db_cs, 95 percent CI [-0.6, 2.3], null band 2.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_cycles, 95 percent CI [-0.4, 0.7], null band 0.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in db_instructions, 95 percent CI [-0.1, 0.5], null band 0.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in db_migrations, 95 percent CI [-0.7, 1.3], null band 1.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.3 percent in db_us, 95 percent CI [-0.2, 2.8], null band 2.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.5 percent in p50 latency (ms), 95 percent CI [-0.2, 3.3], null band 3.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 4.0 percent in p99 latency (ms), 95 percent CI [-1.0, 9.1], null band 9.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.4 percent in requests per second, 95 percent CI [-3.2, 0.4], null band 3.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in server cs per request, 95 percent CI [-0.5, 0.7], null band 0.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server cycles per request, 95 percent CI [-0.9, 0.8], null band 0.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 6.2 percent in server migrations per request, 95 percent CI [-15.1, 27.4], null band 27.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.9 percent in server CPU per request (us), 95 percent CI [-0.3, 2.1], null band 2.1, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>17-front-auth-master-vs-fpm-11.4-20261010T130654Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="18-front-anon-master-vs-apache-11.4-20261010T132008Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit master vs Apache + mod_php</span><span class="meta">Drupal 11.4, demo_umami profile · 18-front-anon-master-vs-apache-11.4-20261010T132008Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host pro4s-2 · date 2026-10-10T13:33:35Z</p>
+<p class="headline">CLAIM drupal-front-c32: B is 66.8 percent more server instructions per request, outside the null band of 0.1, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-master</th><th>apache</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4817579.6966</td><td>8035565.6098</td><td>66.8%</td><td>[66.69, 66.9]</td><td>0.15</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.3837</td><td>11.2523</td><td>-1.15%</td><td>[-1.39, -0.92]</td><td>0.2</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4778997.0263</td><td>4735157.1409</td><td>-0.91%</td><td>[-3.0, 1.18]</td><td>1.87</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>2220420.6124</td><td>2227038.8569</td><td>0.3%</td><td>[0.04, 0.56]</td><td>0.22</td><td>10/12</td><td>CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.7357</td><td>1.8193</td><td>4.82%</td><td>[0.32, 9.32]</td><td>5.26</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>db_us</td><td>1910.5808</td><td>1825.7319</td><td>-4.44%</td><td>[-8.84, -0.03]</td><td>5.37</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>58.6389</td><td>44.7949</td><td>-23.6%</td><td>[-26.97, -20.23]</td><td>5.23</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>86.3298</td><td>73.5443</td><td>-14.69%</td><td>[-23.54, -5.83]</td><td>8.77</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>545.3708</td><td>446.9567</td><td>-18.05%</td><td>[-21.46, -14.64]</td><td>4.99</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cs per request</td><td>14.6473</td><td>11.6627</td><td>-20.35%</td><td>[-23.93, -16.76]</td><td>5.2</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>9255006.2592</td><td>11773703.4105</td><td>27.25%</td><td>[24.16, 30.35]</td><td>3.2</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.3323</td><td>0.0414</td><td>-86.93%</td><td>[-120.18, -53.68]</td><td>37.44</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>3669.0835</td><td>4477.1891</td><td>22.02%</td><td>[18.17, 25.87]</td><td>4.93</td><td>12/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.0 percent in server instructions per request, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_cs, 95 percent CI [-0.2, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in db_cycles, 95 percent CI [-1.2, 1.9], null band 1.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_instructions, 95 percent CI [-0.1, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.7 percent in db_migrations, 95 percent CI [-3.8, 5.3], null band 5.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_us, 95 percent CI [-5.4, 5.3], null band 5.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.4 percent in p50 latency (ms), 95 percent CI [-4.4, 5.2], null band 5.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 3.8 percent in p99 latency (ms), 95 percent CI [-1.2, 8.8], null band 8.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in requests per second, 95 percent CI [-5.0, 4.9], null band 5.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.4 percent in server cs per request, 95 percent CI [-2.3, 5.2], null band 5.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in server cycles per request, 95 percent CI [-1.6, 3.2], null band 3.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -6.5 percent in server migrations per request, 95 percent CI [-37.4, 24.5], null band 37.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in server CPU per request (us), 95 percent CI [-4.3, 4.9], null band 4.9, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>18-front-anon-master-vs-apache-11.4-20261010T132008Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="193-drupal-front-11.4-tip-vs-1370-11.4-sd-91675-20261020T125247Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit 1.37.0 vs freeunit-tip-e63168bd</span><span class="meta">Drupal 11.4, demo_umami profile · 193-drupal-front-11.4-tip-vs-1370-11.4-sd-91675-20261020T125247Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-20T13:13:29Z</p>
+<p class="headline">NO CLAIM drupal-front-c32: inside the noise, no claim (B is 0.0 percent more server instructions per request, null band 0.2, 8 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>freeunit-tip-e63168bd</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4722916.0406</td><td>4723459.4003</td><td>0.01%</td><td>[-0.15, 0.17]</td><td>0.17</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.363</td><td>11.3698</td><td>0.06%</td><td>[-0.07, 0.19]</td><td>0.22</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4724969.8329</td><td>4697013.0726</td><td>-0.59%</td><td>[-1.5, 0.33]</td><td>1.44</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>2213350.138</td><td>2213127.0811</td><td>-0.01%</td><td>[-0.13, 0.11]</td><td>0.11</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.6786</td><td>1.6779</td><td>-0.04%</td><td>[-4.5, 4.41]</td><td>3.17</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>1974.7762</td><td>2009.1394</td><td>1.8%</td><td>[-0.9, 4.51]</td><td>4.18</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>front_cs</td><td>2.457</td><td>2.5745</td><td>5.65%</td><td>[-7.53, 18.82]</td><td>14.46</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>front_cycles</td><td>395848.3867</td><td>368055.4023</td><td>-6.8%</td><td>[-12.41, -1.19]</td><td>6.3</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>front_instructions</td><td>131631.7477</td><td>123680.8927</td><td>-6.0%</td><td>[-9.47, -2.53]</td><td>3.64</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>front_migrations</td><td>0.3549</td><td>0.3931</td><td>14.22%</td><td>[-11.39, 39.83]</td><td>32.4</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>front_us</td><td>189.6582</td><td>183.9643</td><td>-2.9%</td><td>[-10.28, 4.47]</td><td>8.43</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>59.9717</td><td>61.0517</td><td>1.85%</td><td>[-0.93, 4.63]</td><td>3.37</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>82.493</td><td>84.2307</td><td>2.13%</td><td>[-1.39, 5.64]</td><td>4.02</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>requests per second</td><td>530.4633</td><td>521.9767</td><td>-1.56%</td><td>[-4.11, 0.99]</td><td>3.79</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>13.9042</td><td>14.1527</td><td>1.84%</td><td>[-1.49, 5.17]</td><td>3.7</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>8981568.8808</td><td>8895705.8484</td><td>-0.94%</td><td>[-2.36, 0.49]</td><td>2.06</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.4222</td><td>0.4506</td><td>9.79%</td><td>[-9.73, 29.3]</td><td>24.53</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>3768.4478</td><td>3826.731</td><td>1.58%</td><td>[-0.93, 4.09]</td><td>3.68</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>worker_cs</td><td>11.4472</td><td>11.5929</td><td>1.28%</td><td>[-0.02, 2.58]</td><td>1.51</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>worker_cycles</td><td>8585720.4941</td><td>8528029.8377</td><td>-0.66%</td><td>[-2.07, 0.75]</td><td>2.09</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>worker_instructions</td><td>4591284.2929</td><td>4599923.7653</td><td>0.19%</td><td>[0.11, 0.27]</td><td>0.08</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>worker_migrations</td><td>0.0674</td><td>0.0603</td><td>7.92%</td><td>[-42.61, 58.45]</td><td>43.16</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>worker_us</td><td>3578.7895</td><td>3642.7517</td><td>1.83%</td><td>[-0.58, 4.25]</td><td>3.68</td><td>8/12</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.0 percent in server instructions per request, 95 percent CI [-0.1, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_cs, 95 percent CI [-0.1, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.4 percent in db_cycles, 95 percent CI [-1.4, 0.6], null band 1.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_instructions, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.3 percent in db_migrations, 95 percent CI [-3.2, 2.5], null band 3.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.4 percent in db_us, 95 percent CI [-1.4, 4.2], null band 4.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 2.6 percent in front_cs, 95 percent CI [-9.3, 14.5], null band 14.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.0 percent in front_cycles, 95 percent CI [-4.2, 6.3], null band 6.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.7 percent in front_instructions, 95 percent CI [-2.3, 3.6], null band 3.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 9.2 percent in front_migrations, 95 percent CI [-14.1, 32.4], null band 32.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 2.6 percent in front_us, 95 percent CI [-3.1, 8.4], null band 8.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.1 percent in p50 latency (ms), 95 percent CI [-1.2, 3.4], null band 3.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.7 percent in p99 latency (ms), 95 percent CI [-2.6, 4.0], null band 4.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.4 percent in requests per second, 95 percent CI [-3.8, 1.0], null band 3.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.6 percent in server cs per request, 95 percent CI [-2.6, 3.7], null band 3.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in server cycles per request, 95 percent CI [-2.1, 1.1], null band 2.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 6.2 percent in server migrations per request, 95 percent CI [-12.1, 24.5], null band 24.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.4 percent in server CPU per request (us), 95 percent CI [-1.0, 3.7], null band 3.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in worker_cs, 95 percent CI [-1.0, 1.5], null band 1.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in worker_cycles, 95 percent CI [-2.1, 1.0], null band 2.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in worker_instructions, 95 percent CI [-0.0, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.4 percent in worker_migrations, 95 percent CI [-42.4, 43.2], null band 43.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.3 percent in worker_us, 95 percent CI [-1.1, 3.7], null band 3.7, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>193-drupal-front-11.4-tip-vs-1370-11.4-sd-91675-20261020T125247Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="213-front-anon-11.4-tip-vs-1370-tight-sd-91675-20261020T235608Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit 1.37.0 vs freeunit-tip-e63168bd</span><span class="meta">Drupal 11.4, demo_umami profile · 213-front-anon-11.4-tip-vs-1370-tight-sd-91675-20261020T235608Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-21T00:26:01Z</p>
+<p class="headline">NO CLAIM drupal-front-c32: inside the noise, no claim (B is 0.2 percent less server instructions per request, null band 0.1, 11 of 16 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>freeunit-tip-e63168bd</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4727997.5776</td><td>4720793.4678</td><td>-0.15%</td><td>[-0.25, -0.05]</td><td>0.13</td><td>11/16</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.366</td><td>11.3701</td><td>0.04%</td><td>[-0.1, 0.17]</td><td>0.12</td><td>9/16</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4698376.6204</td><td>4688382.1053</td><td>-0.21%</td><td>[-0.57, 0.14]</td><td>0.41</td><td>11/16</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>2213060.8667</td><td>2211995.4891</td><td>-0.05%</td><td>[-0.13, 0.03]</td><td>0.1</td><td>9/16</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.6939</td><td>1.6787</td><td>-0.87%</td><td>[-3.44, 1.69]</td><td>3.18</td><td>8/16</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>1999.9611</td><td>1998.3921</td><td>-0.08%</td><td>[-1.29, 1.13]</td><td>1.13</td><td>8/16</td><td>NO CLAIM</td></tr>
+<tr><td>front_cs</td><td>2.6739</td><td>2.4288</td><td>-9.01%</td><td>[-18.01, 0.0]</td><td>10.68</td><td>12/16</td><td>NOISY</td></tr>
+<tr><td>front_cycles</td><td>405811.2594</td><td>356833.1516</td><td>-12.04%</td><td>[-15.74, -8.35]</td><td>5.61</td><td>14/16</td><td>NOISY</td></tr>
+<tr><td>front_instructions</td><td>133856.3709</td><td>120984.8878</td><td>-9.61%</td><td>[-12.0, -7.21]</td><td>2.85</td><td>16/16</td><td>CLAIM</td></tr>
+<tr><td>front_migrations</td><td>0.4142</td><td>0.3462</td><td>-15.76%</td><td>[-28.77, -2.76]</td><td>28.42</td><td>12/16</td><td>NOISY</td></tr>
+<tr><td>front_us</td><td>199.0416</td><td>176.8897</td><td>-11.08%</td><td>[-15.67, -6.49]</td><td>5.81</td><td>13/16</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>61.1249</td><td>60.7829</td><td>-0.56%</td><td>[-1.56, 0.44]</td><td>0.83</td><td>12/16</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>81.4473</td><td>81.4912</td><td>0.06%</td><td>[-1.38, 1.5]</td><td>1.39</td><td>7/16</td><td>NO CLAIM</td></tr>
+<tr><td>requests per second</td><td>522.7275</td><td>525.315</td><td>0.5%</td><td>[-0.66, 1.65]</td><td>0.88</td><td>11/16</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>14.2189</td><td>13.886</td><td>-2.33%</td><td>[-4.67, 0.01]</td><td>2.83</td><td>12/16</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>8924675.0125</td><td>8876192.8835</td><td>-0.54%</td><td>[-1.13, 0.04]</td><td>0.81</td><td>13/16</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.4763</td><td>0.4007</td><td>-15.33%</td><td>[-27.55, -3.11]</td><td>22.98</td><td>12/16</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>3820.9251</td><td>3802.2206</td><td>-0.49%</td><td>[-1.62, 0.64]</td><td>0.89</td><td>11/16</td><td>NO CLAIM</td></tr>
+<tr><td>worker_cs</td><td>11.545</td><td>11.4686</td><td>-0.66%</td><td>[-1.54, 0.22]</td><td>1.21</td><td>9/16</td><td>NO CLAIM</td></tr>
+<tr><td>worker_cycles</td><td>8518863.7531</td><td>8519636.8226</td><td>0.01%</td><td>[-0.56, 0.57]</td><td>0.77</td><td>10/16</td><td>NO CLAIM</td></tr>
+<tr><td>worker_instructions</td><td>4594141.2067</td><td>4599912.1077</td><td>0.13%</td><td>[0.09, 0.17]</td><td>0.06</td><td>15/16</td><td>CLAIM</td></tr>
+<tr><td>worker_migrations</td><td>0.0621</td><td>0.0561</td><td>-6.42%</td><td>[-41.63, 28.8]</td><td>33.96</td><td>10/16</td><td>NOISY</td></tr>
+<tr><td>worker_us</td><td>3621.8834</td><td>3625.331</td><td>0.1%</td><td>[-0.99, 1.18]</td><td>0.94</td><td>9/16</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.0 percent in server instructions per request, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_cs, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in db_cycles, 95 percent CI [-0.0, 0.4], null band 0.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_instructions, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.3 percent in db_migrations, 95 percent CI [-2.5, 3.2], null band 3.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.4 percent in db_us, 95 percent CI [-1.1, 0.4], null band 1.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.2 percent in front_cs, 95 percent CI [-8.3, 10.7], null band 10.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.2 percent in front_cycles, 95 percent CI [-3.2, 5.6], null band 5.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in front_instructions, 95 percent CI [-2.4, 2.9], null band 2.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 6.6 percent in front_migrations, 95 percent CI [-15.1, 28.4], null band 28.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in front_us, 95 percent CI [-4.2, 5.8], null band 5.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in p50 latency (ms), 95 percent CI [-0.7, 0.8], null band 0.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in p99 latency (ms), 95 percent CI [-1.4, 1.4], null band 1.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in requests per second, 95 percent CI [-0.6, 0.9], null band 0.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in server cs per request, 95 percent CI [-2.5, 2.8], null band 2.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.4 percent in server cycles per request, 95 percent CI [0.1, 0.8], null band 0.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 4.9 percent in server migrations per request, 95 percent CI [-13.1, 23.0], null band 23.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server CPU per request (us), 95 percent CI [-0.9, 0.6], null band 0.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in worker_cs, 95 percent CI [-1.2, 1.2], null band 1.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.4 percent in worker_cycles, 95 percent CI [0.1, 0.8], null band 0.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in worker_instructions, 95 percent CI [-0.0, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in worker_migrations, 95 percent CI [-32.3, 34.0], null band 34.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in worker_us, 95 percent CI [-0.9, 0.6], null band 0.9, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>213-front-anon-11.4-tip-vs-1370-tight-sd-91675-20261020T235608Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="213-front-anon-11.4-tip-vs-1370-tight-sd-91675-20261021T054408Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit 1.37.0 vs freeunit-tip-e63168bd</span><span class="meta">Drupal 11.4, demo_umami profile · 213-front-anon-11.4-tip-vs-1370-tight-sd-91675-20261021T054408Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-21T06:13:46Z</p>
+<p class="headline">NO CLAIM drupal-front-c32: inside the noise, no claim (B is 0.1 percent more server instructions per request, null band 0.2, 11 of 16 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>freeunit-tip-e63168bd</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4724259.9245</td><td>4727426.9715</td><td>0.07%</td><td>[-0.02, 0.16]</td><td>0.15</td><td>11/16</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.3763</td><td>11.3662</td><td>-0.09%</td><td>[-0.18, 0.01]</td><td>0.1</td><td>11/16</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>4687151.6786</td><td>4699913.906</td><td>0.27%</td><td>[-0.43, 0.98]</td><td>0.27</td><td>8/16</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>2212247.4946</td><td>2212353.4261</td><td>0.0%</td><td>[-0.07, 0.08]</td><td>0.13</td><td>10/16</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.6993</td><td>1.6831</td><td>-0.94%</td><td>[-3.2, 1.32]</td><td>3.1</td><td>8/16</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>2003.0261</td><td>1993.7303</td><td>-0.46%</td><td>[-2.5, 1.58]</td><td>0.86</td><td>7/16</td><td>NO CLAIM</td></tr>
+<tr><td>front_cs</td><td>2.5168</td><td>2.746</td><td>9.82%</td><td>[1.07, 18.58]</td><td>10.69</td><td>11/16</td><td>NOISY</td></tr>
+<tr><td>front_cycles</td><td>393287.0118</td><td>378834.3136</td><td>-3.56%</td><td>[-7.29, 0.17]</td><td>4.78</td><td>11/16</td><td>NO CLAIM</td></tr>
+<tr><td>front_instructions</td><td>131698.7416</td><td>125502.8298</td><td>-4.66%</td><td>[-6.84, -2.48]</td><td>2.86</td><td>12/16</td><td>CLAIM</td></tr>
+<tr><td>front_migrations</td><td>0.3434</td><td>0.3987</td><td>17.27%</td><td>[-2.78, 37.33]</td><td>20.92</td><td>11/16</td><td>NOISY</td></tr>
+<tr><td>front_us</td><td>192.9041</td><td>188.8323</td><td>-1.95%</td><td>[-6.69, 2.8]</td><td>5.64</td><td>11/16</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>61.0512</td><td>60.8364</td><td>-0.35%</td><td>[-2.23, 1.53]</td><td>0.8</td><td>7/16</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>81.7288</td><td>82.052</td><td>0.41%</td><td>[-1.5, 2.31]</td><td>7.82</td><td>9/16</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>522.9288</td><td>524.4862</td><td>0.3%</td><td>[-1.66, 2.27]</td><td>0.89</td><td>8/16</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>13.9735</td><td>14.3749</td><td>2.91%</td><td>[0.77, 5.05]</td><td>2.95</td><td>12/16</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>8891125.8296</td><td>8932837.887</td><td>0.47%</td><td>[-0.65, 1.59]</td><td>0.51</td><td>9/16</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.3959</td><td>0.4528</td><td>14.56%</td><td>[-2.58, 31.7]</td><td>19.49</td><td>12/16</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>3819.2188</td><td>3812.1282</td><td>-0.18%</td><td>[-1.95, 1.58]</td><td>0.9</td><td>8/16</td><td>NO CLAIM</td></tr>
+<tr><td>worker_cs</td><td>11.4567</td><td>11.6405</td><td>1.61%</td><td>[0.83, 2.39]</td><td>1.32</td><td>13/16</td><td>CLAIM</td></tr>
+<tr><td>worker_cycles</td><td>8497838.8178</td><td>8554323.5752</td><td>0.66%</td><td>[-0.46, 1.79]</td><td>0.48</td><td>11/16</td><td>NO CLAIM</td></tr>
+<tr><td>worker_instructions</td><td>4592561.1829</td><td>4602040.4277</td><td>0.21%</td><td>[0.16, 0.25]</td><td>0.08</td><td>16/16</td><td>CLAIM</td></tr>
+<tr><td>worker_migrations</td><td>0.0525</td><td>0.0566</td><td>15.41%</td><td>[-28.87, 59.69]</td><td>69.01</td><td>12/16</td><td>NOISY</td></tr>
+<tr><td>worker_us</td><td>3626.3146</td><td>3623.2959</td><td>-0.08%</td><td>[-1.81, 1.65]</td><td>0.85</td><td>8/16</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.0 percent in server instructions per request, 95 percent CI [-0.2, 0.1], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_cs, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_cycles, 95 percent CI [-0.3, 0.2], null band 0.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_instructions, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in db_migrations, 95 percent CI [-1.4, 3.1], null band 3.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_us, 95 percent CI [-0.9, 0.7], null band 0.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in front_cs, 95 percent CI [-10.7, 9.7], null band 10.7, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in front_cycles, 95 percent CI [-4.8, 4.8], null band 4.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in front_instructions, 95 percent CI [-2.9, 2.7], null band 2.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in front_migrations, 95 percent CI [-20.9, 20.5], null band 20.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in front_us, 95 percent CI [-5.6, 5.4], null band 5.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in p50 latency (ms), 95 percent CI [-0.7, 0.8], null band 0.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 3.1 percent in p99 latency (ms), 95 percent CI [-1.6, 7.8], null band 7.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in requests per second, 95 percent CI [-0.8, 0.9], null band 0.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.3 percent in server cs per request, 95 percent CI [-2.9, 2.4], null band 2.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in server cycles per request, 95 percent CI [-0.5, 0.5], null band 0.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 2.2 percent in server migrations per request, 95 percent CI [-15.1, 19.5], null band 19.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server CPU per request (us), 95 percent CI [-0.9, 0.7], null band 0.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in worker_cs, 95 percent CI [-1.3, 0.9], null band 1.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in worker_cycles, 95 percent CI [-0.5, 0.4], null band 0.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in worker_instructions, 95 percent CI [-0.1, 0.0], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 26.9 percent in worker_migrations, 95 percent CI [-15.3, 69.0], null band 69.0, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in worker_us, 95 percent CI [-0.9, 0.7], null band 0.9, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>213-front-anon-11.4-tip-vs-1370-tight-sd-91675-20261021T054408Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="41-auth-libphp-symbolic-20261010T155337Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, authenticated (page cache bypassed) — FreeUnit 1.37.0 vs freeunit-symbolic</span><span class="meta">Drupal 11.4, demo_umami profile · 41-auth-libphp-symbolic-20261010T155337Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host pro4s-2 · date 2026-10-10T16:06:52Z</p>
+<p class="headline">CLAIM drupal-auth-c32: B is 4.8 percent less server cycles per request, outside the null band of 1.1, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>freeunit-symbolic</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server cycles per request</td><td>99497195.4744</td><td>94707084.5787</td><td>-4.81%</td><td>[-5.65, -3.98]</td><td>1.07</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>66.8497</td><td>68.3597</td><td>2.28%</td><td>[-0.12, 4.67]</td><td>3.82</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>30088017.7685</td><td>30332455.9413</td><td>0.81%</td><td>[-1.92, 3.55]</td><td>3.66</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>13454297.1491</td><td>13483386.6734</td><td>0.22%</td><td>[-0.2, 0.63]</td><td>0.32</td><td>9/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>12.3496</td><td>12.9254</td><td>4.67%</td><td>[2.71, 6.62]</td><td>3.46</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_us</td><td>10468.9531</td><td>10390.8822</td><td>-0.75%</td><td>[-5.42, 3.91]</td><td>5.31</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>535.1621</td><td>502.2661</td><td>-6.15%</td><td>[-8.88, -3.43]</td><td>2.66</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>960.5951</td><td>882.0466</td><td>-8.17%</td><td>[-27.05, 10.7]</td><td>29.49</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>57.4217</td><td>61.0225</td><td>6.26%</td><td>[0.62, 11.91]</td><td>6.37</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>67.5663</td><td>67.6502</td><td>0.12%</td><td>[-0.82, 1.07]</td><td>1.28</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>server instructions per request</td><td>83037935.5307</td><td>82277154.486</td><td>-0.92%</td><td>[-1.21, -0.62]</td><td>0.75</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>1.1368</td><td>0.7438</td><td>-33.42%</td><td>[-59.62, -7.23]</td><td>51.64</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>33608.8566</td><td>31448.3891</td><td>-6.43%</td><td>[-8.14, -4.71]</td><td>1.78</td><td>12/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.0 percent in server cycles per request, 95 percent CI [-1.1, 1.0], null band 1.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 2.1 percent in db_cs, 95 percent CI [0.3, 3.8], null band 3.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.2 percent in db_cycles, 95 percent CI [-3.7, 1.2], null band 3.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.0 percent in db_instructions, 95 percent CI [-0.3, 0.3], null band 0.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 2.0 percent in db_migrations, 95 percent CI [0.5, 3.5], null band 3.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.6 percent in db_us, 95 percent CI [-5.3, 2.2], null band 5.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.4 percent in p50 latency (ms), 95 percent CI [-2.7, 1.8], null band 2.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -12.1 percent in p99 latency (ms), 95 percent CI [-29.5, 5.2], null band 29.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 2.3 percent in requests per second, 95 percent CI [-1.8, 6.4], null band 6.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in server cs per request, 95 percent CI [-1.3, 0.2], null band 1.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in server instructions per request, 95 percent CI [-0.8, 0.4], null band 0.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 22.1 percent in server migrations per request, 95 percent CI [-7.5, 51.6], null band 51.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in server CPU per request (us), 95 percent CI [-1.8, 1.4], null band 1.8, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>41-auth-libphp-symbolic-20261010T155337Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="42-auth-symbolic-vs-fpm-11.4-20261010T160737Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, authenticated (page cache bypassed) — freeunit-symbolic vs nginx + PHP-FPM</span><span class="meta">Drupal 11.4, demo_umami profile · 42-auth-symbolic-vs-fpm-11.4-20261010T160737Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host pro4s-2 · date 2026-10-10T16:20:51Z</p>
+<p class="headline">CLAIM drupal-auth-c32: B is 0.6 percent more server instructions per request, outside the null band of 0.6, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit-symbolic</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>82209120.2292</td><td>82712552.0427</td><td>0.61%</td><td>[0.33, 0.9]</td><td>0.61</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>67.3701</td><td>67.1658</td><td>-0.31%</td><td>[-2.6, 1.98]</td><td>3.41</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>30465201.602</td><td>30056583.4349</td><td>-1.34%</td><td>[-4.27, 1.6]</td><td>3.75</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>13450476.7917</td><td>13430713.9957</td><td>-0.15%</td><td>[-0.51, 0.21]</td><td>0.48</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>12.6564</td><td>12.642</td><td>-0.11%</td><td>[-1.66, 1.44]</td><td>2.18</td><td>4/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>10324.2743</td><td>10445.9412</td><td>1.2%</td><td>[-2.85, 5.25]</td><td>6.45</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>499.8937</td><td>519.4323</td><td>3.92%</td><td>[1.08, 6.76]</td><td>3.89</td><td>9/12</td><td>CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>994.6602</td><td>914.2795</td><td>-7.0%</td><td>[-27.34, 13.35]</td><td>36.79</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>60.9633</td><td>60.1975</td><td>-1.24%</td><td>[-5.44, 2.97]</td><td>6.31</td><td>5/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>67.6615</td><td>64.935</td><td>-4.03%</td><td>[-4.78, -3.28]</td><td>1.55</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>94842042.8744</td><td>95213240.7645</td><td>0.39%</td><td>[-0.49, 1.27]</td><td>0.73</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.9721</td><td>0.6715</td><td>-29.44%</td><td>[-54.51, -4.37]</td><td>42.81</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>31153.4174</td><td>32121.5878</td><td>3.12%</td><td>[1.56, 4.67]</td><td>2.54</td><td>11/12</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.2 percent in server instructions per request, 95 percent CI [-0.2, 0.6], null band 0.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.4 percent in db_cs, 95 percent CI [-0.7, 3.4], null band 3.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.2 percent in db_cycles, 95 percent CI [-1.4, 3.8], null band 3.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in db_instructions, 95 percent CI [-0.2, 0.5], null band 0.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.1 percent in db_migrations, 95 percent CI [0.1, 2.2], null band 2.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 2.4 percent in db_us, 95 percent CI [-1.6, 6.5], null band 6.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 2.2 percent in p50 latency (ms), 95 percent CI [0.4, 3.9], null band 3.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 10.5 percent in p99 latency (ms), 95 percent CI [-15.8, 36.8], null band 36.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.9 percent in requests per second, 95 percent CI [-6.3, 2.4], null band 6.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.6 percent in server cs per request, 95 percent CI [-0.4, 1.6], null band 1.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in server cycles per request, 95 percent CI [-0.6, 0.7], null band 0.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -16.0 percent in server migrations per request, 95 percent CI [-42.8, 10.8], null band 42.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 1.1 percent in server CPU per request (us), 95 percent CI [-0.4, 2.5], null band 2.5, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>42-auth-symbolic-vs-fpm-11.4-20261010T160737Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="43-auth-fpm-vs-symbolic-11.4-20261010T162052Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">Front page, authenticated (page cache bypassed) — nginx + PHP-FPM vs freeunit-symbolic</span><span class="meta">Drupal 11.4, demo_umami profile · 43-auth-fpm-vs-symbolic-11.4-20261010T162052Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host pro4s-2 · date 2026-10-10T16:34:41Z</p>
+<p class="headline">NO CLAIM drupal-auth-c32: inside the noise, no claim (B is 0.3 percent less server instructions per request, null band 0.3, 11 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>nginx-fpm</th><th>freeunit-symbolic</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>82602382.0439</td><td>82340281.3647</td><td>-0.32%</td><td>[-0.61, -0.02]</td><td>0.33</td><td>11/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>68.5411</td><td>67.5259</td><td>-1.48%</td><td>[-4.57, 1.61]</td><td>2.57</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>30599856.2354</td><td>30660164.5953</td><td>0.19%</td><td>[-3.52, 3.9]</td><td>3.52</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>13519555.2963</td><td>13458396.706</td><td>-0.45%</td><td>[-1.19, 0.29]</td><td>0.36</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_migrations</td><td>12.1319</td><td>12.0461</td><td>-0.71%</td><td>[-17.16, 15.74]</td><td>1.86</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>10502.6804</td><td>10343.0408</td><td>-1.5%</td><td>[-5.29, 2.29]</td><td>4.98</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>526.8799</td><td>501.1246</td><td>-4.86%</td><td>[-8.06, -1.65]</td><td>3.46</td><td>10/12</td><td>CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>1048.7529</td><td>1036.6546</td><td>-0.38%</td><td>[-22.53, 21.76]</td><td>28.28</td><td>6/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>58.2375</td><td>60.14</td><td>3.29%</td><td>[-2.53, 9.11]</td><td>5.46</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>65.3718</td><td>67.8699</td><td>3.82%</td><td>[2.25, 5.39]</td><td>0.85</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>97058832.1836</td><td>96561388.87</td><td>-0.49%</td><td>[-4.65, 3.66]</td><td>1.0</td><td>6/12</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.8027</td><td>0.8167</td><td>2.87%</td><td>[-27.65, 33.39]</td><td>12.86</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>32388.3992</td><td>31573.4093</td><td>-2.52%</td><td>[-5.42, 0.39]</td><td>2.25</td><td>10/12</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.1 percent in server instructions per request, 95 percent CI [-0.3, 0.2], null band 0.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.2 percent in db_cs, 95 percent CI [-2.1, 2.6], null band 2.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.7 percent in db_cycles, 95 percent CI [-3.5, 2.1], null band 3.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in db_instructions, 95 percent CI [-0.4, 0.2], null band 0.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in db_migrations, 95 percent CI [-1.9, 1.4], null band 1.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.7 percent in db_us, 95 percent CI [-5.0, 3.6], null band 5.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.9 percent in p50 latency (ms), 95 percent CI [-3.5, 1.7], null band 3.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -5.1 percent in p99 latency (ms), 95 percent CI [-28.3, 18.1], null band 28.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.7 percent in requests per second, 95 percent CI [-4.0, 5.5], null band 5.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in server cs per request, 95 percent CI [-0.9, 0.7], null band 0.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in server cycles per request, 95 percent CI [-0.8, 1.0], null band 1.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in server migrations per request, 95 percent CI [-11.9, 12.9], null band 12.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in server CPU per request (us), 95 percent CI [-1.2, 2.2], null band 2.2, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>43-auth-fpm-vs-symbolic-11.4-20261010T162052Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<h3 id="site-11.4-standard">Drupal 11.4, standard profile <span class="meta">(2 runs)</span></h3>
+<details class="run" id="21-drupal-front-freeunit-vs-fpm-11.4-standard-sd-91675-20261010T200119Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit 1.37.0 vs nginx + PHP-FPM</span><span class="meta">Drupal 11.4, standard profile · 21-drupal-front-freeunit-vs-fpm-11.4-standard-sd-91675-20261010T200119Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-10T20:14:19Z</p>
+<p class="headline">CLAIM drupal-front-c32: B is 6.8 percent more server instructions per request, outside the null band of 0.2, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>4303775.8505</td><td>4597384.4034</td><td>6.82%</td><td>[6.69, 6.95]</td><td>0.19</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cs</td><td>11.2011</td><td>11.2261</td><td>0.22%</td><td>[0.13, 0.31]</td><td>0.14</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_cycles</td><td>3852315.6624</td><td>3904273.7995</td><td>1.36%</td><td>[-0.77, 3.49]</td><td>2.69</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>1368107.1726</td><td>1371631.4337</td><td>0.26%</td><td>[0.11, 0.4]</td><td>0.22</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_migrations</td><td>1.8626</td><td>2.0016</td><td>7.49%</td><td>[5.15, 9.84]</td><td>4.89</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_us</td><td>1577.4846</td><td>1582.4853</td><td>0.37%</td><td>[-5.63, 6.36]</td><td>6.15</td><td>9/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>54.5678</td><td>55.7225</td><td>2.15%</td><td>[-3.95, 8.25]</td><td>6.51</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>76.9028</td><td>77.5168</td><td>0.86%</td><td>[-3.69, 5.41]</td><td>4.67</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>requests per second</td><td>588.2325</td><td>579.0908</td><td>-1.52%</td><td>[-7.44, 4.41]</td><td>5.9</td><td>10/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>13.9596</td><td>13.697</td><td>-1.83%</td><td>[-3.37, -0.29]</td><td>3.3</td><td>8/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>8424097.2719</td><td>8657331.3523</td><td>2.79%</td><td>[-0.1, 5.68]</td><td>4.02</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>0.3528</td><td>0.573</td><td>62.59%</td><td>[36.58, 88.59]</td><td>28.09</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>3403.6918</td><td>3465.0473</td><td>1.83%</td><td>[-3.61, 7.27]</td><td>5.2</td><td>10/12</td><td>NOISY</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.1 percent in server instructions per request, 95 percent CI [-0.2, 0.1], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in db_cs, 95 percent CI [-0.1, 0.1], null band 0.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.8 percent in db_cycles, 95 percent CI [-1.1, 2.7], null band 2.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in db_instructions, 95 percent CI [-0.1, 0.2], null band 0.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.9 percent in db_migrations, 95 percent CI [-1.1, 4.9], null band 4.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.3 percent in db_us, 95 percent CI [-6.2, 3.6], null band 6.2, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.6 percent in p50 latency (ms), 95 percent CI [-6.5, 3.4], null band 6.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.9 percent in p99 latency (ms), 95 percent CI [-2.9, 4.7], null band 4.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.2 percent in requests per second, 95 percent CI [-3.4, 5.9], null band 5.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.4 percent in server cs per request, 95 percent CI [-3.3, 2.5], null band 3.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.2 percent in server cycles per request, 95 percent CI [-1.7, 4.0], null band 4.0, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -6.8 percent in server migrations per request, 95 percent CI [-28.1, 14.5], null band 28.1, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -1.0 percent in server CPU per request (us), 95 percent CI [-5.2, 3.1], null band 5.2, limit 5.0: NOISY</li>
+</ul></details>
+<p class="data">raw: <code>21-drupal-front-freeunit-vs-fpm-11.4-standard-sd-91675-20261010T200119Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<details class="run" id="22-drupal-auth-freeunit-vs-fpm-11.4-standard-sd-91675-20261010T201420Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">Front page, authenticated (page cache bypassed) — FreeUnit 1.37.0 vs nginx + PHP-FPM</span><span class="meta">Drupal 11.4, standard profile · 22-drupal-auth-freeunit-vs-fpm-11.4-standard-sd-91675-20261010T201420Z</span></summary>
+<p class="meta">server CPUs 0,1 load_cpus=2,3,6,7 db_cpus=4,5 · DB CPUs  · governor powersave · kernel 6.8.0-136-generic ·  blocks × 8 ·  connections ·  s window · db mysql · host sd-91675 · date 2026-10-10T20:27:46Z</p>
+<p class="headline">NO CLAIM drupal-auth-c32: inside the noise, no claim (B is 0.6 percent more server instructions per request, null band 0.7, 12 of 12 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>30313590.8523</td><td>30487231.6188</td><td>0.57%</td><td>[0.23, 0.91]</td><td>0.71</td><td>12/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cs</td><td>38.1344</td><td>38.1635</td><td>0.08%</td><td>[-0.02, 0.18]</td><td>0.17</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_cycles</td><td>16477226.1484</td><td>16550383.1373</td><td>0.44%</td><td>[0.06, 0.83]</td><td>0.76</td><td>7/12</td><td>NO CLAIM</td></tr>
+<tr><td>db_instructions</td><td>6947557.2868</td><td>6958459.9599</td><td>0.16%</td><td>[0.07, 0.24]</td><td>0.14</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>db_migrations</td><td>7.5174</td><td>7.6392</td><td>1.62%</td><td>[0.38, 2.86]</td><td>1.6</td><td>10/12</td><td>CLAIM</td></tr>
+<tr><td>db_us</td><td>6837.7244</td><td>6914.7621</td><td>1.13%</td><td>[-0.61, 2.87]</td><td>6.91</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>296.1843</td><td>285.7237</td><td>-3.53%</td><td>[-4.69, -2.37]</td><td>6.2</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>399.4776</td><td>401.5915</td><td>0.54%</td><td>[-3.18, 4.27]</td><td>11.22</td><td>5/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>108.3292</td><td>111.7617</td><td>3.17%</td><td>[1.55, 4.8]</td><td>6.22</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>server cs per request</td><td>44.8405</td><td>42.8516</td><td>-4.44%</td><td>[-4.92, -3.95]</td><td>1.33</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>45213421.1086</td><td>43401615.0629</td><td>-4.0%</td><td>[-4.82, -3.19]</td><td>2.51</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>1.1041</td><td>0.7733</td><td>-27.72%</td><td>[-51.55, -3.89]</td><td>38.69</td><td>8/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>18441.6062</td><td>17860.2723</td><td>-3.15%</td><td>[-4.72, -1.58]</td><td>5.19</td><td>11/12</td><td>NOISY</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>INVALID: 1 cell(s) failed, first: B drupal-auth-c32 block 2 slot 1 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B drupal-auth-c32 block 2 slot 1 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B drupal-auth-c32 block 2 slot 1 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B drupal-auth-c32 block 2 slot 1 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B drupal-auth-c32 block 2 slot 1 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B drupal-auth-c32 block 2 slot 1 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B drupal-auth-c32 block 2 slot 1 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B drupal-auth-c32 block 2 slot 1 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B drupal-auth-c32 block 2 slot 1 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B drupal-auth-c32 block 2 slot 1 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B drupal-auth-c32 block 2 slot 1 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B drupal-auth-c32 block 2 slot 1 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: B drupal-auth-c32 block 2 slot 1 alerts=1</li>
+</ul></details>
+<p class="data">raw: <code>22-drupal-auth-freeunit-vs-fpm-11.4-standard-sd-91675-20261010T201420Z/summary.json</code> · <a href="#runs">back to the index</a></p>
+</details>
+<p class="data">Rendered 2026-10-29T04:55:26Z. A plain-language summary of the findings is in
+<a href="https://github.com/freeunitorg/benchmarks-drupal/blob/main/docs/report-2026-10.md">docs/report-2026-10.md</a>;
+the suite's resume note is <code>docs/state.md</code>.</p>
+</body></html>
