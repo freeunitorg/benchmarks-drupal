@@ -1,0 +1,21 @@
+NO CLAIM php-hello-c32: inside the noise, no claim (B is 0.6 percent less server instructions per request, null band 0.7, 14 of 16 cells agree)
+job 256-nd-hello-1f371  run 256-nd-hello-1f371-andy-HP-20261028T234259Z  A None ()  B None ()  governor performance/performance  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  php-hello-c32  s_instructions           214820.991   215119.237    +0.14     [-0.37, +0.65]   0.65  10/16  PASS
+null  php-hello-c32  db_us                         0.000        0.000      n/a                n/a    n/a   0/16  NO DATA
+null  php-hello-c32  p50_ms                        5.701        5.706    +0.10     [-0.51, +0.72]   0.72   7/16  PASS
+null  php-hello-c32  p99_ms                       10.957       10.957    +0.00     [-0.92, +0.92]   0.92   8/16  PASS
+null  php-hello-c32  rps                        5456.302     5455.475    -0.01     [-0.45, +0.42]   0.45   7/16  PASS
+null  php-hello-c32  s_cs                          7.266        7.290    +0.33     [-0.33, +0.99]   0.99  10/16  PASS
+null  php-hello-c32  s_cycles                 339502.279   339601.892    +0.03     [-0.47, +0.53]   0.53   7/16  PASS
+null  php-hello-c32  s_migrations                  0.000        0.000      n/a                n/a    n/a   0/16  NO DATA
+null  php-hello-c32  server_us                   180.318      180.532    +0.12     [-0.39, +0.63]   0.63   8/16  PASS
+ab    php-hello-c32  s_instructions           215281.933   214029.027    -0.58     [-1.00, -0.16]   0.65  14/16  NO CLAIM
+ab    php-hello-c32  db_us                         0.000        0.000      n/a                n/a    n/a   0/16  NO DATA
+ab    php-hello-c32  p50_ms                        5.699        5.616    -1.46     [-2.07, -0.84]   0.72  16/16  CLAIM
+ab    php-hello-c32  p99_ms                       10.947       11.081    +1.23     [+0.40, +2.07]   0.92  12/16  CLAIM
+ab    php-hello-c32  rps                        5452.681     5448.337    -0.08     [-0.62, +0.47]   0.45   8/16  NO CLAIM
+ab    php-hello-c32  s_cs                          7.306        6.892    -5.67     [-6.56, -4.77]   0.99  16/16  CLAIM
+ab    php-hello-c32  s_cycles                 339755.928   340461.756    +0.21     [-0.32, +0.73]   0.53   9/16  NO CLAIM
+ab    php-hello-c32  s_migrations                  0.000        0.000      n/a                n/a    n/a   0/16  NO DATA
+ab    php-hello-c32  server_us                   180.593      179.167    -0.79     [-1.37, -0.21]   0.63  14/16  CLAIM
