@@ -1,5 +1,12 @@
 # 1.37.1 performance note — draft from measured cells
 
+> **Superseded (2026-10-31).** The rows below were measured at `e63168bd`, 46 commits
+> before the `1.37.1` tag; the tag changes `src/` in 81 files after it (epoll, h1proto,
+> router, port socket among them).  `c5d71253` has the same `src/` as the tag, and on
+> aarch64 job 255 measured it +4.4 % server CPU against 1.37.0 (15/16).  The release
+> itself is re-measured by `scripts/campaign.steps.release-1371` (jobs 260-268); the
+> runs quoted here moved to `results-archive/` with every other intermediate build.
+
 Every number below is a published result in this repository: the job number is the
 pointer, `results/<job>/compare.txt` holds the row, and `results/<job>/job.txt` holds the
 configuration it ran with. Nothing here is summed from micro-benchmarks; a per-path

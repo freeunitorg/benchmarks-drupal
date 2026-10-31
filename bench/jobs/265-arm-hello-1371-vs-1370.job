@@ -1,0 +1,22 @@
+# The 1.37.1 release tarball against 1.37.0, four blocks: the published 1.37.1 rows came from e63168bd, 46 commits before the tag, and this is the release itself. On aarch64 255 (c5d71253, same src as the tag) measured +4.4 percent.
+JOB=265-arm-hello-1371-vs-1370
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-1371
+SITE=hello
+DB=mysql
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="the +4 percent aarch64 cost that 255 found at c5d71253"
+FALSIFY="level or faster, which would contradict 255"

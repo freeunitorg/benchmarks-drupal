@@ -116,6 +116,8 @@ fi
 image_for() {  # runtime family -> image
     case "$1" in
     freeunit)  echo "drupal-bench-freeunit:${FREEUNIT_TAG:-1.37.0}" ;;
+    # The 1.37.1 release tarball (build-images.sh), the baseline for 1.37.2.
+    freeunit-1371) echo "drupal-bench-freeunit:1.37.1" ;;
     freeunit-master) echo "drupal-bench-freeunit:master" ;;
     freeunit-master-old) echo "drupal-bench-freeunit:master-old" ;;
     freeunit-master-mid) echo "drupal-bench-freeunit:master-mid" ;;
@@ -395,7 +397,7 @@ start_rt() {  # runtime side -> name
     local preload_vol=()
     [ -f "$sitedir/preload.ini" ] && preload_vol=(-v "$sitedir/preload.ini:/usr/local/etc/php/conf.d/zz-preload.ini:ro")
     case "$rt" in
-    freeunit|freeunit-direct|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head|freeunit-master-33896f7|freeunit-768-base|freeunit-768-head|freeunit-master-ff694772|freeunit-master-730|freeunit-master-708|freeunit-master-705|freeunit-master-749|freeunit-master-742x|freeunit-master-736|freeunit-master-phpopen|freeunit-master-10e1a9bec|freeunit-master-b532b9d|freeunit-master-13effad|freeunit-705-base|freeunit-705|freeunit-tip-e63168bd|freeunit-781|freeunit-musl-tip|freeunit-jemalloc|freeunit-tip-b27bc76d|freeunit-srcphp-debian|freeunit-srcphp-alpine|freeunit-musl-jemalloc|freeunit-alog-if-heavy|freeunit-alog-if|freeunit-alog-devnull|freeunit-alog|freeunit-python|freeunit-python-asgi|freeunit-python-asgi-small|freeunit-python-1370|freeunit-master-4a0271cc|freeunit-816-merge|freeunit-master-818-820|freeunit-816-master-merge|freeunit-master-4fc2bcfa|freeunit-master-827|freeunit-master-825011f5|freeunit-master-c5d71253)
+    freeunit|freeunit-1371|freeunit-direct|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head|freeunit-master-33896f7|freeunit-768-base|freeunit-768-head|freeunit-master-ff694772|freeunit-master-730|freeunit-master-708|freeunit-master-705|freeunit-master-749|freeunit-master-742x|freeunit-master-736|freeunit-master-phpopen|freeunit-master-10e1a9bec|freeunit-master-b532b9d|freeunit-master-13effad|freeunit-705-base|freeunit-705|freeunit-tip-e63168bd|freeunit-781|freeunit-musl-tip|freeunit-jemalloc|freeunit-tip-b27bc76d|freeunit-srcphp-debian|freeunit-srcphp-alpine|freeunit-musl-jemalloc|freeunit-alog-if-heavy|freeunit-alog-if|freeunit-alog-devnull|freeunit-alog|freeunit-python|freeunit-python-asgi|freeunit-python-asgi-small|freeunit-python-1370|freeunit-master-4a0271cc|freeunit-816-merge|freeunit-master-818-820|freeunit-816-master-merge|freeunit-master-4fc2bcfa|freeunit-master-827|freeunit-master-825011f5|freeunit-master-c5d71253)
         local cfg="$RESROOT/runtimes/$rt.json"
         [ -f "$cfg" ] || cfg="$RESROOT/runtimes/freeunit.json"
         docker run -d --name "$name" --network "$net" --cpuset-cpus "$SERVER_CPUS" \
@@ -667,7 +669,7 @@ PY
     local alerts=0 alog=
     [ "$pre" = 1 ] && alerts=$((alerts + 1))
     case "$rt" in
-    freeunit|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-direct|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head|freeunit-master-33896f7|freeunit-768-base|freeunit-768-head|freeunit-master-ff694772|freeunit-master-730|freeunit-master-708|freeunit-master-705|freeunit-master-749|freeunit-master-742x|freeunit-master-736|freeunit-master-phpopen|freeunit-master-10e1a9bec|freeunit-master-b532b9d|freeunit-master-13effad|freeunit-705-base|freeunit-705|freeunit-tip-e63168bd|freeunit-781|freeunit-musl-tip|freeunit-jemalloc|freeunit-tip-b27bc76d|freeunit-srcphp-debian|freeunit-srcphp-alpine|freeunit-musl-jemalloc|freeunit-alog-if-heavy|freeunit-alog-if|freeunit-alog-devnull|freeunit-alog|freeunit-python|freeunit-python-asgi|freeunit-python-asgi-small|freeunit-python-1370|freeunit-master-4a0271cc|freeunit-816-merge|freeunit-master-818-820|freeunit-816-master-merge|freeunit-master-4fc2bcfa|freeunit-master-827|freeunit-master-825011f5|freeunit-master-c5d71253)
+    freeunit|freeunit-1371|freeunit-master|freeunit-master-old|freeunit-master-mid|freeunit-musl|freeunit-direct|freeunit-master-o2|freeunit-master-lto|freeunit-742-base|freeunit-742-head|freeunit-master-33896f7|freeunit-768-base|freeunit-768-head|freeunit-master-ff694772|freeunit-master-730|freeunit-master-708|freeunit-master-705|freeunit-master-749|freeunit-master-742x|freeunit-master-736|freeunit-master-phpopen|freeunit-master-10e1a9bec|freeunit-master-b532b9d|freeunit-master-13effad|freeunit-705-base|freeunit-705|freeunit-tip-e63168bd|freeunit-781|freeunit-musl-tip|freeunit-jemalloc|freeunit-tip-b27bc76d|freeunit-srcphp-debian|freeunit-srcphp-alpine|freeunit-musl-jemalloc|freeunit-alog-if-heavy|freeunit-alog-if|freeunit-alog-devnull|freeunit-alog|freeunit-python|freeunit-python-asgi|freeunit-python-asgi-small|freeunit-python-1370|freeunit-master-4a0271cc|freeunit-816-merge|freeunit-master-818-820|freeunit-816-master-merge|freeunit-master-4fc2bcfa|freeunit-master-827|freeunit-master-825011f5|freeunit-master-c5d71253)
         alog=$(docker logs "$name" 2>&1 | grep -E '\[(alert|crit|emerg)\]' || true) ;;
     *)
         alog=$(docker logs "$name" 2>&1 | grep -E '\[(crit|emerg|alert)\]|worker process is shutting down unexpectedly' || true) ;;

@@ -46,6 +46,7 @@ report:
 
 pull:
 	rsync -a --exclude results.tsv $(HOST):$(REMOTE_ROOT)/run/ ./run/ 2>/dev/null || true
-	rsync -a $(HOST):$(REMOTE_ROOT)/results/ ./results/ 2>/dev/null || true
+	ls results-archive 2>/dev/null | sed 's|^|/|' > run/.archive-excludes || :
+	rsync -a --exclude-from=run/.archive-excludes $(HOST):$(REMOTE_ROOT)/results/ ./results/ 2>/dev/null || true
 
 .PHONY: help sync build site bench ticks report pull

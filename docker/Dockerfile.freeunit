@@ -1,6 +1,8 @@
 # FreeUnit runtime. Default: the pinned 1.37.0 release tarball (decision 3a).
 # Master column: --build-arg FREEUNIT_REF=master --build-context none (sha check skipped).
 #   docker build -f docker/Dockerfile.freeunit --build-arg FREEUNIT_REF=master -t drupal-bench-freeunit:master .
+# A release: --build-arg FREEUNIT_REF=1.37.1 --build-arg FREEUNIT_SHA256=<tarball sha256>;
+# any X.Y.Z ref is fetched from refs/tags and must pass the checksum.
 # Never mix tarball and master inside one chart.
 # BASE selects the C library: the default is glibc (Debian trixie), and
 # --build-arg BASE=php:8.5.11-cli-alpine builds the same source against musl, which is
@@ -29,7 +31,7 @@ RUN set -eux; \
         apt-get install -y --no-install-recommends build-essential curl ca-certificates \
             libssl-dev libpcre2-dev zlib1g-dev libzstd-dev libbrotli-dev; \
     fi; \
-    if [ "$FREEUNIT_REF" = "1.37.0" ]; then \
+    if expr "$FREEUNIT_REF" : '[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*$' >/dev/null; then \
         curl -fsSL "https://github.com/freeunitorg/freeunit/archive/refs/tags/${FREEUNIT_REF}.tar.gz" -o /tmp/freeunit.tar.gz; \
         echo "${FREEUNIT_SHA256}  /tmp/freeunit.tar.gz" | sha256sum -c -; \
     else \

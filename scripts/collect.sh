@@ -41,6 +41,8 @@ n=0
 while read -r run; do
     [ -n "$run" ] || continue
     case "$run" in 00-*) continue ;; esac
+    # An archived run (scripts/archive-intermediate.py) stays out of results/.
+    [ -d "$HERE/results-archive/$run" ] && continue
     ssh -n "$HOST" "test -f $REMOTE_ROOT/run/$run/summary.json" || continue
     # A run whose headline is INVALID or NO DATA is a failed measurement, not a
     # result: publishing it puts a row of dashes on the page and a zero mean into

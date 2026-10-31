@@ -1,0 +1,22 @@
+# The 1.37.1 release tarball against nginx + PHP-FPM: the headline cell redone on the release, so the page compares releases only.
+JOB=266-front-anon-1371-vs-fpm-12.0
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-1371
+RUNTIME_B=nginx-fpm
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+DECOMPOSE=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3,6,7
+DB_CPUS=4,5
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="FPM cheaper by about 10 percent, as 23 and 65 found for 1.37.0"
+FALSIFY="FreeUnit level with or cheaper than FPM"

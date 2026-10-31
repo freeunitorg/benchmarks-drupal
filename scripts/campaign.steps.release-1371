@@ -1,0 +1,17 @@
+# 1.37.1 baseline on the x86 box: the release tarball against 1.37.0 on the five
+# release cells, then against nginx + PHP-FPM on three headline cells.  These
+# replace the e63168bd rows in docs/release-1.37.1-performance.md and are the
+# baseline every 1.37.2 candidate is measured against.  build-images.sh builds
+# drupal-bench-freeunit:1.37.1 from the checksummed tag tarball.
+site:hello
+site:12.0
+site:11.4
+site:wp
+job:bench/jobs/260-hello-1371-vs-1370.job
+job:bench/jobs/261-front-anon-1371-vs-1370-12.0.job
+job:bench/jobs/262-front-auth-1371-vs-1370-12.0.job
+job:bench/jobs/263-front-anon-1371-vs-1370-11.4.job
+job:bench/jobs/264-wp-front-1371-vs-1370.job
+job:bench/jobs/266-front-anon-1371-vs-fpm-12.0.job
+job:bench/jobs/267-hello-1371-vs-fpm.job
+job:bench/jobs/268-wp-front-1371-vs-fpm.job

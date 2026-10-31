@@ -202,6 +202,7 @@ cp -f "$RUNROOT/site/$SITE/meta.txt" "$OUTDIR/site-meta.txt" 2>/dev/null || true
     echo "oha=$($OHA --version 2>/dev/null | head -1)"
     echo "perf_image=$(docker image inspect -f '{{.Id}}' "$PERF_IMAGE" 2>/dev/null | cut -c8-19)"
     echo "freeunit_image=$(docker image inspect -f '{{.Id}}' drupal-bench-freeunit:1.37.0 2>/dev/null | cut -c8-19)"
+    echo "freeunit_1371_image=$(docker image inspect -f '{{.Id}}' drupal-bench-freeunit:1.37.1 2>/dev/null | cut -c8-19)"
     echo "freeunit_master_sha=$(cat "$RUNROOT/freeunit-master-sha" 2>/dev/null || echo unknown)"
     echo "freeunit_master_image=$(docker image inspect -f '{{.Id}}' drupal-bench-freeunit:master 2>/dev/null | cut -c8-19)"
     echo "freeunit_master_old_sha=$(cat "$RUNROOT/freeunit-master-old-sha" 2>/dev/null || echo unknown)"

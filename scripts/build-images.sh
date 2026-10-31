@@ -22,6 +22,15 @@ MASTER_MID_REF=${FREEUNIT_MASTER_MID_REF:-dc30c8a7e76fe86f8063ce7eafcefc28513762
 RUNROOT=${RUNROOT:-run}
 
 docker build -f docker/Dockerfile.freeunit -t drupal-bench-freeunit:1.37.0 .
+# The 1.37.1 release tarball: the baseline every 1.37.2 candidate is measured against.
+docker build -f docker/Dockerfile.freeunit \
+    --build-arg FREEUNIT_REF=1.37.1 \
+    --build-arg FREEUNIT_SHA256=3b38d767d5fdbade19c42f200dadf0453bab0b1c739a6757fdf7a9c6bef6a2a8 \
+    -t drupal-bench-freeunit:1.37.1 .
+docker build -f docker/Dockerfile.freeunit \
+    --build-arg FREEUNIT_REF=1.37.1 \
+    --build-arg FREEUNIT_SHA256=3b38d767d5fdbade19c42f200dadf0453bab0b1c739a6757fdf7a9c6bef6a2a8 \
+    -t drupal-bench-freeunit:1.37.1 .
 docker build -f docker/Dockerfile.freeunit \
     --build-arg FREEUNIT_REF="$MASTER_REF" -t drupal-bench-freeunit:master .
 docker build -f docker/Dockerfile.freeunit \
