@@ -1,0 +1,21 @@
+# Runtime comparison on the same Drupal 11.5.0-beta1 front page and the same FPM pool.
+JOB=ski08-fu-vs-nginxfpm-115b1
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit
+RUNTIME_B=nginx-fpm
+SITE=11.5-beta1
+DB=sqlite
+CONNS=32
+WARM=2
+DUR=8
+REPS=3
+PERF=1
+SERVER_CPUS=9,10,11
+LOAD_CPUS=21,22,23
+DB_CPUS=18
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="the two servers differ by the server cost of the same PHP page"
+FALSIFY="a delta inside the null band"
