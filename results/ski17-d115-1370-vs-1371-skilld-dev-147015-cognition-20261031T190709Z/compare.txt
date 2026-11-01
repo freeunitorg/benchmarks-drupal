@@ -1,0 +1,21 @@
+NO CLAIM drupal-front-c32: inside the noise, no claim (B is 0.0 percent less server instructions per request, null band 0.0, 12 of 16 cells agree)
+job ski17-d115-1370-vs-1371  run ski17-d115-1370-vs-1371-skilld-dev-147015-cognition-20261031T190709Z  A None ()  B None ()  governor schedutil/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  drupal-front-c32 s_instructions         18756799.747 18757909.447    +0.01     [-0.02, +0.03]   0.03   7/16  PASS
+null  drupal-front-c32 db_us                         0.000        0.000      n/a                n/a    n/a   0/16  NO DATA
+null  drupal-front-c32 p50_ms                       80.724       80.340    -0.47     [-1.84, +0.90]   1.84   9/16  PASS
+null  drupal-front-c32 p99_ms                      127.628      131.680    +3.45     [-1.91, +8.80]   8.80  13/16  NOISY
+null  drupal-front-c32 rps                         398.085      397.821    -0.06     [-1.37, +1.24]   1.37   8/16  PASS
+null  drupal-front-c32 s_cs                          9.731        9.789    +0.61     [-2.69, +3.91]   3.91   9/16  PASS
+null  drupal-front-c32 s_cycles               20450028.335 20443783.235    -0.03     [-1.30, +1.25]   1.30   9/16  PASS
+null  drupal-front-c32 s_migrations                  1.030        1.117    +8.50    [-0.87, +17.88]  17.88  11/16  NOISY
+null  drupal-front-c32 server_us                  7277.056     7275.063    -0.02     [-1.30, +1.25]   1.30   9/16  PASS
+ab    drupal-front-c32 s_instructions         18757339.498 18752242.964    -0.03     [-0.05, -0.01]   0.03  12/16  NO CLAIM
+ab    drupal-front-c32 db_us                         0.000        0.000      n/a                n/a    n/a   0/16  NO DATA
+ab    drupal-front-c32 p50_ms                       80.429       80.689    +0.33     [-0.72, +1.37]   1.84   9/16  NO CLAIM
+ab    drupal-front-c32 p99_ms                      127.295      127.058    +0.15     [-4.54, +4.84]   8.80  10/16  NOISY
+ab    drupal-front-c32 rps                         397.959      396.436    -0.38     [-1.43, +0.67]   1.37   9/16  NO CLAIM
+ab    drupal-front-c32 s_cs                          9.814        9.992    +1.82     [-0.78, +4.42]   3.91  10/16  NO CLAIM
+ab    drupal-front-c32 s_cycles               20441444.521 20510187.372    +0.34     [-0.73, +1.41]   1.30  10/16  NO CLAIM
+ab    drupal-front-c32 s_migrations                  1.157        1.162    +0.55     [-7.32, +8.43]  17.88   9/16  NOISY
+ab    drupal-front-c32 server_us                  7276.184     7301.340    +0.35     [-0.72, +1.42]   1.30  11/16  NO CLAIM

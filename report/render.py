@@ -15,6 +15,7 @@ import glob
 import html
 import json
 import os
+import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -38,7 +39,11 @@ SITE_TITLE = {
     "11.4-mysqli": "Drupal 11.4 on the mysqli driver",
     "11.4-pgsql": "Drupal 11.4 on PostgreSQL",
     "11.4-sqlite": "Drupal 11.4 on SQLite",
+    "11.5": "Drupal 11.5, demo_umami profile",
+    "11.5-beta1": "Drupal 11.5.0-beta1, demo_umami profile",
     "12.0": "Drupal 12.0.0-beta1, demo_umami profile",
+    "12.0-beta1": "Drupal 12.0.0-beta1, demo_umami profile",
+    "12.0-sqlite": "Drupal 12.0 on SQLite",
     # A security release: beta1 has the vulnerabilities this fixes (SA-CORE-2026-014,
     # -015, -016), so its rows are the historical baseline, not a recommendation.
     "12.0-beta2": "Drupal 12.0.0-beta2 (security release), demo_umami profile",
@@ -53,6 +58,12 @@ RUNTIME_TITLE = {
     "freeunit-master": "FreeUnit master",
     "freeunit-direct": "FreeUnit 1.37.0, direct routes",
     "nginx-fpm": "nginx + PHP-FPM",
+    "nginx-src": "nginx from source + PHP-FPM",
+    "angie-fpm": "Angie + PHP-FPM",
+    "freenginx-fpm": "FreeNginx + PHP-FPM",
+    "freeunit-tuned": "FreeUnit 1.37.0 (12-thread tuning)",
+    "freeunit-1371": "FreeUnit 1.37.1",
+    "freeunit-1371-tuned": "FreeUnit 1.37.1 (12-thread tuning)",
     "apache": "Apache + mod_php",
 }
 
@@ -163,33 +174,62 @@ def short_version(summaries, limit=0):
     order = ["CLAIM", "NO CLAIM", "PASS", "INVALID", "NO DATA"]
     by_verdict = {k: [d for d in summaries if verdict_of(d) == k] for k in order}
 
-    out = ['<h2 id="short">The short version</h2>',
+    # #summary is the short version on every page kind, so a deep link to the
+    # summary lands on the same thing whether it is the overview or a family page.
+    # #short stays as an alias for links written before the rename.
+    out = ['<span id="short"></span><h2 id="summary">The short version</h2>',
            '<p class="note">This page holds <strong>%d published comparisons</strong> across '
-           '<strong>%d application sites</strong>, measured on %s. Each comparison is one job: '
+           '<strong>%d application site%s</strong>, measured on %s. Each comparison is one job: '
            'the same cells against two runtimes, with a null phase that bounds the noise first. '
            'A <span class="badge claim">CLAIM</span> appears only when the delta is outside that '
            'band. Start with the summary tables, then open a run for its numbers; every run links '
            'to its raw <code>results/&lt;run-id&gt;/</code> directory.</p>'
-           % (len(summaries), sites, esc(", ".join(hosts)))]
+           % (len(summaries), sites, "" if sites == 1 else "s", esc(", ".join(hosts)))]
+
+    # A count line keeps the shape of the result set visible without expanding a
+    # single list: before this, every run's headline was printed and the summary
+    # below it was what got lost on a page with a hundred runs.
+    counts = " \u00b7 ".join(f'<a href="#verdict-{k.lower().replace(" ", "-")}">{len(runs)} {esc(k.lower())}</a>'
+                              for k, runs in ((k, by_verdict.get(k) or []) for k in order) if runs)
+    if counts:
+        out.append(f'<p class="counts">{counts}</p>')
 
     for key in order:
         runs = by_verdict.get(key) or []
         if not runs:
             continue
-        out.append(f'<h3>{esc(key)} <span class="meta">({len(runs)})</span></h3>')
-        out.append('<ul class="verdicts">')
+        slug = key.lower().replace(" ", "-")
+        cls, label = VERDICT_CLASS.get(key, ("nodata", key.lower()))
+        out.append(f'<details class="verdicts" id="verdict-{slug}">')
+        out.append(f'<summary><span class="badge {cls}">{esc(label)}</span> '
+                   f'<span class="meta">({len(runs)} run{"s" if len(runs) != 1 else ""})</span>'
+                   f'</summary>')
+        out.append('<ul>')
         shown = runs[:limit] if limit else runs
         for d in shown:
-            out.append(f'<li>{badge(d)} <a href="#{esc(d.get("run_id"))}">{esc(run_label(d))}</a> '
+            out.append(f'<li><a href="#{esc(d.get("run_id"))}">{esc(run_label(d))}</a> '
                        f'<span class="meta">{esc(d.get("headline"))}</span></li>')
         if limit and len(runs) > limit:
             out.append(f'<li class="meta">and {len(runs) - limit} more under '
                        f'<a href="#runs">every run</a> on this page.</li>')
-        out.append("</ul>")
+        out.append('</ul></details>')
     return "\n".join(out)
 
 
 # --------------------------------------------------------------------- rankings
+
+def _cond_text(summaries):
+    """Governor and host(s) named from the runs themselves: a page whose runs came from
+    a schedutil governor on a shared node must not read as a powersave perf box."""
+    govs = sorted({str((d.get("meta") or {}).get("governor") or "unknown") for d in summaries})
+    hosts = sorted({str((d.get("meta") or {}).get("host") or "pro4s-2") for d in summaries})
+    out = " under "
+    if govs:
+        out += "governor " + "/".join(govs)
+    if hosts:
+        out += (" on host " if len(hosts) == 1 else " on hosts ") + ", ".join(hosts)
+    return out
+
 
 def summary_section(summaries):
     """One ranking table per (workload, database, host): absolute primary metric per
@@ -216,13 +256,13 @@ def summary_section(summaries):
     if not groups:
         return ""
     primaries = sorted({g[3] for g in groups})
-    out = ['<h2 id="summary">Summary: the primary metric per runtime</h2>',
+    out = ['<h2 id="rankings">The primary metric per runtime</h2>',
            '<p class="note">Primary metric: '
            + esc(", ".join(p.replace("_", " ") for p in primaries)) + ' (lower is better), '
            'measured c32 on one host in one window. The ratio is against the best runtime in that '
            'row. Each comparison has its null band printed in the run sections below; a ratio '
            'smaller than the band is not a difference. Caveat: this table pools absolute means from '
-           'runs taken hours apart under a powersave governor, so use it for the order, not for a '
+           'runs taken hours apart' + _cond_text(summaries) + ', so use it for the order, not for a '
            'percentage; the per-run tables are the controlled measurement.</p>']
     for (workload, db, host, primary, cell), runtimes in sorted(groups.items()):
         means = {rt: sum(v) / len(v) for rt, v in runtimes.items()}
@@ -386,7 +426,7 @@ def run_details(d):
             h.append(f'<li>{esc(r.get("line"))}</li>')
         h.append("</ul></details>")
     h.append(f'<p class="data">raw: <code>{esc(d.get("_path", ""))}</code> · '
-             f'<a href="#runs">back to the index</a></p>')
+             f'<a href="#runs">back to the index</a> · <a href="#top">top</a></p>')
     h.append("</details>")
     return "\n".join(h)
 
@@ -431,6 +471,15 @@ STYLE = """
  .badge.pass { background: #e8f0fe; color: #1a4b8c; }
  ul.verdicts { margin: .3rem 0 1rem; padding-left: 1.1rem; }
  ul.verdicts li { margin: .2rem 0; }
+ details.verdicts { border: 1px solid #e6e6e6; border-radius: .5rem; padding: .3rem .7rem; margin: .4rem 0; }
+ details.verdicts > summary { cursor: pointer; }
+ details.verdicts > ul { margin: .5rem 0 .2rem; padding-left: 1.1rem; }
+ p.counts { margin: .6rem 0 .2rem; font-size: 14px; }
+ p.counts a { text-decoration: none; }
+ nav.toc { margin: .8rem 0 1rem; font-size: 14px; }
+ nav.toc ol { display: inline; margin: 0; padding-left: .4rem; }
+ nav.toc li { display: inline; margin: 0 .1rem; }
+ nav.toc li:not(:last-child)::after { content: " ·"; color: #999; }
  details.run { border: 1px solid #e6e6e6; border-radius: .5rem; padding: .4rem .7rem; margin: .5rem 0; }
  details.run > summary { cursor: pointer; display: block; }
  .run-title { font-weight: 600; margin: 0 .5rem 0 .4rem; }
@@ -450,7 +499,12 @@ STYLE = """
 # Runs taken anywhere else (the aarch64 host) get their own page: their primary
 # metric is CPU time, because that guest has no PMU, so they must not be read as
 # an extension of the instruction-count tables.
-PINNED_HOSTS = {"sd-91675", "sd-92483", "pro4s-2", "pro4s-4", "localhost"}
+# x86 hosts whose counters work. A host must be listed here to keep its runs on its
+# own application family page; an unlisted host is filed under arm64, whose primary
+# metric is CPU time because that guest has no PMU. The shared 48-thread node has a
+# PMU, so its runs carry s_instructions and belong with the x86 pages.
+PINNED_HOSTS = {"sd-91675", "sd-92483", "pro4s-2", "pro4s-4", "localhost",
+                "skilld-dev-147015-cognition"}
 
 FAMILY_TITLE = {
     "arm64": "ARM64 (Oracle A1)",
@@ -484,11 +538,26 @@ def page_title(key):
     return FAMILY_TITLE.get(key, key)
 
 
-def page_lede(key):
+def page_lede(key, runs=None):
+    """A page's lede. For Drupal lines it is derived from the runs on that page, so a
+    line with two runtimes and one database cannot claim four runtimes and a database
+    axis it does not have."""
     if key.startswith("drupal-"):
         site = key[len("drupal-"):]
-        return (f"{SITE_TITLE.get(site, site)} on Apache+mod_php, nginx+PHP-FPM, the two nginx "
-                "forks built from source, and FreeUnit, across the database axis.")
+        runs = runs or []
+        rts = sorted({runtime_title((d.get("meta") or {}).get(r))
+                      for d in runs for r in ("runtime_a", "runtime_b")} - {None})
+        dbs = sorted({str((d.get("meta") or {}).get("db") or "mysql") for d in runs})
+        hosts = sorted({str((d.get("meta") or {}).get("host") or "pro4s-2") for d in runs})
+        head = SITE_TITLE.get(site, site)
+        if not rts:
+            return head + "."
+        sent = head + " — " + ", ".join(rts)
+        if dbs:
+            sent += " on " + ("the " if len(dbs) > 1 else "") + "/".join(dbs)
+        if hosts:
+            sent += ", measured on " + ", ".join(hosts)
+        return sent + "."
     return FAMILY_LEDE.get(key, "")
 
 
@@ -507,12 +576,12 @@ def family_of(d):
         return "symfony"
     if site == "hello" or workload.startswith("php-"):
         return "php"
-    if site.startswith("11.4") or site.startswith("12.0") or workload.startswith("drupal-"):
-        if site.startswith("11.4"):
-            return "drupal-11.4"
-        if site.startswith("12.0"):
-            return "drupal-12.0"
-        return "drupal-" + (site or "other")
+    # One page per Drupal line, derived from the site key so a new line (11.5, 12.1)
+    # or a new variant of an old one (12.0-beta2, 12.0-sqlite) lands on the page of
+    # its line instead of vanishing into "other".
+    line = re.match(r"^(11\.\d+|12\.\d+)", site)
+    if line or workload.startswith("drupal-"):
+        return "drupal-" + (line.group(1) if line else (site or "other"))
     return "other"
 
 
@@ -548,17 +617,36 @@ def verdict_counts(summaries):
     return counts
 
 
+def toc(items):
+    """An in-page table of contents. Every entry is an id that exists on this page
+    kind, so a deep link such as #summary works on the overview and on every family
+    page alike, and a reader landing mid-page can get back to the summary."""
+    items = [(i, label) for i, label in items if i]
+    if not items:
+        return ""
+    out = ['<nav class="toc"><strong>On this page:</strong> <ol>']
+    for anchor, label in items:
+        out.append(f'<li><a href="#{esc(anchor)}">{esc(label)}</a></li>')
+    out.append("</ol></nav>")
+    return "\n".join(out)
+
+
 def overview_body(groups, all_summaries):
-    """The overview page: one row per family, plus the cron/queue arms, which are a
-    cross-family story and do not belong to one application page."""
-    out = ['<h2 id="pages">Pages</h2>',
-           '<p class="note">The result set is split by application family so each page stays '
-           'readable while the runtime and database matrices grow. Every page carries its own '
-           'short version, ranking table, run index and per-run detail; the raw data is the same '
-           'committed <code>results/</code> tree for all of them.</p>',
-           '<table class="index"><thead><tr><th>page</th><th>runs</th><th>sites</th>'
-           '<th>claim</th><th>no claim</th><th>invalid</th><th>no data</th>'
-           '</tr></thead><tbody>']
+    """The overview page, summary first: the counts and the verdict groups (collapsed)
+    come before the page index, so a reader sees what the result set says before it
+    sees how it is filed."""
+    arms_html = ticks_section(RESULTS)
+    out = [toc([("summary", "The short version"), ("pages", "Pages"),
+                ("arms", "Cron and queue arms") if arms_html else None]),
+           short_version(all_summaries, limit=6)]
+    out.append('<h2 id="pages">Pages</h2>')
+    out.append('<p class="note">The result set is split by application family so each page stays '
+               'readable while the runtime and database matrices grow. Every page carries its own '
+               'short version, ranking table, run index and per-run detail; the raw data is the same '
+               'committed <code>results/</code> tree for all of them.</p>')
+    out.append('<table class="index"><thead><tr><th>page</th><th>runs</th><th>sites</th>'
+               '<th>claim</th><th>no claim</th><th>invalid</th><th>no data</th>'
+               '</tr></thead><tbody>')
     for key in page_keys(groups):
         runs = groups[key]
         counts = verdict_counts(runs)
@@ -573,13 +661,15 @@ def overview_body(groups, all_summaries):
             f'<td>{counts.get("NO DATA", 0)}</td>'
             '</tr>')
     out.append("</tbody></table>")
-    out.append(ticks_section(RESULTS))
-    out.append(short_version(all_summaries, limit=6))
+    arms = ticks_section(RESULTS)
+    out.append(arms)
     return "\n".join(part for part in out if part)
 
 
 def page_body(key, runs):
     return "\n".join(part for part in [
+        toc([("summary", "The short version"), ("rankings", "Primary metric per runtime"),
+             ("runs", "Every run"), ("details", "Run detail")]),
         short_version(runs),
         summary_section(runs),
         run_index(runs),
@@ -594,7 +684,7 @@ def document(title, current, groups, lede, body, note=""):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(title)}</title>
 <meta name="description" content="Reproducible comparison of Drupal, Symfony, WordPress and framework-free PHP on Apache+mod_php, nginx+PHP-FPM, Angie, FreeNginx and FreeUnit, with a null band beside every comparison.">
-<style>{STYLE}</style></head><body>
+<style>{STYLE}</style></head><body id="top">
 <h1>{esc(title)}</h1>
 <p class="lede">{lede}</p>
 {nav(current, groups)}
@@ -646,7 +736,7 @@ def main():
             path = os.path.join(outdir, f"{key}.html")
             title = f"{page_title(key)} benchmarks"
             with open(path, "w", encoding="utf-8") as fh:
-                fh.write(document(title, key, groups, page_lede(key),
+                fh.write(document(title, key, groups, page_lede(key, groups[key]),
                                   page_body(key, groups[key]), note))
             written.append(path)
     else:

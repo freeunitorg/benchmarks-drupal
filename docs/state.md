@@ -326,3 +326,40 @@ short version.
   `115`/`116` written, run them one at a time when no loop job holds `run/.run.lock`.
 * Queues: pro4s-2 `matrix=5 apache=5 master=5 musl=3`, pro4s-4 `front=1 core=7 master=5 beta2=3`,
   o-build idle; both x86 boxes gated by another session.
+
+## 2026-10-31: 1.37.1 published next to 1.37.0, and the master arm is out of the published set
+
+**1.37.1 is tagged** (`9c034c47`, "Changes with FreeUnit 1.37.1", security + HTTP/1.1
+parser fixes). Six runs were added so every application page carries the release
+comparison; all six were taken on the shared 48-thread node, 3 pinned threads for the
+server on the Drupal/WordPress/Symfony cells and 12 for the framework-free cell:
+
+| run | site | cell | verdict |
+|---|---|---|---|
+| `ski16-d12-1370-vs-1371-*` | Drupal 12.0.0-beta2, sqlite | front-anon c32 | NO CLAIM (-0.02 %, band 0.02) |
+| `ski17-d115-1370-vs-1371-*` | Drupal 11.5.0-beta1, sqlite | front-anon c32 | NO CLAIM (-0.03 %, band 0.03) |
+| `ski19-d114-1370-vs-1371-*` | Drupal 11.4.8, sqlite | front-anon c32 | NO CLAIM (-0.01 %, band 0.03) |
+| `ski20-symfony-1370-vs-1371-*` | Symfony 7.4 + MariaDB | symfony-front c32 | NO CLAIM (-0.07 %, band 0.15) |
+| `ski21-wp-1370-vs-1371-*` | WordPress 7.1.3 + MariaDB | wp-front c32 | NO CLAIM (-0.02 %, band 0.04) |
+| `ski18-hello-tuned-1370-vs-1371-*` | framework-free PHP, 12 threads | php-hello c128 | **CLAIM** +2.71 % rps, -3.00 % server_us, instructions flat |
+
+Reading: on real applications 1.37.1 is not different from 1.37.0, which is what a
+security-and-parser release should look like. The one cell that moves is the balanced
+12-thread framework-free one, and it moves in rps and server CPU while the retired
+instruction count stays flat — a response-path saving (fewer syscalls and wakeups), not
+less work per request.
+
+**`results-archive/` now holds 136 runs whose `runtime_a`/`runtime_b` named a master
+build** (`freeunit-master`, `-old`, `-mid`, and the retired c5d71253 image), moved out of
+`results/` with `git mv`: the data stays in the repository, `report/render.py` globs
+`results/*/summary.json`, so nothing in the archive reaches the page. 215 comparisons
+remain published.
+
+Why: a floating `master` column goes stale the day after it is measured, the images were
+removed from the boxes for the same reason, and the next master column should start from
+a commit worth measuring (new image, new `-<sha>` runtime name) rather than inherit 136
+rows from three different commits across two hosts. Restoring any run to the page:
+
+```sh
+git mv results-archive/<run-id> results/
+```

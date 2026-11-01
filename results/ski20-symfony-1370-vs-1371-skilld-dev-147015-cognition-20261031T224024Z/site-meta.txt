@@ -1,0 +1,7 @@
+site=symfony
+framework=7.4.22
+php=8.5.11
+tag=symfony/skeleton:7.4.*
+runroot=/srv/perf-lab/benchmarks-drupal/run
+installed=2026-10-31T22:36:45Z
+page_note=50 of 200 rows from MariaDB via PDO, Twig render
