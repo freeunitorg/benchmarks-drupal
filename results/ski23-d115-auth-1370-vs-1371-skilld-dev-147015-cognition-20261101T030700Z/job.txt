@@ -1,0 +1,21 @@
+# Authenticated front page (page cache bypassed): 1.37.1 against 1.37.0.
+JOB=ski23-d115-auth-1370-vs-1371
+ISSUE="https://github.com/freeunitorg/benchmarks-drupal"
+PHASES="null ab"
+WORKLOAD=drupal-auth
+RUNTIME_A=freeunit
+RUNTIME_B=freeunit-1371
+SITE=11.5-beta1
+DB=sqlite
+CONNS=32
+WARM=3
+DUR=10
+REPS=4
+PERF=1
+SERVER_CPUS=9,10,11
+LOAD_CPUS=21,22,23
+DB_CPUS=18
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="master (1.37.1-pre) differs from 1.37.0 by the measured post-release work"
+FALSIFY="NO CLAIM: no regression shows on a page-cache-hit Drupal cell"

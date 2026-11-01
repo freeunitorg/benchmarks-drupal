@@ -363,3 +363,27 @@ rows from three different commits across two hosts. Restoring any run to the pag
 ```sh
 git mv results-archive/<run-id> results/
 ```
+
+### 2026-11-01: the authenticated front page for 1.37.1
+
+The first 1.37.1 push covered the anonymous front page only, so the published "Front page,
+authenticated (page cache bypassed)" chart had no 1.37.1 row. Three cells close that; each
+is `drupal-auth` c32, session cookie of `bench-user`, `X-Drupal-Cache: UNCACHEABLE (request
+policy)` with `X-Drupal-Dynamic-Cache: HIT` in the preflight:
+
+| run | site | s_instructions | null band | verdict |
+|---|---|---|---|---|
+| `ski22-d114-auth-1370-vs-1371-*` | Drupal 11.4.8, sqlite | +0.15 % [-0.20, +0.49] | 0.07 | NO CLAIM |
+| `ski23-d115-auth-1370-vs-1371-*` | Drupal 11.5.0-beta1, sqlite | -0.01 % [-0.04, +0.01] | 0.18 | NO CLAIM |
+| `ski24-d120-auth-1370-vs-1371-*` | Drupal 12.0.0-beta2, sqlite | -0.01 % [-0.04, +0.02] | 0.17 | NO CLAIM |
+
+All three are flat, matching the anonymous cells: 1.37.1 changes nothing an application can
+feel per request. These cells cost 55-63 M instructions and about 25 ms of server CPU per
+request, so they are the expensive end of the suite; 64 of 64 timed cells per run had
+`bad=0`.
+
+Site note: the three `cookie.txt` files had to be regenerated on the node
+(`vendor/bin/dr bench login-url bench-user`, then one non-followed curl into the cookie
+jar). The Drupal 11.4 and 11.5 jars shipped by `site-build.sh` were empty, which would have
+measured an anonymous request and still passed the dynamic-cache preflight - a cell that
+looks authenticated and is not.
