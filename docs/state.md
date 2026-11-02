@@ -387,3 +387,37 @@ Site note: the three `cookie.txt` files had to be regenerated on the node
 jar). The Drupal 11.4 and 11.5 jars shipped by `site-build.sh` were empty, which would have
 measured an anonymous request and still passed the dynamic-cache preflight - a cell that
 looks authenticated and is not.
+
+## 2026-11-02: 1.37.2-pre, as merged at bd890d40, against 1.37.1
+
+Twenty-two commits landed after 1.37.1 before this run (compression for application
+responses of unknown length, zlib window sizing, brotli flush reporting, 26 unused
+functions removed, the `compression` config guard) and then a further five (the
+`Accept-Ranges` drop on compressed responses). Measured at the final tip, `bd890d40`, with
+1.37.1 as the anchor, same cells as the 1.37.0-vs-1.37.1 set:
+
+| run | cell | host | delta | null band | verdict |
+|---|---|---|---|---|---|
+| `r1` | Drupal 12.0.0-beta2 front-anon | x86, 3 threads | -0.01 % | 0.03 | NO CLAIM |
+| `r2` | Drupal 12.0.0-beta2 front-auth | x86 | -0.00 % | 0.06 | NO CLAIM |
+| `r3` | Drupal 11.5.0-beta1 front-anon | x86 | -0.03 % | 0.02 | CLAIM (below one band) |
+| `r4` | Drupal 11.4.8 front-anon | x86 | +0.00 % | 0.03 | NO CLAIM |
+| `r5` | Symfony 7.4 front | x86 | +0.05 % | 0.20 | NO CLAIM |
+| `r6` | WordPress 7.1.3 front | x86 | +0.01 % | 0.03 | NO CLAIM |
+| `r7` | framework-free PHP, 12 threads | x86 | -0.12 % instr, +0.10 % rps | 0.62 | NO CLAIM |
+| `arm-h2` | framework-free PHP | aarch64, 2 OCPU | +0.14 % server_us | 2.05 | NO CLAIM |
+| `arm-d2` | Drupal 11.4.8 front-anon | aarch64 | -0.17 % server_us | 1.83 | NO CLAIM |
+
+`r3`'s point estimate (-0.03 %) sits inside a single band and 13 of 16 cells agree, so it is
+read as flat, not as a win; the harness calls it a CLAIM only because the band there is
+0.02 %, which is the resolution floor of the cell, not a physical difference.
+
+Two runs taken earlier the same day against `a9cfb082` (before the last five commits) are
+**not** in `results/`: they measured a tip that is no longer the tip, and a half-published
+pre-release column is worse than none.
+
+**What these cells cannot see:** the whole compression block. `oha` sends no
+`Accept-Encoding`, so every cell here is an identity body, and the new "compress application
+responses of unknown length" path never runs. A 1.37.2 claim about compression needs its
+own cell: a route with `compression` enabled, `AE=gzip` and `AE=br`, and a response whose
+length is unknown (streamed/flushed). That is not in this run.

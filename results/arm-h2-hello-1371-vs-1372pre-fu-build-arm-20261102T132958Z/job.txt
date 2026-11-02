@@ -1,0 +1,23 @@
+# aarch64 (Oracle A1, 2 OCPU, no PMU): 1.37.2-pre against 1.37.1 on the control app.
+# The primary metric is the server's own CPU time per request, because the guest has
+# no hardware counters; the arm64 page explains that in its lede.
+JOB=arm-h2-hello-1371-vs-1372pre
+ISSUE=https://github.com/freeunitorg/benchmarks-drupal/pull/3
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-1371
+RUNTIME_B=freeunit-master-bd890d40
+SITE=hello
+NO_DB=1
+CONNS=32
+WARM=2
+DUR=8
+REPS=2
+PERF=0
+SERVER_CPUS=0
+LOAD_CPUS=1
+DB_CPUS=0
+PRIMARY=server_us
+NULL_LIMIT_PCT=5
+EXPECT="1.37.2-pre carries no per-request CPU change against 1.37.1 on aarch64"
+FALSIFY="a delta outside the null band"
