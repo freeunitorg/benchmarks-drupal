@@ -1,0 +1,29 @@
+job=arm-h2-hello-1371-vs-1372pre
+run_id=arm-h2-hello-1371-vs-1372pre-fu-build-arm-20261102T132958Z
+host=fu-build-arm
+date=2026-11-02T13:36:04Z
+workload=php-hello
+runtime_a=freeunit-1371
+runtime_b=freeunit-master-bd890d40
+site=hello
+db=mysql
+phases=null ab conns=32 dur=8 warm=2 reps=2 rate=
+server_cpus=0 load_cpus=1 db_cpus=0
+governor=unknown
+epp=unknown
+kernel=6.18.60-0-virt
+oha=oha 1.16.0
+perf_image=
+freeunit_image=e1bc85bc1a10
+freeunit_master_sha=unknown
+freeunit_master_image=
+freeunit_master_old_sha=unknown
+freeunit_master_old_image=
+freeunit_master_mid_sha=unknown
+freeunit_master_mid_image=
+fpm_image=
+apache_image=
+mariadb_image=7db29378d4fd
+issue=https://github.com/freeunitorg/benchmarks-drupal/pull/3
+expect=1.37.2-pre carries no per-request CPU change against 1.37.1 on aarch64
+falsify=a delta outside the null band

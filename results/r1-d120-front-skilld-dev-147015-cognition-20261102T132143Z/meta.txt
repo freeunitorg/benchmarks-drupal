@@ -1,0 +1,29 @@
+job=r1-d120-front
+run_id=r1-d120-front-skilld-dev-147015-cognition-20261102T132143Z
+host=skilld-dev-147015-cognition
+date=2026-11-02T13:40:30Z
+workload=drupal-front
+runtime_a=freeunit-1371
+runtime_b=freeunit-master-bd890d40
+site=12.0-beta2
+db=sqlite
+phases=null ab conns=32 dur=10 warm=3 reps=4 rate=
+server_cpus=9,10,11 load_cpus=21,22,23 db_cpus=18
+governor=schedutil
+epp=unknown
+kernel=6.12.114-flatcar
+oha=oha 1.16.0
+perf_image=7d0a00006762
+freeunit_image=1fc8ae786efe
+freeunit_master_sha=c5d71253c36ba03f67620bd2cc08683f7fc70eff
+freeunit_master_image=
+freeunit_master_old_sha=unknown
+freeunit_master_old_image=
+freeunit_master_mid_sha=unknown
+freeunit_master_mid_image=
+fpm_image=c3d2b2e6c0e9
+apache_image=846ed2a38641
+mariadb_image=72b6ab51626b
+issue=https://github.com/freeunitorg/benchmarks-drupal/pull/3
+expect=1.37.2-pre (bd890d40) carries no per-request cost change against 1.37.1
+falsify=a delta outside the null band

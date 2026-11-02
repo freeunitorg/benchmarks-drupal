@@ -64,6 +64,9 @@ RUNTIME_TITLE = {
     "freeunit-tuned": "FreeUnit 1.37.0 (12-thread tuning)",
     "freeunit-1371": "FreeUnit 1.37.1",
     "freeunit-1371-tuned": "FreeUnit 1.37.1 (12-thread tuning)",
+    "freeunit-master-bd890d40": "FreeUnit 1.37.2-pre (master bd890d40)",
+    "freeunit-master-bd890d40-tuned": "FreeUnit 1.37.2-pre (master bd890d40, "
+                                      "12-thread tuning)",
     "apache": "Apache + mod_php",
 }
 
