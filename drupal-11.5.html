@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drupal 11.5 benchmarks</title>
+<meta name="description" content="Reproducible comparison of Drupal, Symfony, WordPress and framework-free PHP on Apache+mod_php, nginx+PHP-FPM, Angie, FreeNginx and FreeUnit, with a null band beside every comparison.">
+<style>
+ body { font: 15px/1.5 system-ui, sans-serif; max-width: 68rem; margin: 2rem auto; padding: 0 1rem; color: #222; }
+ h1 { font-size: 1.6rem; margin-bottom: .2rem; }
+ h2 { font-size: 1.15rem; margin-top: 2.5rem; border-top: 1px solid #ddd; padding-top: 1rem; }
+ h3 { font-size: 1rem; margin: 1.4rem 0 .4rem; }
+ table { border-collapse: collapse; width: 100%; margin: .5rem 0 1rem; font-size: 14px; }
+ th, td { text-align: right; padding: .3rem .5rem; border-bottom: 1px solid #eee; vertical-align: top; }
+ th:first-child, td:first-child { text-align: left; }
+ table.index td, table.index th { font-size: 13px; }
+ .meta, .data { color: #666; font-size: 13px; font-weight: normal; }
+ .headline { font-weight: 600; }
+ .note { background: #f6f8fa; border-left: 3px solid #888; padding: .6rem .9rem; }
+ tr.best td { font-weight: 600; background: #f0fbf4; }
+ code { background: #f6f8fa; padding: .1rem .3rem; }
+ .badge { font-size: 11px; font-weight: 700; padding: .1rem .45rem; border-radius: .7rem; white-space: nowrap; }
+ .badge.claim { background: #e6f4ea; color: #136a2f; }
+ .badge.noclaim { background: #eef1f4; color: #4a5568; }
+ .badge.invalid { background: #fdecea; color: #a12b20; }
+ .badge.nodata { background: #fff4e5; color: #8a5a00; }
+ .badge.pass { background: #e8f0fe; color: #1a4b8c; }
+ ul.verdicts { margin: .3rem 0 1rem; padding-left: 1.1rem; }
+ ul.verdicts li { margin: .2rem 0; }
+ details.verdicts { border: 1px solid #e6e6e6; border-radius: .5rem; padding: .3rem .7rem; margin: .4rem 0; }
+ details.verdicts > summary { cursor: pointer; }
+ details.verdicts > ul { margin: .5rem 0 .2rem; padding-left: 1.1rem; }
+ p.counts { margin: .6rem 0 .2rem; font-size: 14px; }
+ p.counts a { text-decoration: none; }
+ nav.toc { margin: .8rem 0 1rem; font-size: 14px; }
+ nav.toc ol { display: inline; margin: 0; padding-left: .4rem; }
+ nav.toc li { display: inline; margin: 0 .1rem; }
+ nav.toc li:not(:last-child)::after { content: " ·"; color: #999; }
+ details.run { border: 1px solid #e6e6e6; border-radius: .5rem; padding: .4rem .7rem; margin: .5rem 0; }
+ details.run > summary { cursor: pointer; display: block; }
+ .run-title { font-weight: 600; margin: 0 .5rem 0 .4rem; }
+ details[open].run { background: #fcfcfd; }
+ :target { scroll-margin-top: 1rem; background: #fffbe6; }
+ nav.pages { margin: .8rem 0 1.2rem; display: flex; flex-wrap: wrap; gap: .4rem; }
+ nav.pages a, nav.pages span.here { border: 1px solid #d7dbe0; border-radius: .4rem; padding: .25rem .6rem; font-size: 13px; }
+ nav.pages a { text-decoration: none; }
+ nav.pages span.here { background: #eef1f4; font-weight: 600; border-color: #c3c9d1; }
+ nav.pages a:hover { background: #f6f8fa; }
+ nav.toc ol { margin: .3rem 0 0; padding-left: 1.2rem; }
+ p.lede { color: #444; }
+ @media print { details.run { break-inside: avoid; } }
+</style></head><body id="top">
+<h1>Drupal 11.5 benchmarks</h1>
+<p class="lede">Drupal 11.5, demo_umami profile — FreeUnit 1.37.0, FreeUnit 1.37.1, nginx + PHP-FPM on sqlite, measured on skilld-dev-147015-cognition.</p>
+<nav class="pages">
+<a href="index.html">Overview <span class="meta">(223)</span></a>
+<a href="drupal-11.4.html">Drupal 11.4 <span class="meta">(16)</span></a>
+<span class="here">Drupal 11.5 <span class="meta">(3)</span></span>
+<a href="drupal-12.0.html">Drupal 12.0 <span class="meta">(49)</span></a>
+<a href="symfony.html">Symfony <span class="meta">(29)</span></a>
+<a href="wordpress.html">WordPress <span class="meta">(25)</span></a>
+<a href="php.html">Framework-free PHP <span class="meta">(47)</span></a>
+<a href="arm64.html">ARM64 (Oracle A1) <span class="meta">(54)</span></a>
+</nav>
+<p class="note">Everything here is rebuilt from committed <code>results/&lt;run-id&gt;/summary.json</code> files. The <strong>null band</strong> is printed beside every comparison: it is the same job run with both sides identical (A against a copy of A), so a delta smaller than the band is noise and is reported as <em>no claim</em>. Host class, governor, PHP, Drupal tag, database and runtime versions are in each run's header.</p>
+<nav class="toc"><strong>On this page:</strong> <ol>
+<li><a href="#summary">The short version</a></li>
+<li><a href="#rankings">Primary metric per runtime</a></li>
+<li><a href="#runs">Every run</a></li>
+<li><a href="#details">Run detail</a></li>
+</ol></nav>
+<span id="short"></span><h2 id="summary">The short version</h2>
+<p class="note">This page holds <strong>3 published comparisons</strong> across <strong>1 application site</strong>, measured on skilld-dev-147015-cognition. Each comparison is one job: the same cells against two runtimes, with a null phase that bounds the noise first. A <span class="badge claim">CLAIM</span> appears only when the delta is outside that band. Start with the summary tables, then open a run for its numbers; every run links to its raw <code>results/&lt;run-id&gt;/</code> directory.</p>
+<p class="counts"><a href="#verdict-claim">1 claim</a> · <a href="#verdict-no-claim">2 no claim</a></p>
+<details class="verdicts" id="verdict-claim">
+<summary><span class="badge claim">CLAIM</span> <span class="meta">(1 run)</span></summary>
+<ul>
+<li><a href="#ski08-fu-vs-nginxfpm-115b1-skilld-dev-147015-cognition-20261030T015758Z">Drupal 11.5.0-beta1, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit 1.37.0 vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-front-c32: B is 2.2 percent more server instructions per request, outside the null band of 0.0, 12 of 12 cells agree</span></li>
+</ul></details>
+<details class="verdicts" id="verdict-no-claim">
+<summary><span class="badge noclaim">no claim</span> <span class="meta">(2 runs)</span></summary>
+<ul>
+<li><a href="#ski17-d115-1370-vs-1371-skilld-dev-147015-cognition-20261031T190709Z">Drupal 11.5.0-beta1, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit 1.37.0 vs FreeUnit 1.37.1</a> <span class="meta">NO CLAIM drupal-front-c32: inside the noise, no claim (B is 0.0 percent less server instructions per request, null band 0.0, 12 of 16 cells agree)</span></li>
+<li><a href="#ski23-d115-auth-1370-vs-1371-skilld-dev-147015-cognition-20261101T030700Z">Drupal 11.5.0-beta1, demo_umami profile · Front page, authenticated (page cache bypassed) · FreeUnit 1.37.0 vs FreeUnit 1.37.1</a> <span class="meta">NO CLAIM drupal-auth-c32: inside the noise, no claim (B is 0.0 percent less server instructions per request, null band 0.2, 9 of 16 cells agree)</span></li>
+</ul></details>
+<h2 id="rankings">The primary metric per runtime</h2>
+<p class="note">Primary metric: s instructions (lower is better), measured c32 on one host in one window. The ratio is against the best runtime in that row. Each comparison has its null band printed in the run sections below; a ratio smaller than the band is not a difference. Caveat: this table pools absolute means from runs taken hours apart under governor schedutil on host skilld-dev-147015-cognition, so use it for the order, not for a percentage; the per-run tables are the controlled measurement.</p>
+<h3>Front page, authenticated (page cache bypassed) <span class="meta">(drupal-auth-c32, sqlite, skilld-dev-147015-cognition, s instructions)</span></h3>
+<table><thead><tr><th>runtime</th><th>s instructions</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>FreeUnit 1.37.1</td><td>63,074,096</td><td>1.00x</td></tr>
+<tr><td>FreeUnit 1.37.0</td><td>63,081,477</td><td>1.00x</td></tr>
+</tbody></table>
+<h3>Front page, anonymous (page-cache hit) <span class="meta">(drupal-front-c32, sqlite, skilld-dev-147015-cognition, s instructions)</span></h3>
+<table><thead><tr><th>runtime</th><th>s instructions</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>FreeUnit 1.37.1</td><td>18,752,243</td><td>1.00x</td></tr>
+<tr><td>FreeUnit 1.37.0</td><td>18,757,306</td><td>1.00x</td></tr>
+<tr><td>nginx + PHP-FPM</td><td>19,173,344</td><td>1.02x</td></tr>
+</tbody></table>
+<h2 id="runs">Every run</h2>
+<p class="note">One row per comparison. The run id is the directory name under <code>results/</code> and the anchor of its detail block below; the date is the run's own start time. Open a row to read its metrics.</p>
+<table class="index"><thead><tr><th>run</th><th>date</th><th>site</th><th>workload</th><th>runtimes</th><th>verdict</th></tr></thead><tbody>
+<tr><td><a href="#ski08-fu-vs-nginxfpm-115b1-skilld-dev-147015-cognition-20261030T015758Z"><code>ski08-fu-vs-nginxfpm-115b1-skilld-dev-147015-cog</code></a></td><td>2026-10-30T02:10</td><td>Drupal 11.5.0-beta1, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit 1.37.0 vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#ski17-d115-1370-vs-1371-skilld-dev-147015-cognition-20261031T190709Z"><code>ski17-d115-1370-vs-1371-skilld-dev-147015-cognit</code></a></td><td>2026-10-31T19:27</td><td>Drupal 11.5.0-beta1, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit 1.37.0 vs FreeUnit 1.37.1</td><td><span class="badge noclaim">no claim</span></td></tr>
+<tr><td><a href="#ski23-d115-auth-1370-vs-1371-skilld-dev-147015-cognition-20261101T030700Z"><code>ski23-d115-auth-1370-vs-1371-skilld-dev-147015-c</code></a></td><td>2026-11-01T03:27</td><td>Drupal 11.5.0-beta1, demo_umami profile</td><td>Front page, authenticated (page cache bypassed)</td><td>FreeUnit 1.37.0 vs FreeUnit 1.37.1</td><td><span class="badge noclaim">no claim</span></td></tr>
+</tbody></table>
+<h2 id="details">Run detail</h2>
+<p class="note">Grouped by application site. Nothing is hidden: the summary line carries the verdict, the body has the metrics, and the null-phase row that bounds the job is one click further.</p>
+<h3 id="site-11.5-beta1">Drupal 11.5.0-beta1, demo_umami profile <span class="meta">(3 runs)</span></h3>
+<details class="run" id="ski08-fu-vs-nginxfpm-115b1-skilld-dev-147015-cognition-20261030T015758Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit 1.37.0 vs nginx + PHP-FPM</span><span class="meta">Drupal 11.5.0-beta1, demo_umami profile · ski08-fu-vs-nginxfpm-115b1-skilld-dev-147015-cognition-20261030T015758Z</span></summary>
+<p class="meta">server CPUs 9,10,11 load_cpus=21,22,23 db_cpus=18 · DB CPUs  · governor schedutil · kernel 6.12.54-flatcar ·  blocks × 8 ·  connections ·  s window · db sqlite · host skilld-dev-147015-cognition · date 2026-10-30T02:10:34Z</p>
+<p class="headline">CLAIM drupal-front-c32: B is 2.2 percent more server instructions per request, outside the null band of 0.0, 12 of 12 cells agree</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>nginx-fpm</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>18757273.1045</td><td>19173343.9617</td><td>2.22%</td><td>[2.2, 2.24]</td><td>0.03</td><td>12/12</td><td>CLAIM</td></tr>
+<tr><td>db_us</td><td>0.0</td><td>0.0</td><td>-%</td><td>[-, -]</td><td>-</td><td>0/12</td><td>NO DATA</td></tr>
+<tr><td>p50 latency (ms)</td><td>80.6739</td><td>84.1101</td><td>4.26%</td><td>[3.13, 5.4]</td><td>3.82</td><td>11/12</td><td>CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>131.3865</td><td>124.9579</td><td>-4.59%</td><td>[-9.3, 0.12]</td><td>15.91</td><td>7/12</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>395.2883</td><td>381.13</td><td>-3.57%</td><td>[-4.95, -2.2]</td><td>4.41</td><td>10/12</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>9.7567</td><td>7.7889</td><td>-20.17%</td><td>[-23.1, -17.25]</td><td>5.59</td><td>12/12</td><td>NOISY</td></tr>
+<tr><td>server cycles per request</td><td>20556272.1563</td><td>21372901.2008</td><td>3.98%</td><td>[2.68, 5.28]</td><td>4.5</td><td>11/12</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>1.126</td><td>1.3449</td><td>19.76%</td><td>[9.0, 30.51]</td><td>17.63</td><td>11/12</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>7318.9555</td><td>7460.9992</td><td>1.95%</td><td>[0.64, 3.25]</td><td>4.42</td><td>10/12</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.0 percent in server instructions per request, 95 percent CI [-0.0, 0.0], null band 0.0, limit 5.0: PASS</li>
+<li>no data for db_us</li>
+<li>null gate: A and a copy of A differ by 2.1 percent in p50 latency (ms), 95 percent CI [0.5, 3.8], null band 3.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 8.7 percent in p99 latency (ms), 95 percent CI [1.5, 15.9], null band 15.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -2.5 percent in requests per second, 95 percent CI [-4.4, -0.7], null band 4.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -2.4 percent in server cs per request, 95 percent CI [-5.6, 0.7], null band 5.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 2.6 percent in server cycles per request, 95 percent CI [0.6, 4.5], null band 4.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -7.2 percent in server migrations per request, 95 percent CI [-17.6, 3.2], null band 17.6, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 2.5 percent in server CPU per request (us), 95 percent CI [0.6, 4.4], null band 4.4, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>ski08-fu-vs-nginxfpm-115b1-skilld-dev-147015-cognition/summary.json</code> · <a href="#runs">back to the index</a> · <a href="#top">top</a></p>
+</details>
+<details class="run" id="ski17-d115-1370-vs-1371-skilld-dev-147015-cognition-20261031T190709Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit 1.37.0 vs FreeUnit 1.37.1</span><span class="meta">Drupal 11.5.0-beta1, demo_umami profile · ski17-d115-1370-vs-1371-skilld-dev-147015-cognition-20261031T190709Z</span></summary>
+<p class="meta">server CPUs 9,10,11 load_cpus=21,22,23 db_cpus=18 · DB CPUs  · governor schedutil · kernel 6.12.54-flatcar ·  blocks × 8 ·  connections ·  s window · db sqlite · host skilld-dev-147015-cognition · date 2026-10-31T19:27:12Z</p>
+<p class="headline">NO CLAIM drupal-front-c32: inside the noise, no claim (B is 0.0 percent less server instructions per request, null band 0.0, 12 of 16 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>freeunit-1371</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>18757339.4984</td><td>18752242.9644</td><td>-0.03%</td><td>[-0.05, -0.01]</td><td>0.03</td><td>12/16</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>0.0</td><td>0.0</td><td>-%</td><td>[-, -]</td><td>-</td><td>0/16</td><td>NO DATA</td></tr>
+<tr><td>p50 latency (ms)</td><td>80.4288</td><td>80.6892</td><td>0.33%</td><td>[-0.72, 1.37]</td><td>1.84</td><td>9/16</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>127.2947</td><td>127.0577</td><td>0.15%</td><td>[-4.54, 4.84]</td><td>8.8</td><td>10/16</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>397.9594</td><td>396.4356</td><td>-0.38%</td><td>[-1.43, 0.67]</td><td>1.37</td><td>9/16</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>9.8143</td><td>9.9917</td><td>1.82%</td><td>[-0.78, 4.42]</td><td>3.91</td><td>10/16</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>20441444.5209</td><td>20510187.3715</td><td>0.34%</td><td>[-0.73, 1.41]</td><td>1.3</td><td>10/16</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>1.157</td><td>1.1617</td><td>0.55%</td><td>[-7.32, 8.43]</td><td>17.88</td><td>9/16</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>7276.1842</td><td>7301.3402</td><td>0.35%</td><td>[-0.72, 1.42]</td><td>1.3</td><td>11/16</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.0 percent in server instructions per request, 95 percent CI [-0.0, 0.0], null band 0.0, limit 5.0: PASS</li>
+<li>no data for db_us</li>
+<li>null gate: A and a copy of A differ by -0.5 percent in p50 latency (ms), 95 percent CI [-1.8, 0.9], null band 1.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 3.4 percent in p99 latency (ms), 95 percent CI [-1.9, 8.8], null band 8.8, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.1 percent in requests per second, 95 percent CI [-1.4, 1.2], null band 1.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.6 percent in server cs per request, 95 percent CI [-2.7, 3.9], null band 3.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in server cycles per request, 95 percent CI [-1.3, 1.3], null band 1.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 8.5 percent in server migrations per request, 95 percent CI [-0.9, 17.9], null band 17.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.0 percent in server CPU per request (us), 95 percent CI [-1.3, 1.3], null band 1.3, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>ski17-d115-1370-vs-1371-skilld-dev-147015-cognition-20261031T190709Z/summary.json</code> · <a href="#runs">back to the index</a> · <a href="#top">top</a></p>
+</details>
+<details class="run" id="ski23-d115-auth-1370-vs-1371-skilld-dev-147015-cognition-20261101T030700Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">Front page, authenticated (page cache bypassed) — FreeUnit 1.37.0 vs FreeUnit 1.37.1</span><span class="meta">Drupal 11.5.0-beta1, demo_umami profile · ski23-d115-auth-1370-vs-1371-skilld-dev-147015-cognition-20261101T030700Z</span></summary>
+<p class="meta">server CPUs 9,10,11 load_cpus=21,22,23 db_cpus=18 · DB CPUs  · governor schedutil · kernel 6.12.114-flatcar ·  blocks × 8 ·  connections ·  s window · db sqlite · host skilld-dev-147015-cognition · date 2026-11-01T03:27:52Z</p>
+<p class="headline">NO CLAIM drupal-auth-c32: inside the noise, no claim (B is 0.0 percent less server instructions per request, null band 0.2, 9 of 16 cells agree)</p>
+<table><thead><tr><th>metric</th><th>freeunit</th><th>freeunit-1371</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server instructions per request</td><td>63081477.1574</td><td>63074096.3759</td><td>-0.01%</td><td>[-0.04, 0.01]</td><td>0.18</td><td>9/16</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>0.0</td><td>0.0</td><td>-%</td><td>[-, -]</td><td>-</td><td>0/16</td><td>NO DATA</td></tr>
+<tr><td>p50 latency (ms)</td><td>287.4572</td><td>288.8756</td><td>0.51%</td><td>[-0.97, 1.99]</td><td>1.73</td><td>11/16</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>408.9533</td><td>408.3081</td><td>0.33%</td><td>[-7.65, 8.3]</td><td>6.28</td><td>9/16</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>110.4887</td><td>110.2669</td><td>-0.19%</td><td>[-1.98, 1.6]</td><td>1.59</td><td>8/16</td><td>NO CLAIM</td></tr>
+<tr><td>server cs per request</td><td>18.2459</td><td>18.1721</td><td>-0.37%</td><td>[-2.25, 1.5]</td><td>1.58</td><td>8/16</td><td>NO CLAIM</td></tr>
+<tr><td>server cycles per request</td><td>74955486.0793</td><td>75043598.6455</td><td>0.13%</td><td>[-1.5, 1.77]</td><td>1.74</td><td>9/16</td><td>NO CLAIM</td></tr>
+<tr><td>server migrations per request</td><td>2.1282</td><td>2.4898</td><td>17.32%</td><td>[3.37, 31.27]</td><td>10.38</td><td>11/16</td><td>NOISY</td></tr>
+<tr><td>server CPU per request (us)</td><td>26664.6685</td><td>26713.7654</td><td>0.2%</td><td>[-1.57, 1.96]</td><td>1.68</td><td>8/16</td><td>NO CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -0.1 percent in server instructions per request, 95 percent CI [-0.2, 0.0], null band 0.2, limit 5.0: PASS</li>
+<li>no data for db_us</li>
+<li>null gate: A and a copy of A differ by -0.7 percent in p50 latency (ms), 95 percent CI [-1.7, 0.4], null band 1.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in p99 latency (ms), 95 percent CI [-6.0, 6.3], null band 6.3, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in requests per second, 95 percent CI [-0.5, 1.6], null band 1.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.1 percent in server cs per request, 95 percent CI [-1.3, 1.6], null band 1.6, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.6 percent in server cycles per request, 95 percent CI [-1.7, 0.5], null band 1.7, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -2.1 percent in server migrations per request, 95 percent CI [-10.4, 6.2], null band 10.4, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.6 percent in server CPU per request (us), 95 percent CI [-1.7, 0.5], null band 1.7, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>ski23-d115-auth-1370-vs-1371-skilld-dev-147015-cognition-20261101T030700Z/summary.json</code> · <a href="#runs">back to the index</a> · <a href="#top">top</a></p>
+</details>
+<p class="data">Rendered 2026-11-02T08:30:36Z. A plain-language summary of the findings is in
+<a href="https://github.com/freeunitorg/benchmarks-drupal/blob/main/docs/report-2026-10.md">docs/report-2026-10.md</a>;
+the suite's resume note is <code>docs/state.md</code>.</p>
+</body></html>
