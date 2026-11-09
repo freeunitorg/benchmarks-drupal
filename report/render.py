@@ -58,6 +58,8 @@ RUNTIME_TITLE = {
     "freeunit-master": "FreeUnit master",
     "freeunit-direct": "FreeUnit 1.37.0, direct routes",
     "nginx-fpm": "nginx + PHP-FPM",
+    "nginx-fpm-p12": "nginx + PHP-FPM (12 children)",
+    "apache-p12": "Apache + mod_php (12 children)",
     "nginx-src": "nginx from source + PHP-FPM",
     "angie-fpm": "Angie + PHP-FPM",
     "freenginx-fpm": "FreeNginx + PHP-FPM",
@@ -477,6 +479,10 @@ STYLE = """
  p.counts { margin: .6rem 0 .2rem; font-size: 14px; }
  p.counts a { text-decoration: none; }
  nav.toc { margin: .8rem 0 1rem; font-size: 14px; }
+ table.ladder td { font-size: 13px; }
+ table.ladder td.na { color: #999; }
+ table.ladder th { font-size: 12px; }
+ table.ladder td .badge { margin-right: .25rem; }
  nav.toc ol { display: inline; margin: 0; padding-left: .4rem; }
  nav.toc li { display: inline; margin: 0 .1rem; }
  nav.toc li:not(:last-child)::after { content: " ·"; color: #999; }
@@ -617,6 +623,139 @@ def verdict_counts(summaries):
     return counts
 
 
+# ---------------------------------------------------------------- release axis
+# The index answers one question first: how did the tagged releases move. A runtime key
+# that names a release is mapped here; anything else (a commit, an experiment) is not
+# part of the ladder, which is why the archive keeps the pages readable.
+RELEASE_OF = {
+    "freeunit": "1.37.0", "freeunit-tuned": "1.37.0",
+    "freeunit-1371": "1.37.1", "freeunit-1371-tuned": "1.37.1",
+    "freeunit-1372": "1.37.2", "freeunit-1372-tuned": "1.37.2",
+}
+RELEASE_ORDER = ["1.37.0", "1.37.1", "1.37.2", "1.37.3"]
+
+# Server baselines a release is compared against, in the order a reader expects.
+BASELINE_ORDER = ["nginx-fpm", "nginx-fpm-p12", "apache", "apache-p12",
+                  "angie-fpm", "freenginx-fpm", "nginx-src"]
+
+
+def _is_tuned(rt):
+    return str(rt or "").endswith("-tuned")
+
+
+def _primary_row(d):
+    """The ab row this index cell shows: the job's own primary metric, whatever it is."""
+    prim = d.get("primary") or "s_instructions"
+    for r in d.get("results", []):
+        if r.get("phase") == "ab" and r.get("metric") == prim:
+            return prim, r
+    return prim, None
+
+
+def _cell_html(row, band=True):
+    """delta% with its verdict badge; the null band in small type under it."""
+    if not row:
+        return '<td class="na">-</td>'
+    v = verbadge(row.get("verdict"))
+    d = row.get("delta_pct")
+    txt = "-" if d is None else f"{d:+.2f}%"
+    b = row.get("null_band_pct")
+    tail = f'<div class="meta">band {b:.2f}%</div>' if (band and b is not None) else ""
+    return f'<td>{v} {esc(txt)}{tail}</td>'
+
+
+def verbadge(verdict):
+    key = str(verdict or "").upper()
+    cls, label = VERDICT_CLASS.get(key, ("nodata", key.lower() or "?"))
+    return f'<span class="badge {cls}">{esc(label)}</span>' if key else ""
+
+
+def release_ladder_section(summaries):
+    """One row per application, one column per consecutive release pair, filled from the
+    runs themselves. A pair is only shown when both arms are releases of the same variant,
+    so a row never mixes a plain build with a tuned one."""
+    rows = {}
+    metrics = set()
+    for d in summaries:
+        m = d.get("meta") or {}
+        a, b = m.get("runtime_a"), m.get("runtime_b")
+        ra, rb = RELEASE_OF.get(a), RELEASE_OF.get(b)
+        if not ra or not rb or ra == rb or _is_tuned(a) != _is_tuned(b):
+            continue
+        prim, row = _primary_row(d)
+        if not row:
+            continue
+        metrics.add(prim)
+        key = (str(m.get("site")), str(m.get("workload")), _is_tuned(a))
+        rows.setdefault(key, {})[(ra, rb)] = row
+
+    if not rows:
+        return ""
+    pairs = []
+    for i, older in enumerate(RELEASE_ORDER):
+        for newer in RELEASE_ORDER[i + 1:]:
+            if any((older, newer) in v for v in rows.values()):
+                pairs.append((older, newer))
+
+    out = ['<h2 id="releases">How the releases moved</h2>',
+           '<p class="note">One row per application, one column per release pair, read from '
+           'the <code>ab</code> rows of the runs below: the number is the change in the '
+           'primary metric (' + esc(", ".join(sorted(p.replace("_", " ") for p in metrics)))
+           + ', lower is better) and the badge is the run\'s own verdict against the null band '
+           'printed under it. The number is the newer release against the older one, so a '
+           'negative value means the newer release costs less; a dash means that pair was not '
+           'measured for that application.</p>',
+           '<table class="index ladder"><thead><tr><th>application</th>'
+           + "".join(f'<th>{esc(a)} &rarr; {esc(b)}</th>' for a, b in pairs)
+           + '</tr></thead><tbody>']
+    for key in sorted(rows):
+        site, wl, tuned = key
+        label = f'{esc(site_title(site))} · {esc(WORKLOAD_TITLE.get(wl, wl))}'
+        if tuned:
+            label += ' <span class="meta">12-thread tuning</span>'
+        out.append(f'<tr><td>{label}</td>'
+                   + "".join(_cell_html(rows[key].get(pair)) for pair in pairs) + '</tr>')
+    out.append('</tbody></table>')
+    return "\n".join(out)
+
+
+def baseline_section(summaries):
+    """The standing question, per application: the newest measured release against each
+    server baseline. Same source, same badges."""
+    rows = {}
+    for d in summaries:
+        m = d.get("meta") or {}
+        a, b = m.get("runtime_a"), m.get("runtime_b")
+        rel = RELEASE_OF.get(a)
+        if not rel or b not in BASELINE_ORDER:
+            continue
+        prim, row = _primary_row(d)
+        if not row:
+            continue
+        key = (str(m.get("site")), str(m.get("workload")))
+        rows.setdefault(key, {})[b] = (rel, row)
+    if not rows:
+        return ""
+    cols = [b for b in BASELINE_ORDER if any(b in v for v in rows.values())]
+    out = ['<h2 id="baselines">A release against the other servers</h2>',
+           '<p class="note">Each cell is one job: the release as A, the baseline as B, same '
+           'cells and the same null phase, so the number is the <em>baseline</em> against the '
+           'release: positive means the release is cheaper. The row label names the newest '
+           'release measured for that application.</p>',
+           '<table class="index ladder"><thead><tr><th>application</th><th>release</th>'
+           + "".join(f'<th>{esc(runtime_title(b))}</th>' for b in cols)
+           + '</tr></thead><tbody>']
+    for key in sorted(rows):
+        site, wl = key
+        releases = sorted({rel for rel, _ in rows[key].values()})
+        out.append(f'<tr><td>{esc(site_title(site))} · {esc(WORKLOAD_TITLE.get(wl, wl))}</td>'
+                   f'<td>{esc(", ".join(releases))}</td>'
+                   + "".join(_cell_html(rows[key][b][1] if b in rows[key] else None) for b in cols)
+                   + '</tr>')
+    out.append('</tbody></table>')
+    return "\n".join(out)
+
+
 def toc(items):
     """An in-page table of contents. Every entry is an id that exists on this page
     kind, so a deep link such as #summary works on the overview and on every family
@@ -636,9 +775,15 @@ def overview_body(groups, all_summaries):
     come before the page index, so a reader sees what the result set says before it
     sees how it is filed."""
     arms_html = ticks_section(RESULTS)
-    out = [toc([("summary", "The short version"), ("pages", "Pages"),
+    ladder = release_ladder_section(all_summaries)
+    baselines = baseline_section(all_summaries)
+    out = [toc([("summary", "The short version"),
+                ("releases", "How the releases moved") if ladder else None,
+                ("baselines", "A release against the other servers") if baselines else None,
+                ("pages", "Pages"),
                 ("arms", "Cron and queue arms") if arms_html else None]),
-           short_version(all_summaries, limit=6)]
+           short_version(all_summaries, limit=6),
+           ladder, baselines]
     out.append('<h2 id="pages">Pages</h2>')
     out.append('<p class="note">The result set is split by application family so each page stays '
                'readable while the runtime and database matrices grow. Every page carries its own '
