@@ -387,3 +387,51 @@ Site note: the three `cookie.txt` files had to be regenerated on the node
 jar). The Drupal 11.4 and 11.5 jars shipped by `site-build.sh` were empty, which would have
 measured an anonymous request and still passed the dynamic-cache preflight - a cell that
 looks authenticated and is not.
+
+## 2026-11-09: retention — release tags only; 1.37.2 is tagged
+
+**1.37.2 = `b36f4629`** (`unitctl/1.37.2` on the same commit). Before its column is
+measured, the published set is reduced to arms that name a **release tag** or a **server
+baseline**, so the page answers "how did the releases move" instead of "what did this
+commit do".
+
+Kept arms: `freeunit` (1.37.0), `freeunit-1371`, their `-tuned` variants, the route
+variants `freeunit-direct` / `freeunit-symbolic`, `freeunit-python-1370`, and the
+baselines `nginx-fpm`, `nginx-fpm-p12`, `apache`, `apache-p12`, `angie-fpm`,
+`freenginx-fpm`, `nginx-src`, `gunicorn`, `uvicorn`.
+
+Archived arms (commit-pinned or one-off experiments): `freeunit-tip-e63168bd` (116 arms
+counted), `freeunit-musl-tip` (25), `freeunit-python` / `-asgi*` (21),
+`freeunit-srcphp-debian` / `-alpine` (20), `freeunit-705`, `-705-base`, `-742-*`,
+`-768-*` (24), `freeunit-781` (9), `freeunit-tip-b27bc76d` (8), `freeunit-alog*` (4),
+`freeunit-jemalloc`, `freeunit-musl-jemalloc`.
+
+| site | kept | archived |
+|---|---|---|
+| 11.4 | 11 | 3 |
+| 11.4-standard | 2 | 0 |
+| 11.5-beta1 | 3 | 0 |
+| 12.0 (beta1) | 16 | 29 |
+| 12.0-beta2 | 8 | 0 |
+| hello | 4 | 71 |
+| wp | 12 | 14 |
+| py-hello | 0 | 21 |
+| symfony | 3 | 26 |
+| **total** | **59** | **164** |
+
+Rendered before and after: 223 -> 59 comparisons, and the per-page run counts 54/16/3/49/47/29/25
+-> 4/13/3/21/4/3/11 (arm64, 11.4, 11.5, 12.0, php, 12.0-symfony, WordPress).
+
+**The Python page is gone** with this sweep: every `py-hello` run pairs a `freeunit-python`
+tip arm with `gunicorn`/`uvicorn` or with the 1.37.0 arm, so nothing is tag-anchored except
+one run whose partner is the tip. It returns with one `git mv` once the Python leg is
+re-measured against a release.
+
+Restoring any row:
+
+```sh
+git mv results-archive/<run-id> results/
+```
+
+The archive keeps every file the run had (`results.tsv`, `summary.json`, `compare.txt`,
+`meta.txt`), so a restored row renders exactly as before.
