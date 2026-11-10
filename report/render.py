@@ -652,16 +652,27 @@ def _primary_row(d):
     return prim, None
 
 
-def _cell_html(row, band=True):
-    """delta% with its verdict badge; the null band in small type under it."""
-    if not row:
+def _cell_html(entries, band=True):
+    """One line per run: delta%, verdict badge, null band, and the host it came from.
+
+    A release pair can be measured on more than one host - the same pair re-taken on a
+    quieter box is a separate run, not a replacement - and the host is what tells a
+    reader whether two columns of one row are comparable.
+    """
+    if not entries:
         return '<td class="na">-</td>'
-    v = verbadge(row.get("verdict"))
-    d = row.get("delta_pct")
-    txt = "-" if d is None else f"{d:+.2f}%"
-    b = row.get("null_band_pct")
-    tail = f'<div class="meta">band {b:.2f}%</div>' if (band and b is not None) else ""
-    return f'<td>{v} {esc(txt)}{tail}</td>'
+    lines = []
+    for row, meta in entries:
+        v = verbadge(row.get("verdict"))
+        d = row.get("delta_pct")
+        txt = "-" if d is None else f"{d:+.2f}%"
+        b = row.get("null_band_pct")
+        bits = []
+        if band and b is not None:
+            bits.append(f"band {b:.2f}%")
+        bits.append(f'{esc(str(meta.get("host") or "?"))} · {esc(str(meta.get("db") or "mysql"))}')
+        lines.append(f'<div>{v} {esc(txt)}<div class="meta">{esc(" · ".join(str(x) for x in bits))}</div></div>')
+    return "<td>" + "".join(lines) + "</td>"
 
 
 def verbadge(verdict):
@@ -687,7 +698,7 @@ def release_ladder_section(summaries):
             continue
         metrics.add(prim)
         key = (str(m.get("site")), str(m.get("workload")), _is_tuned(a))
-        rows.setdefault(key, {})[(ra, rb)] = row
+        rows.setdefault(key, {}).setdefault((ra, rb), []).append((row, m))
 
     if not rows:
         return ""
@@ -714,7 +725,7 @@ def release_ladder_section(summaries):
         if tuned:
             label += ' <span class="meta">12-thread tuning</span>'
         out.append(f'<tr><td>{label}</td>'
-                   + "".join(_cell_html(rows[key].get(pair)) for pair in pairs) + '</tr>')
+                   + "".join(_cell_html(rows[key].get(pair, [])) for pair in pairs) + '</tr>')
     out.append('</tbody></table>')
     return "\n".join(out)
 
@@ -733,7 +744,7 @@ def baseline_section(summaries):
         if not row:
             continue
         key = (str(m.get("site")), str(m.get("workload")))
-        rows.setdefault(key, {})[b] = (rel, row)
+        rows.setdefault(key, {})[b] = (rel, row, m)
     if not rows:
         return ""
     cols = [b for b in BASELINE_ORDER if any(b in v for v in rows.values())]
@@ -747,10 +758,11 @@ def baseline_section(summaries):
            + '</tr></thead><tbody>']
     for key in sorted(rows):
         site, wl = key
-        releases = sorted({rel for rel, _ in rows[key].values()})
+        releases = sorted({rel for rel, _, _ in rows[key].values()})
         out.append(f'<tr><td>{esc(site_title(site))} · {esc(WORKLOAD_TITLE.get(wl, wl))}</td>'
                    f'<td>{esc(", ".join(releases))}</td>'
-                   + "".join(_cell_html(rows[key][b][1] if b in rows[key] else None) for b in cols)
+                   + "".join(_cell_html([(rows[key][b][1], rows[key][b][2])] if b in rows[key]
+                                        else None) for b in cols)
                    + '</tr>')
     out.append('</tbody></table>')
     return "\n".join(out)
