@@ -1,6 +1,6 @@
 # drupal-front, FreeUnit master (A) vs nginx-fpm (B), Drupal 11.4, with extended
 # PMU diagnostics for the hot-path audit: Intel icache/iTLB events added to the
-# default set (validated inside freeunit-perf-lab:1 on pro4s-2, Skylake).
+# default set (validated inside freeunit-perf-lab:1 on x86-perf-a, Skylake).
 # PRIMARY stays s_instructions; the extra events are diagnostic attribution only.
 JOB=16i-front-anon-master-vs-fpm-icache-11.4
 ISSUE="https://github.com/freeunitorg/benchmarks-drupal"

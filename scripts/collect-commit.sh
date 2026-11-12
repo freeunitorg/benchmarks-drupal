@@ -13,7 +13,7 @@
 export LC_ALL=C
 set -euo pipefail
 
-HOST=${1:-pro4s-2}
+HOST=${1:-x86-perf-a}
 DRY=${2:-}
 HERE=$(cd "$(dirname "$0")/.." && pwd)
 cd "$HERE"

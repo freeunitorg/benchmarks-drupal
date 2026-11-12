@@ -1,18 +1,18 @@
 # Hot-path machine-code audit: FreeUnit vs nginx-fpm (2026-10)
 
 Status: **draft — local exploratory evidence only; claim-grade numbers pending on
-pro4s-2** (jobs 01/16i/16/34 queued in tmux `hotpath-audit`, then 16r with
+x86-perf-a** (jobs 01/16i/16/34 queued in tmux `hotpath-audit`, then 16r with
 PERF_RECORD). Nothing in section 1-3 is a published result.
 
 Primary metric (unchanged): retired instructions per request (`s_instructions`),
 headline workload `drupal-front` (Drupal 11.4 page-cache hit, c=32).
 
-## 1. Baseline (claim-grade, reproduced on pro4s-2, 2026-10-15)
+## 1. Baseline (claim-grade, reproduced on x86-perf-a, 2026-10-15)
 
 Published direction confirmed and sharpened: on drupal-front c32 (Drupal 11.4),
 **FreeUnit master spends fewer server instructions per request than nginx+PHP-FPM**
 — job 16 rerun on master (run
-16-front-anon-master-vs-fpm-11.4-sd-91675-20261015T211042Z): A (freeunit-master)
+16-front-anon-master-vs-fpm-11.4-x86-perf-a-20261015T211042Z): A (freeunit-master)
 4,708,061 vs B (nginx-fpm) 5,097,075 s_instructions per request, **B is +8.26%
 [95% CI +8.14, +8.38], 12/12 cells agree, null band 0.18%** (job 01 null gate
 PASS at ±0.1%). FreeUnit also leads rps (+7.4%), server_us (−7.2%),

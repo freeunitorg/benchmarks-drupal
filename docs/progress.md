@@ -227,7 +227,7 @@ suite.
 Two hosts can now run the benchmark: the run id and `meta.txt` carry the host, and the
 page groups its summary by host as well as by database, because absolute means from two
 boxes must never be pooled. The idle gate was wrong for a build host: requiring zero
-containers never passes on pro4s-4 (52 idle containers from unitbuild and review work),
+containers never passes on x86-perf-b (52 idle containers from unitbuild and review work),
 so it now samples busy percent on exactly the CPUs a measurement uses
 (SERVER_CPUS/DB_CPUS/LOAD_CPUS) and requires the cell port to be free. Also forced
 `LC_ALL=C` in the measurement scripts: awk formatted 37.6 as "37,6" under this laptop's

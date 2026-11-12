@@ -174,7 +174,7 @@ def short_version(summaries, limit=0):
     if not summaries:
         return ""
     sites = len({(d.get("meta") or {}).get("site") for d in summaries})
-    hosts = sorted({(d.get("meta") or {}).get("host", "pro4s-2") for d in summaries})
+    hosts = sorted({(d.get("meta") or {}).get("host", "unrecorded") for d in summaries})
     order = ["CLAIM", "NO CLAIM", "PASS", "INVALID", "NO DATA"]
     by_verdict = {k: [d for d in summaries if verdict_of(d) == k] for k in order}
 
@@ -226,7 +226,7 @@ def _cond_text(summaries):
     """Governor and host(s) named from the runs themselves: a page whose runs came from
     a schedutil governor on a shared node must not read as a powersave perf box."""
     govs = sorted({str((d.get("meta") or {}).get("governor") or "unknown") for d in summaries})
-    hosts = sorted({str((d.get("meta") or {}).get("host") or "pro4s-2") for d in summaries})
+    hosts = sorted({str((d.get("meta") or {}).get("host") or "unrecorded") for d in summaries})
     out = " under "
     if govs:
         out += "governor " + "/".join(govs)
@@ -246,7 +246,7 @@ def summary_section(summaries):
         if not primary or not workload:
             continue
         db = meta.get("db", "mysql")
-        host = meta.get("host", "pro4s-2")
+        host = meta.get("host", "unrecorded")
         for r in d.get("results", []):
             if r.get("phase") != "ab" or r.get("metric") != primary:
                 continue
@@ -405,7 +405,7 @@ def run_details(d):
              f'DB CPUs {esc(m.get("db_cpus"))} · governor {esc(m.get("governor"))} · '
              f'kernel {esc(m.get("kernel"))} · {esc(m.get("reps"))} blocks × 8 · '
              f'{esc(m.get("conns"))} connections · {esc(m.get("dur"))} s window · '
-             f'db {esc(m.get("db", "mysql"))} · host {esc(m.get("host", "pro4s-2"))} · '
+             f'db {esc(m.get("db", "mysql"))} · host {esc(m.get("host", "unrecorded"))} · '
              f'date {esc(m.get("date"))}</p>')
     h.append(f'<p class="headline">{esc(d.get("headline"))}</p>')
     h.append('<table><thead><tr><th>metric</th><th>'
@@ -512,8 +512,8 @@ STYLE = """
 # own application family page; an unlisted host is filed under arm64, whose primary
 # metric is CPU time because that guest has no PMU. The shared 48-thread node has a
 # PMU, so its runs carry s_instructions and belong with the x86 pages.
-PINNED_HOSTS = {"sd-91675", "sd-92483", "pro4s-2", "pro4s-4", "localhost",
-                "skilld-dev-147015-cognition"}
+PINNED_HOSTS = {"x86-perf-a", "x86-perf-b", "localhost",
+                "x86-48t-shared"}
 
 FAMILY_TITLE = {
     "arm64": "ARM64 (Oracle A1)",
@@ -557,7 +557,7 @@ def page_lede(key, runs=None):
         rts = sorted({runtime_title((d.get("meta") or {}).get(r))
                       for d in runs for r in ("runtime_a", "runtime_b")} - {None})
         dbs = sorted({str((d.get("meta") or {}).get("db") or "mysql") for d in runs})
-        hosts = sorted({str((d.get("meta") or {}).get("host") or "pro4s-2") for d in runs})
+        hosts = sorted({str((d.get("meta") or {}).get("host") or "unrecorded") for d in runs})
         head = SITE_TITLE.get(site, site)
         if not rts:
             return head + "."

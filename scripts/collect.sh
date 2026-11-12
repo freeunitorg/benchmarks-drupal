@@ -12,7 +12,7 @@
 export LC_ALL=C
 set -euo pipefail
 
-HOST=${1:-pro4s-2}
+HOST=${1:-x86-perf-a}
 REMOTE_ROOT=${2:-/data/projects/benchmarks-drupal}
 HERE=$(cd "$(dirname "$0")/.." && pwd)
 DEST="$HERE/results"
