@@ -435,3 +435,34 @@ git mv results-archive/<run-id> results/
 
 The archive keeps every file the run had (`results.tsv`, `summary.json`, `compare.txt`,
 `meta.txt`), so a restored row renders exactly as before.
+
+## 2026-11-12: the 1.37.2 column
+
+1.37.2 = `b36f4629`. It is measured against the 1.37.1 anchor, pairwise, on the same host as
+the 1.37.1 rows (the shared 48-thread node), plus two rows on the fixed-clock perf box:
+
+| run | cell | delta (s_instructions) | null band | verdict |
+|---|---|---|---|---|
+| `v4-d120-front` | Drupal 12.0.0-beta2 front-anon, sqlite | +0.02 % | 0.06 | NO CLAIM |
+| `v4-d120-auth` | Drupal 12.0.0-beta2 front-auth, sqlite | -0.03 % | 0.13 | NO CLAIM |
+| `v4-d115-front` | Drupal 11.5.0-beta1 front-anon | -0.00 % | 0.05 | NO CLAIM |
+| `v4-d114-front` | Drupal 11.4.8 front-anon | -0.01 % | 0.05 | NO CLAIM |
+| `v4-symfony` | Symfony 7.4 front (mysql) | -0.10 % | 0.20 | NO CLAIM |
+| `v4-wp` | WordPress 7.1.3 front (mysql) | -0.02 % | 0.03 | NO CLAIM |
+| `v4-hello-tuned` | framework-free, 12 threads, c128 | +0.55 % instr, -0.57 % rps | 0.66 / 2.28 | NO CLAIM |
+| `v2-hello` | framework-free, c32 (perf box, `powersave`) | -0.01 % | 0.93 | NO CLAIM |
+| `v2-d12front` | Drupal 12.0 front (perf box, mysql) | -0.06 % | 0.54 | NO CLAIM |
+
+**The framework-free rps win did not reproduce on the tag.** At the pre-release tip
+(`bd890d40`, 2026-11-02) the tuned cell read **+2.71 % rps** (band 1.58, CLAIM); on the
+tagged release it reads **-0.57 %** (band 2.28, NO CLAIM), and the retired-instruction
+count moved from -0.12 % to +0.55 % (CI [+0.02, +1.08], band 0.66). Fifty-four commits
+landed between that tip and the tag, several on the request path - `59f807ae6`
+(router/h1proto: start the WebSocket reader only for a real upgrade), `cedeab01c` (encode a
+rewritten proxy target by its content), `de1a3cf0a` (do not call `SSL_shutdown()` after a
+fatal TLS error). The tag is what ships, so the published column is the tag's; the earlier
++2.71 % stands only as a measurement of `bd890d40`, which is not a release and is not in
+`results/` (retention keeps tags).
+
+Nothing here needs a re-run decision: the release pair is flat on every application cell,
+and the one cell that moves is inside its own null band on the tag.

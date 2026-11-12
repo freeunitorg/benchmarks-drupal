@@ -1,0 +1,21 @@
+NO CLAIM php-hello-c128: inside the noise, no claim (B is 0.6 percent less requests per second, null band 2.3, 12 of 16 cells agree)
+job v4-hello-tuned  run v4-hello-tuned-skilld-dev-147015-cognition-20261112T010302Z  A None ()  B None ()  governor schedutil/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  php-hello-c128 rps                       91953.151    93239.207    +1.40     [+0.52, +2.28]   2.28  13/16  PASS
+null  php-hello-c128 db_us                         0.000        0.000      n/a                n/a    n/a   0/16  NO DATA
+null  php-hello-c128 p50_ms                        0.865        0.849    -1.81     [-5.40, +1.78]   5.40  10/16  NOISY
+null  php-hello-c128 p99_ms                        7.217        7.278    +0.83     [-3.13, +4.79]   4.79  11/16  PASS
+null  php-hello-c128 s_cs                          0.332        0.304    -8.28    [-15.93, -0.64]  15.93  13/16  NOISY
+null  php-hello-c128 s_cycles                 345302.860   342398.053    -0.84     [-1.48, -0.20]   1.48  15/16  PASS
+null  php-hello-c128 s_instructions           140405.619   140204.939    -0.14     [-0.66, +0.37]   0.66   8/16  PASS
+null  php-hello-c128 s_migrations                  0.006        0.004   -15.63   [-60.36, +29.10]  60.36  11/16  NOISY
+null  php-hello-c128 server_us                   106.374      105.186    -1.12     [-1.94, -0.29]   1.94  14/16  PASS
+ab    php-hello-c128 rps                       92352.529    91829.423    -0.57     [-1.83, +0.70]   2.28  12/16  NO CLAIM
+ab    php-hello-c128 db_us                         0.000        0.000      n/a                n/a    n/a   0/16  NO DATA
+ab    php-hello-c128 p50_ms                        0.850        0.857    +0.92     [-2.22, +4.05]   5.40  10/16  NOISY
+ab    php-hello-c128 p99_ms                        7.308        7.603    +4.04     [-0.20, +8.28]   4.79  10/16  NO CLAIM
+ab    php-hello-c128 s_cs                          0.315        0.321    +2.21     [-5.53, +9.95]  15.93   6/16  NOISY
+ab    php-hello-c128 s_cycles                 344641.442   345149.016    +0.15     [-0.55, +0.85]   1.48  10/16  NO CLAIM
+ab    php-hello-c128 s_instructions           140669.505   141442.886    +0.55     [+0.02, +1.08]   0.66  12/16  NO CLAIM
+ab    php-hello-c128 s_migrations                  0.006        0.005   +15.09   [-63.65, +93.84]  60.36   8/16  NOISY
+ab    php-hello-c128 server_us                   106.056      106.319    +0.25     [-0.59, +1.09]   1.94  10/16  NO CLAIM
