@@ -409,7 +409,8 @@ def run_details(d):
              f'date {esc(m.get("date"))}</p>')
     h.append(f'<p class="headline">{esc(d.get("headline"))}</p>')
     h.append('<table><thead><tr><th>metric</th><th>'
-             f'{esc(m.get("runtime_a"))}</th><th>{esc(m.get("runtime_b"))}</th>'
+             f'{esc(runtime_title(m.get("runtime_a")))}</th>'
+             f'<th>{esc(runtime_title(m.get("runtime_b")))}</th>'
              '<th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th>'
              '</tr></thead><tbody>')
     for r in metric_rows(d):
