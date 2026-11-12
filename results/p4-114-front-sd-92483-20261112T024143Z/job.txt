@@ -1,0 +1,21 @@
+# 1.37.2 against 1.37.1 on the idle fixed-clock box (Xeon E3-1245 v5, 4 cores, performance).
+JOB=p4-114-front
+ISSUE=https://github.com/freeunitorg/benchmarks-drupal
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-1371
+RUNTIME_B=freeunit-1372
+SITE=11.4
+DB=mysql
+CONNS=32
+WARM=3
+DUR=10
+REPS=4
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3
+DB_CPUS=4
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="1.37.2 carries no per-request cost change against 1.37.1"
+FALSIFY="a delta outside the null band"

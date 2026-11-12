@@ -466,3 +466,30 @@ fatal TLS error). The tag is what ships, so the published column is the tag's; t
 
 Nothing here needs a re-run decision: the release pair is flat on every application cell,
 and the one cell that moves is inside its own null band on the tag.
+
+### 2026-11-12: the cells the 1.37.2 column still lacked, and two on a fixed-clock host
+
+Four runs close the gaps the ladder showed as dashes, and two of them put a release pair on
+a host whose clock does not move:
+
+| run | cell | host | delta | null band | verdict |
+|---|---|---|---|---|---|
+| `v4-d115-auth` | Drupal 11.5.0-beta1 front-auth, sqlite | shared node, `schedutil` | +0.01 % | 0.23 | NO CLAIM |
+| `p4-114-auth` | Drupal 11.4.8 front-auth, mysql | 4-core Xeon, `performance` | -0.01 % | 0.28 | NO CLAIM |
+| `p4-114-front` | Drupal 11.4.8 front-anon, mysql | same | -0.06 % | 0.13 | NO CLAIM |
+| `p4-120-front` | Drupal 12.0.0-beta1 front-anon, mysql | same | -0.02 % | 0.13 | NO CLAIM |
+
+With these, `1.37.1 -> 1.37.2` exists for every application the ladder lists except one row
+that was never measured for 1.37.0, and the 11.4 anonymous cell now carries two lines - the
+sqlite one from the shared node and the mysql one from the fixed-clock box - so the database
+axis is visible in the ladder itself.
+
+The fixed-clock host needed the same handling as every other: its Drupal sites are
+MySQL-backed, so the database container has to come from `cells.sh` (the volume for 11.4 and
+12.0 exists, the one for 12.0-beta2 does not, which is why only those two sites were used).
+
+A `php-hello` cell on that host was measured and **discarded**: three of its 64 cells
+recorded `bad=1`, so the run came back INVALID and is not in `results/`. The same cell on the
+shared node is valid; the difference is that the fixed-clock box ran the framework-free cell
+with 20 workers on two pinned threads, where a recycled worker can reset an in-flight
+connection - the reason the tuned cell on the shared node uses `limits.requests: 1000000`.
