@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARM64 (Oracle A1) benchmarks</title>
+<meta name="description" content="Reproducible comparison of Drupal, Symfony, WordPress and framework-free PHP on Apache+mod_php, nginx+PHP-FPM, Angie, FreeNginx and FreeUnit, with a null band beside every comparison.">
+<style>
+ body { font: 15px/1.5 system-ui, sans-serif; max-width: 68rem; margin: 2rem auto; padding: 0 1rem; color: #222; }
+ h1 { font-size: 1.6rem; margin-bottom: .2rem; }
+ h2 { font-size: 1.15rem; margin-top: 2.5rem; border-top: 1px solid #ddd; padding-top: 1rem; }
+ h3 { font-size: 1rem; margin: 1.4rem 0 .4rem; }
+ table { border-collapse: collapse; width: 100%; margin: .5rem 0 1rem; font-size: 14px; }
+ th, td { text-align: right; padding: .3rem .5rem; border-bottom: 1px solid #eee; vertical-align: top; }
+ th:first-child, td:first-child { text-align: left; }
+ table.index td, table.index th { font-size: 13px; }
+ .meta, .data { color: #666; font-size: 13px; font-weight: normal; }
+ .headline { font-weight: 600; }
+ .note { background: #f6f8fa; border-left: 3px solid #888; padding: .6rem .9rem; }
+ tr.best td { font-weight: 600; background: #f0fbf4; }
+ code { background: #f6f8fa; padding: .1rem .3rem; }
+ .badge { font-size: 11px; font-weight: 700; padding: .1rem .45rem; border-radius: .7rem; white-space: nowrap; }
+ .badge.claim { background: #e6f4ea; color: #136a2f; }
+ .badge.noclaim { background: #eef1f4; color: #4a5568; }
+ .badge.invalid { background: #fdecea; color: #a12b20; }
+ .badge.nodata { background: #fff4e5; color: #8a5a00; }
+ .badge.pass { background: #e8f0fe; color: #1a4b8c; }
+ ul.verdicts { margin: .3rem 0 1rem; padding-left: 1.1rem; }
+ ul.verdicts li { margin: .2rem 0; }
+ details.verdicts { border: 1px solid #e6e6e6; border-radius: .5rem; padding: .3rem .7rem; margin: .4rem 0; }
+ details.verdicts > summary { cursor: pointer; }
+ details.verdicts > ul { margin: .5rem 0 .2rem; padding-left: 1.1rem; }
+ p.counts { margin: .6rem 0 .2rem; font-size: 14px; }
+ p.counts a { text-decoration: none; }
+ nav.toc { margin: .8rem 0 1rem; font-size: 14px; }
+ table.ladder td { font-size: 13px; }
+ table.ladder td.na { color: #999; }
+ table.ladder th { font-size: 12px; }
+ table.ladder td .badge { margin-right: .25rem; }
+ nav.toc ol { display: inline; margin: 0; padding-left: .4rem; }
+ nav.toc li { display: inline; margin: 0 .1rem; }
+ nav.toc li:not(:last-child)::after { content: " ·"; color: #999; }
+ details.run { border: 1px solid #e6e6e6; border-radius: .5rem; padding: .4rem .7rem; margin: .5rem 0; }
+ details.run > summary { cursor: pointer; display: block; }
+ .run-title { font-weight: 600; margin: 0 .5rem 0 .4rem; }
+ details[open].run { background: #fcfcfd; }
+ :target { scroll-margin-top: 1rem; background: #fffbe6; }
+ nav.pages { margin: .8rem 0 1.2rem; display: flex; flex-wrap: wrap; gap: .4rem; }
+ nav.pages a, nav.pages span.here { border: 1px solid #d7dbe0; border-radius: .4rem; padding: .25rem .6rem; font-size: 13px; }
+ nav.pages a { text-decoration: none; }
+ nav.pages span.here { background: #eef1f4; font-weight: 600; border-color: #c3c9d1; }
+ nav.pages a:hover { background: #f6f8fa; }
+ nav.toc ol { margin: .3rem 0 0; padding-left: 1.2rem; }
+ p.lede { color: #444; }
+ @media print { details.run { break-inside: avoid; } }
+</style></head><body id="top">
+<h1>ARM64 (Oracle A1) benchmarks</h1>
+<p class="lede">The same servers on an aarch64 host, where the guest has no PMU: the primary metric is the server's own CPU time per request, not retired instructions. Read the ratios; the absolute numbers are not comparable with the x86 pages.</p>
+<nav class="pages">
+<a href="index.html">Overview <span class="meta">(72)</span></a>
+<a href="drupal-11.4.html">Drupal 11.4 <span class="meta">(16)</span></a>
+<a href="drupal-11.5.html">Drupal 11.5 <span class="meta">(5)</span></a>
+<a href="drupal-12.0.html">Drupal 12.0 <span class="meta">(25)</span></a>
+<a href="symfony.html">Symfony <span class="meta">(4)</span></a>
+<a href="wordpress.html">WordPress <span class="meta">(12)</span></a>
+<a href="php.html">Framework-free PHP <span class="meta">(6)</span></a>
+<span class="here">ARM64 (Oracle A1) <span class="meta">(4)</span></span>
+</nav>
+<p class="note">Everything here is rebuilt from committed <code>results/&lt;run-id&gt;/summary.json</code> files. The <strong>null band</strong> is printed beside every comparison: it is the same job run with both sides identical (A against a copy of A), so a delta smaller than the band is noise and is reported as <em>no claim</em>. Host class, governor, PHP, Drupal tag, database and runtime versions are in each run's header.</p>
+<nav class="toc"><strong>On this page:</strong> <ol>
+<li><a href="#summary">The short version</a></li>
+<li><a href="#rankings">Primary metric per runtime</a></li>
+<li><a href="#runs">Every run</a></li>
+<li><a href="#details">Run detail</a></li>
+</ol></nav>
+<span id="short"></span><h2 id="summary">The short version</h2>
+<p class="note">This page holds <strong>4 published comparisons</strong> across <strong>2 application sites</strong>, measured on aarch64-2c. Each comparison is one job: the same cells against two runtimes, with a null phase that bounds the noise first. A <span class="badge claim">CLAIM</span> appears only when the delta is outside that band. Start with the summary tables, then open a run for its numbers; every run links to its raw <code>results/&lt;run-id&gt;/</code> directory.</p>
+<p class="counts"><a href="#verdict-claim">3 claim</a> · <a href="#verdict-no-claim">1 no claim</a></p>
+<details class="verdicts" id="verdict-claim">
+<summary><span class="badge claim">CLAIM</span> <span class="meta">(3 runs)</span></summary>
+<ul>
+<li><a href="#136-arm-front-anon-1370-vs-fpm-12.0-aarch64-2c-20261018T124142Z">Drupal 12.0.0-beta1, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit 1.37.0 vs nginx + PHP-FPM</a> <span class="meta">CLAIM drupal-front-c32: B is 7.6 percent more server CPU per request (us), outside the null band of 1.9, 8 of 8 cells agree</span></li>
+<li><a href="#84-arm-front-anon-freeunit-vs-apache-12.0-aarch64-2c-20261014T014243Z">Drupal 12.0.0-beta1, demo_umami profile · Front page, anonymous (page-cache hit) · FreeUnit 1.37.0 vs Apache + mod_php</a> <span class="meta">CLAIM drupal-front-c32: B is 39.4 percent more server CPU per request (us), outside the null band of 2.9, 8 of 8 cells agree</span></li>
+<li><a href="#85-arm-front-anon-nginx-fpm-vs-apache-12.0-aarch64-2c-20261014T014757Z">Drupal 12.0.0-beta1, demo_umami profile · Front page, anonymous (page-cache hit) · nginx + PHP-FPM vs Apache + mod_php</a> <span class="meta">CLAIM drupal-front-c32: B is 27.9 percent more server CPU per request (us), outside the null band of 4.4, 8 of 8 cells agree</span></li>
+</ul></details>
+<details class="verdicts" id="verdict-no-claim">
+<summary><span class="badge noclaim">no claim</span> <span class="meta">(1 run)</span></summary>
+<ul>
+<li><a href="#83-arm-wp-front-freeunit-vs-apache-aarch64-2c-20261014T013623Z">http://127.0.0.1:8091 · WordPress front page (no page cache) · FreeUnit 1.37.0 vs Apache + mod_php</a> <span class="meta">NO CLAIM wp-front-c32: inside the noise, no claim (B is 4.3 percent more server CPU per request (us), null band 2.7, 7 of 8 cells agree)</span></li>
+</ul></details>
+<h2 id="rankings">The primary metric per runtime</h2>
+<p class="note">Primary metric: server us (lower is better), measured c32 on one host in one window. The ratio is against the best runtime in that row. Each comparison has its null band printed in the run sections below; a ratio smaller than the band is not a difference. Caveat: this table pools absolute means from runs taken hours apart under governor unknown on host aarch64-2c, so use it for the order, not for a percentage; the per-run tables are the controlled measurement.</p>
+<h3>Front page, anonymous (page-cache hit) <span class="meta">(drupal-front-c32, mysql, aarch64-2c, server us)</span></h3>
+<table><thead><tr><th>runtime</th><th>server us</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>FreeUnit 1.37.0</td><td>2,576</td><td>1.00x</td></tr>
+<tr><td>nginx + PHP-FPM</td><td>2,743</td><td>1.06x</td></tr>
+<tr><td>Apache + mod_php</td><td>3,548</td><td>1.38x</td></tr>
+</tbody></table>
+<h3>WordPress front page (no page cache) <span class="meta">(wp-front-c32, wordpress, aarch64-2c, server us)</span></h3>
+<table><thead><tr><th>runtime</th><th>server us</th><th>relative</th></tr></thead><tbody>
+<tr class="best"><td>FreeUnit 1.37.0</td><td>93,022</td><td>1.00x</td></tr>
+<tr><td>Apache + mod_php</td><td>96,988</td><td>1.04x</td></tr>
+</tbody></table>
+<h2 id="runs">Every run</h2>
+<p class="note">One row per comparison. The run id is the directory name under <code>results/</code> and the anchor of its detail block below; the date is the run's own start time. Open a row to read its metrics.</p>
+<table class="index"><thead><tr><th>run</th><th>date</th><th>site</th><th>workload</th><th>runtimes</th><th>verdict</th></tr></thead><tbody>
+<tr><td><a href="#136-arm-front-anon-1370-vs-fpm-12.0-aarch64-2c-20261018T124142Z"><code>136-arm-front-anon-1370-vs-fpm-12.0-aarch64-2c-2</code></a></td><td>2026-10-18T12:46</td><td>Drupal 12.0.0-beta1, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit 1.37.0 vs nginx + PHP-FPM</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#84-arm-front-anon-freeunit-vs-apache-12.0-aarch64-2c-20261014T014243Z"><code>84-arm-front-anon-freeunit-vs-apache-12.0-aarch6</code></a></td><td>2026-10-14T01:47</td><td>Drupal 12.0.0-beta1, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>FreeUnit 1.37.0 vs Apache + mod_php</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#85-arm-front-anon-nginx-fpm-vs-apache-12.0-aarch64-2c-20261014T014757Z"><code>85-arm-front-anon-nginx-fpm-vs-apache-12.0-aarch</code></a></td><td>2026-10-14T01:53</td><td>Drupal 12.0.0-beta1, demo_umami profile</td><td>Front page, anonymous (page-cache hit)</td><td>nginx + PHP-FPM vs Apache + mod_php</td><td><span class="badge claim">CLAIM</span></td></tr>
+<tr><td><a href="#83-arm-wp-front-freeunit-vs-apache-aarch64-2c-20261014T013623Z"><code>83-arm-wp-front-freeunit-vs-apache-aarch64-2c-20</code></a></td><td>2026-10-14T01:42</td><td>http://127.0.0.1:8091</td><td>WordPress front page (no page cache)</td><td>FreeUnit 1.37.0 vs Apache + mod_php</td><td><span class="badge noclaim">no claim</span></td></tr>
+</tbody></table>
+<h2 id="details">Run detail</h2>
+<p class="note">Grouped by application site. Nothing is hidden: the summary line carries the verdict, the body has the metrics, and the null-phase row that bounds the job is one click further.</p>
+<h3 id="site-12.0">Drupal 12.0.0-beta1, demo_umami profile <span class="meta">(3 runs)</span></h3>
+<details class="run" id="136-arm-front-anon-1370-vs-fpm-12.0-aarch64-2c-20261018T124142Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit 1.37.0 vs nginx + PHP-FPM</span><span class="meta">Drupal 12.0.0-beta1, demo_umami profile · 136-arm-front-anon-1370-vs-fpm-12.0-aarch64-2c-20261018T124142Z</span></summary>
+<p class="meta">server CPUs 0 load_cpus=1 db_cpus=1 · DB CPUs  · governor unknown · kernel 6.18.54-0-virt ·  blocks × 8 ·  connections ·  s window · db mysql · host aarch64-2c · date 2026-10-18T12:46:55Z</p>
+<p class="headline">CLAIM drupal-front-c32: B is 7.6 percent more server CPU per request (us), outside the null band of 1.9, 8 of 8 cells agree</p>
+<table><thead><tr><th>metric</th><th>FreeUnit 1.37.0</th><th>nginx + PHP-FPM</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server CPU per request (us)</td><td>2564.5867</td><td>2758.3566</td><td>7.56%</td><td>[6.08, 9.04]</td><td>1.88</td><td>8/8</td><td>CLAIM</td></tr>
+<tr><td>db_us</td><td>1126.3476</td><td>1157.4043</td><td>2.76%</td><td>[1.53, 3.99]</td><td>1.2</td><td>8/8</td><td>CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>90.0621</td><td>88.4671</td><td>-1.76%</td><td>[-4.56, 1.03]</td><td>2.06</td><td>5/8</td><td>NO CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>114.1026</td><td>120.3273</td><td>5.46%</td><td>[2.01, 8.91]</td><td>2.43</td><td>8/8</td><td>CLAIM</td></tr>
+<tr><td>requests per second</td><td>387.105</td><td>357.745</td><td>-7.58%</td><td>[-9.52, -5.65]</td><td>2.24</td><td>8/8</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 0.6 percent in server CPU per request (us), 95 percent CI [-0.7, 1.9], null band 1.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.4 percent in db_us, 95 percent CI [-0.5, 1.2], null band 1.2, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.5 percent in p50 latency (ms), 95 percent CI [-1.0, 2.1], null band 2.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.6 percent in p99 latency (ms), 95 percent CI [-1.1, 2.4], null band 2.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.8 percent in requests per second, 95 percent CI [-2.2, 0.7], null band 2.2, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>136-arm-front-anon-1370-vs-fpm-12.0-aarch64-2c-20261018T124142Z/summary.json</code> · <a href="#runs">back to the index</a> · <a href="#top">top</a></p>
+</details>
+<details class="run" id="84-arm-front-anon-freeunit-vs-apache-12.0-aarch64-2c-20261014T014243Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, anonymous (page-cache hit) — FreeUnit 1.37.0 vs Apache + mod_php</span><span class="meta">Drupal 12.0.0-beta1, demo_umami profile · 84-arm-front-anon-freeunit-vs-apache-12.0-aarch64-2c-20261014T014243Z</span></summary>
+<p class="meta">server CPUs 0 load_cpus=1 db_cpus=1 · DB CPUs  · governor unknown · kernel 6.18.54-0-virt ·  blocks × 8 ·  connections ·  s window · db mysql · host aarch64-2c · date 2026-10-14T01:47:57Z</p>
+<p class="headline">CLAIM drupal-front-c32: B is 39.4 percent more server CPU per request (us), outside the null band of 2.9, 8 of 8 cells agree</p>
+<table><thead><tr><th>metric</th><th>FreeUnit 1.37.0</th><th>Apache + mod_php</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server CPU per request (us)</td><td>2587.6846</td><td>3607.316</td><td>39.41%</td><td>[37.94, 40.87]</td><td>2.95</td><td>8/8</td><td>CLAIM</td></tr>
+<tr><td>db_us</td><td>1164.6075</td><td>1210.1115</td><td>3.9%</td><td>[2.78, 5.01]</td><td>3.53</td><td>8/8</td><td>CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>90.8324</td><td>72.4114</td><td>-20.28%</td><td>[-21.58, -18.98]</td><td>4.14</td><td>8/8</td><td>CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>114.3125</td><td>106.0925</td><td>-7.17%</td><td>[-9.41, -4.92]</td><td>3.77</td><td>8/8</td><td>CLAIM</td></tr>
+<tr><td>requests per second</td><td>383.2063</td><td>274.7588</td><td>-28.29%</td><td>[-29.41, -27.17]</td><td>3.38</td><td>8/8</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by 1.1 percent in server CPU per request (us), 95 percent CI [-0.7, 2.9], null band 2.9, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -0.2 percent in db_us, 95 percent CI [-3.5, 3.1], null band 3.5, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 1.9 percent in p50 latency (ms), 95 percent CI [-0.4, 4.1], null band 4.1, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by 0.6 percent in p99 latency (ms), 95 percent CI [-2.5, 3.8], null band 3.8, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.2 percent in requests per second, 95 percent CI [-3.4, 1.0], null band 3.4, limit 5.0: PASS</li>
+</ul></details>
+<p class="data">raw: <code>84-arm-front-anon-freeunit-vs-apache-12.0-aarch64-2c-20261014T014243Z/summary.json</code> · <a href="#runs">back to the index</a> · <a href="#top">top</a></p>
+</details>
+<details class="run" id="85-arm-front-anon-nginx-fpm-vs-apache-12.0-aarch64-2c-20261014T014757Z">
+<summary><span class="badge claim">CLAIM</span><span class="run-title">Front page, anonymous (page-cache hit) — nginx + PHP-FPM vs Apache + mod_php</span><span class="meta">Drupal 12.0.0-beta1, demo_umami profile · 85-arm-front-anon-nginx-fpm-vs-apache-12.0-aarch64-2c-20261014T014757Z</span></summary>
+<p class="meta">server CPUs 0 load_cpus=1 db_cpus=1 · DB CPUs  · governor unknown · kernel 6.18.54-0-virt ·  blocks × 8 ·  connections ·  s window · db mysql · host aarch64-2c · date 2026-10-14T01:53:10Z</p>
+<p class="headline">CLAIM drupal-front-c32: B is 27.9 percent more server CPU per request (us), outside the null band of 4.4, 8 of 8 cells agree</p>
+<table><thead><tr><th>metric</th><th>nginx + PHP-FPM</th><th>Apache + mod_php</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server CPU per request (us)</td><td>2728.056</td><td>3488.6425</td><td>27.89%</td><td>[25.82, 29.95]</td><td>4.4</td><td>8/8</td><td>CLAIM</td></tr>
+<tr><td>db_us</td><td>1178.5196</td><td>1167.4088</td><td>-0.94%</td><td>[-2.56, 0.67]</td><td>3.29</td><td>7/8</td><td>NO CLAIM</td></tr>
+<tr><td>p50 latency (ms)</td><td>87.4412</td><td>70.0203</td><td>-19.92%</td><td>[-22.24, -17.61]</td><td>5.94</td><td>8/8</td><td>NOISY</td></tr>
+<tr><td>p99 latency (ms)</td><td>118.7977</td><td>102.7045</td><td>-13.54%</td><td>[-15.84, -11.25]</td><td>5.49</td><td>8/8</td><td>NOISY</td></tr>
+<tr><td>requests per second</td><td>361.6012</td><td>284.1513</td><td>-21.41%</td><td>[-23.47, -19.35]</td><td>5.27</td><td>8/8</td><td>NOISY</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>null gate: A and a copy of A differ by -1.9 percent in server CPU per request (us), 95 percent CI [-4.4, 0.5], null band 4.4, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -1.5 percent in db_us, 95 percent CI [-3.3, 0.4], null band 3.3, limit 5.0: PASS</li>
+<li>null gate: A and a copy of A differ by -2.9 percent in p50 latency (ms), 95 percent CI [-5.9, 0.1], null band 5.9, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by -0.9 percent in p99 latency (ms), 95 percent CI [-5.5, 3.7], null band 5.5, limit 5.0: NOISY</li>
+<li>null gate: A and a copy of A differ by 2.2 percent in requests per second, 95 percent CI [-0.8, 5.3], null band 5.3, limit 5.0: NOISY</li>
+</ul></details>
+<p class="data">raw: <code>85-arm-front-anon-nginx-fpm-vs-apache-12.0-aarch64-2c-20261014T014757Z/summary.json</code> · <a href="#runs">back to the index</a> · <a href="#top">top</a></p>
+</details>
+<h3 id="site-http://127.0.0.1:8091">http://127.0.0.1:8091 <span class="meta">(1 run)</span></h3>
+<details class="run" id="83-arm-wp-front-freeunit-vs-apache-aarch64-2c-20261014T013623Z">
+<summary><span class="badge noclaim">no claim</span><span class="run-title">WordPress front page (no page cache) — FreeUnit 1.37.0 vs Apache + mod_php</span><span class="meta">http://127.0.0.1:8091 · 83-arm-wp-front-freeunit-vs-apache-aarch64-2c-20261014T013623Z</span></summary>
+<p class="meta">server CPUs 0 load_cpus=1 db_cpus=1 · DB CPUs  · governor unknown · kernel 6.18.54-0-virt ·  blocks × 8 ·  connections ·  s window · db wordpress · host aarch64-2c · date 2026-10-14T01:42:43Z</p>
+<p class="headline">NO CLAIM wp-front-c32: inside the noise, no claim (B is 4.3 percent more server CPU per request (us), null band 2.7, 7 of 8 cells agree)</p>
+<table><thead><tr><th>metric</th><th>FreeUnit 1.37.0</th><th>Apache + mod_php</th><th>delta</th><th>95% CI</th><th>null band</th><th>cells agree</th><th>verdict</th></tr></thead><tbody>
+<tr><td>server CPU per request (us)</td><td>93022.0095</td><td>96987.6736</td><td>4.27%</td><td>[-0.08, 8.63]</td><td>2.75</td><td>7/8</td><td>NO CLAIM</td></tr>
+<tr><td>db_us</td><td>4838.8821</td><td>4763.0074</td><td>-1.47%</td><td>[-7.92, 4.99]</td><td>5.6</td><td>5/8</td><td>NOISY</td></tr>
+<tr><td>p50 latency (ms)</td><td>2583.1614</td><td>1560.6454</td><td>-39.56%</td><td>[-43.44, -35.68]</td><td>3.84</td><td>8/8</td><td>CLAIM</td></tr>
+<tr><td>p99 latency (ms)</td><td>4991.2897</td><td>7728.5745</td><td>54.88%</td><td>[49.37, 60.39]</td><td>4.4</td><td>8/8</td><td>CLAIM</td></tr>
+<tr><td>requests per second</td><td>10.7775</td><td>10.3212</td><td>-4.23%</td><td>[-8.34, -0.12]</td><td>2.73</td><td>7/8</td><td>CLAIM</td></tr>
+</tbody></table>
+<details><summary>null phase (A against a copy of A)</summary><ul>
+<li>INVALID: 1 cell(s) failed, first: A wp-front-c32 block 0 slot 0 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-front-c32 block 0 slot 0 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-front-c32 block 0 slot 0 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-front-c32 block 0 slot 0 alerts=1</li>
+<li>INVALID: 1 cell(s) failed, first: A wp-front-c32 block 0 slot 0 alerts=1</li>
+</ul></details>
+<p class="data">raw: <code>83-arm-wp-front-freeunit-vs-apache-aarch64-2c-20261014T013623Z/summary.json</code> · <a href="#runs">back to the index</a> · <a href="#top">top</a></p>
+</details>
+<p class="data">Rendered 2026-11-12T11:06:08Z. A plain-language summary of the findings is in
+<a href="https://github.com/freeunitorg/benchmarks-drupal/blob/main/docs/report-2026-10.md">docs/report-2026-10.md</a>;
+the suite's resume note is <code>docs/state.md</code>.</p>
+</body></html>
