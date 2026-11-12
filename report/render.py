@@ -673,7 +673,8 @@ def _cell_html(entries, band=True):
         bits = []
         if band and b is not None:
             bits.append(f"band {b:.2f}%")
-        bits.append(f'{esc(str(meta.get("host") or "?"))} · {esc(str(meta.get("db") or "mysql"))}')
+        host = str(meta.get("host") or "").strip() or "host not recorded"
+        bits.append(f'{esc(host)} · {esc(str(meta.get("db") or "mysql"))}')
         lines.append(f'<div>{v} {esc(txt)}<div class="meta">{esc(" · ".join(str(x) for x in bits))}</div></div>')
     return "<td>" + "".join(lines) + "</td>"
 
