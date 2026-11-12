@@ -1,0 +1,22 @@
+# 1.37.2 column: the tagged 1.37.2 against the 1.37.1 anchor, same cell shape as the
+# 1.37.1-vs-1.37.0 set so the page reads as a release ladder.
+JOB=v4-hello-tuned
+ISSUE=https://github.com/freeunitorg/benchmarks-drupal
+PHASES="null ab"
+WORKLOAD=php-hello
+RUNTIME_A=freeunit-1371-tuned
+RUNTIME_B=freeunit-1372-tuned
+SITE=hello
+NO_DB=1
+CONNS=128
+WARM=3
+DUR=10
+REPS=4
+PERF=1
+SERVER_CPUS=18,19,20,42,43,44,21,22,23,45,46,47
+LOAD_CPUS=12,13,14,15,16,17,36,37,38,39,40,41
+DB_CPUS=9
+PRIMARY=rps
+NULL_LIMIT_PCT=5
+EXPECT="1.37.2 carries no per-request cost change against 1.37.1"
+FALSIFY="a delta outside the null band"

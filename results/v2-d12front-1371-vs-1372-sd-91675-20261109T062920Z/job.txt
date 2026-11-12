@@ -1,0 +1,22 @@
+# 1.37.2 release validation: the candidate tip (056fc0c52) against the 1.37.1 anchor.
+# Two blocks per phase, 8 s cells: this is a regression screen, not a publishable cell.
+JOB=v2-d12front-1371-vs-1372
+ISSUE=https://github.com/freeunitorg/freeunit/issues/597
+PHASES="null ab"
+WORKLOAD=drupal-front
+RUNTIME_A=freeunit-1371
+RUNTIME_B=freeunit-1372
+SITE=12.0
+DB=mysql
+CONNS=32
+WARM=2
+DUR=10
+REPS=4
+PERF=1
+SERVER_CPUS=0,1
+LOAD_CPUS=2,3
+DB_CPUS=4
+PRIMARY=s_instructions
+NULL_LIMIT_PCT=5
+EXPECT="no per-request regression in the 1.37.2 candidate against 1.37.1"
+FALSIFY="a delta outside the null band"
