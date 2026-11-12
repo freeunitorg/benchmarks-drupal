@@ -1,0 +1,35 @@
+job=p4-114-front
+run_id=p4-114-front-x86-perf-b-20261112T024143Z
+host=x86-perf-b
+date=2026-11-12T02:59:59Z
+workload=drupal-front
+runtime_a=freeunit-1371
+runtime_b=freeunit-1372
+site=11.4
+db=mysql
+phases=null ab conns=32 dur=10 warm=3 reps=4 rate=
+server_cpus=0,1 load_cpus=2,3 db_cpus=4
+governor=performance
+epp=performance
+kernel=6.8.0-147-generic
+oha=oha 1.16.0
+perf_image=b44db1b28915
+freeunit_image=2d1ba9008e23
+freeunit_master_sha=c5d71253c36ba03f67620bd2cc08683f7fc70eff
+freeunit_master_image=35de5e8cb562
+freeunit_master_old_sha=8492d5ee43a99a8f1504598ed44d046b61d85131
+freeunit_master_old_image=
+freeunit_master_mid_sha=dc30c8a7e76fe86f8063ce7eafcefc285137629a
+freeunit_master_mid_image=
+fpm_image=
+apache_image=
+mariadb_image=0d0945c57f75
+issue=https://github.com/freeunitorg/benchmarks-drupal
+expect=1.37.2 carries no per-request cost change against 1.37.1
+falsify=a delta outside the null band
+tag=drupal/recommended-project:11.4.8 drupal=11.4.8 php=8.5.11 profile=demo_umami drush=1 composer_opt=1 preload=0
+site-build: auth cookie verified (session cookie plus dynamic cache header)
+site=11.4
+runroot=/data/projects/benchmarks-drupal/run
+installed=2026-10-29T05:12:54Z
+user=bench-user

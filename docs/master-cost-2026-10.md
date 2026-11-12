@@ -1,6 +1,6 @@
 # What master costs against 1.37.0, and what the atomic work did to it
 
-Measured 2026-10-18 on pro4s-4 (x86, `s_instructions` per request) and o-build
+Measured 2026-10-18 on x86-perf-b (x86, `s_instructions` per request) and o-build
 (aarch64, `server_us` per request, no PMU). Every cell is a paired null+A/B run:
 the null phase gives the band, the ab phase gives the delta, and a CLAIM needs the
 delta outside the band, a 95 % CI excluding 0 and 3 of 4 adjacent slot pairs
@@ -25,7 +25,7 @@ where the release and today's master are indistinguishable (−0.2 % with a ±3 
 The atomics are **not** the regression; #752 alone measured cheaper on hello.
 
 Drupal cells agree within their resolution: 118 front-anon `1.37.0 → 33896f7e`
-+0.16 % (pro4s-4, NO CLAIM) and +0.22 % (pro4s-2, band edge); 121 front-auth +0.03 %
++0.16 % (x86-perf-b, NO CLAIM) and +0.22 % (x86-perf-a, band edge); 121 front-auth +0.03 %
 (band 0.03, NO CLAIM); 132 #752 on the front page **+0.10 %** (band 0.2, NO CLAIM).
 
 Not concluded: the sweep's own step has a 2.9 % band and six of twelve cells
@@ -82,8 +82,8 @@ Both silenced whole runs and are fixed:
 
 `cells.sh` in all four trees now puts its scratch under `$RESROOT/tmp` (on the data
 disk) and removes it when the cells succeed. Before, every job left a
-`/tmp/drupal-bench.*` directory on the 40 GB root: 255 stale ones on pro4s-2, 146 on
-o-build, and a 27.5 GB perf recording in `/tmp` filled `/` on pro4s-4 and broke
+`/tmp/drupal-bench.*` directory on the 40 GB root: 255 stale ones on x86-perf-a, 146 on
+o-build, and a 27.5 GB perf recording in `/tmp` filled `/` on x86-perf-b and broke
 docker builds and the idle gate for hours.
 
 ## Update 2026-10-19: the tip is now faster than the release

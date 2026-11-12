@@ -4,7 +4,7 @@
 # PERF_HOST). The box must be claimed and idle; jobs longer than 15 minutes wait
 # for PERF_WINDOW. Published numbers only ever come from this host.
 
-HOST        ?= pro4s-2
+HOST        ?= x86-perf-a
 REMOTE_ROOT ?= /data/projects/benchmarks-drupal
 RUNROOT     ?= $(REMOTE_ROOT)/run
 SITE        ?= 11.4

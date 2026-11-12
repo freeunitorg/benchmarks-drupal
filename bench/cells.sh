@@ -25,7 +25,7 @@ OUT="${OUT:-$RESROOT}/results.tsv"
 OUTDIR=$(dirname "$OUT")
 # Scratch goes beside the run, not into /tmp: on the perf boxes /tmp is on the
 # 40 GB root, and a PERF_RECORD job writes its recordings here. A 27 GB leftover
-# perf file filled / on pro4s-4 on 2026-10-17, which broke docker builds and made
+# perf file filled / on x86-perf-b on 2026-10-17, which broke docker builds and made
 # the idle gate refuse every run; the scratch dirs were never removed either.
 TMPBASE=${BENCH_TMPDIR:-$RESROOT/tmp}
 mkdir -p "$TMPBASE" 2>/dev/null || TMPBASE=/tmp

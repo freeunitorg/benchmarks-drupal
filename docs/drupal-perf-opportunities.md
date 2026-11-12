@@ -20,7 +20,7 @@ use yet.
 
 ## Verified facts about our own setup
 
-Read on the built 12.0 site on pro4s-2:
+Read on the built 12.0 site on x86-perf-a:
 
 * **The autoloader is not optimized.** `vendor/composer/autoload_classmap.php` has
   79 entries: `composer create-project` installs without `-o`, so every class

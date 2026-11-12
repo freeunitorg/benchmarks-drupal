@@ -1,6 +1,6 @@
 # E3: the overtaking claim, FreeUnit with symbolic libphp against nginx + PHP-FPM (swapped pair 42/43).
 # the same FreeUnit 1.37.0 image, libphp.so rebuilt from the same 8.5.11 source and
-# configure options with -Wl,-Bsymbolic (docker/Dockerfile.freeunit-symbolic). Run on pro4s-4.
+# configure options with -Wl,-Bsymbolic (docker/Dockerfile.freeunit-symbolic). Run on x86-perf-b.
 JOB=42-auth-symbolic-vs-fpm-11.4
 ISSUE=https://github.com/freeunitorg/benchmarks-drupal
 PHASES="null ab"

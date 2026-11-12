@@ -24,7 +24,7 @@ Published: 30 comparisons on five pages (`index`, `drupal-11.4`, `drupal-12.0`,
 `php`, `symfony`); the report was split per application family because the single
 page had reached 103 KB and the runtime x database matrix lands on Drupal.
 
-**pro4s-2** (`sd-91675`, tmux `ws-loop`) finishes the master bisect and then runs
+**x86-perf-a** (`x86-perf-a`, tmux `ws-loop`) finishes the master bisect and then runs
 the matrix: `scripts/campaign.steps.master-bisect` (56 body mid->new, 57/58 the
 Drupal 12 pair) then `scripts/campaign.steps.matrix-12` (15 jobs: Drupal 12
 front-anon x mysql/mysqli/pgsql/sqlite x Angie/FreeNginx/nginx/nginx-src against
@@ -32,7 +32,7 @@ FreeUnit, plus the two fork-vs-source-nginx checks).  The loop retries a pass th
 loses jobs to a busy window, up to 2026-10-14T06:00Z.  It is waiting: another
 session has the box at 100 % busy with three containers.
 
-**pro4s-4** (`sd-92483`, tmux `wp`) runs `scripts/campaign.steps.wp`:
+**x86-perf-b** (`x86-perf-b`, tmux `wp`) runs `scripts/campaign.steps.wp`:
 75-wp-smoke (deleted after it passes, never published), then 42-47.  Its `run/`
 tree and the two WP sites were rebuilt from scratch because the old ones predated
 the drop-in fix and five stalled `42-*` directories were left behind by the
@@ -60,8 +60,8 @@ Traps from this stretch:
   artefact still exists: a stale `site:12.0 exit=0` skipped a site rebuild whose
   directory had been deleted.
 * on a box shared with another session, name the prefixes:
-  `COLLECT_ONLY="42- 43- 44- 45- 46- 47-" scripts/collect-commit.sh pro4s-4`.
-* `ssh pro4s-2` and `ssh pro4s-4` work with the default config, so `make sync`,
+  `COLLECT_ONLY="42- 43- 44- 45- 46- 47-" scripts/collect-commit.sh x86-perf-b`.
+* `ssh x86-perf-a` and `ssh x86-perf-b` work with the default config, so `make sync`,
   `collect.sh` and `collect-commit.sh` need no `-F`.
 
 ## Upstream work (freeunitorg/freeunit)
@@ -183,9 +183,9 @@ Traps from this stretch:
 
 ## Queues as of 2026-10-13T20:00Z
 
-`pro4s-2` tmux `matrix` (9 jobs: the mysqli/pgsql/sqlite blocks 66-74; the bisect is complete
-and published — #638 is the whole win, #670 flat), `pro4s-4` tmux `wp` (3 left of the WordPress
-set), `o-build` not ours.  The five-minute validator's session name for pro4s-2 changed from
+`x86-perf-a` tmux `matrix` (9 jobs: the mysqli/pgsql/sqlite blocks 66-74; the bisect is complete
+and published — #638 is the whole win, #670 flat), `x86-perf-b` tmux `wp` (3 left of the WordPress
+set), `o-build` not ours.  The five-minute validator's session name for x86-perf-a changed from
 `ws-loop` to `matrix`; it reports no problems.  The earlier loop exited by design after 12
 passes with 9 jobs left, which is why the queue looked dead.
 
@@ -193,7 +193,7 @@ passes with 9 jobs left, which is why the queue looked dead.
 ### The Apache arms (requested 2026-10-13), and a trap that ate two live logs
 
 Jobs **76/77/78** (WordPress and Drupal 12 front-anon, FreeUnit and nginx+FPM against
-mod_php) and **86/87** (the same with `freeunit-master`) run on pro4s-2, chained after the
+mod_php) and **86/87** (the same with `freeunit-master`) run on x86-perf-a, chained after the
 matrix by `/tmp/matrix-loop.sh` in tmux `bench`; **83/84/85/88/89** are the A1 equivalents
 (`PERF=0`, `PRIMARY=server_us`, one core each) in tmux `apachearm` on o-build, whose image
 build is chained apache -> `freeunit-master` at `2dc6596f` and writes `run/freeunit-master-sha`.
@@ -222,18 +222,18 @@ the login POST) and writes an application password to the site directory for a f
 authenticated REST cell — deliberately **not** in `meta.txt`, which is published with every
 run.  `site_installed()` requires the cookie and the post id, so a site that predates a
 workload rebuilds instead of being skipped; **and the `site:wp`/`site:wp-persistent` lines
-had to be cleared from pro4s-4's `campaign.done`**, because the campaign's done-file skip
+had to be cleared from x86-perf-b's `campaign.done`**, because the campaign's done-file skip
 outranks the builder's own check — the same trap as the Drupal 12 site earlier.
 
-Queues at 2026-10-13T20:55Z: pro4s-2 running the matrix then the Apache arms
-(remaining 14); pro4s-4 the WordPress front set then the core-workload set (14, and it
+Queues at 2026-10-13T20:55Z: x86-perf-a running the matrix then the Apache arms
+(remaining 14); x86-perf-b the WordPress front set then the core-workload set (14, and it
 rebuilds both WP sites on its next pass); o-build the ARM Apache set (5) once the master
 image finishes.  A1's main image finished; `freeunit-master` was building.
 
 Mistakes made and fixed in this stretch, for the record:
 
 * an `rsync --delete` invoked from the wrong working directory (the FreeUnit tree) overwrote
-  pro4s-4's benchmark tree; `run/` and `.git` were excluded so no results, sites or history
+  x86-perf-b's benchmark tree; `run/` and `.git` were excluded so no results, sites or history
   were lost, and the tree was restored from the correct directory (16 steps files, `run/`
   intact at 52 entries).
 * a remote `pkill -f wp-loop.sh` killed its own ssh session, because the session's command
@@ -253,7 +253,7 @@ Mistakes made and fixed in this stretch, for the record:
   removed containers that were not mine.  The filter used everywhere else in this suite —
   `grep -E '^(rt|db-bench|perf)-|db-wp'` — is there for exactly that reason.
 * Also mine, earlier in the same stretch: an `rsync --delete` run from the wrong working
-  directory (the FreeUnit tree instead of the benchmark tree) overwrote pro4s-4's checkout.
+  directory (the FreeUnit tree instead of the benchmark tree) overwrote x86-perf-b's checkout.
   `run/` and `.git` were excluded, so no results, sites or history were lost, and the tree was
   restored from the correct directory.  Always `cd` explicitly before a sync.
 
@@ -293,7 +293,7 @@ run reaches the page only when `collect-commit.sh` (not `collect.sh`) is what pu
 
 ## Next steps
 
-1. Let the profile jobs finish, then `scripts/collect-commit.sh pro4s-2` (run it **locally** —
+1. Let the profile jobs finish, then `scripts/collect-commit.sh x86-perf-a` (run it **locally** —
    it calls `collect.sh`, which rsyncs from the host; running it on the box commits in a
    copy that is not a git repository) and confirm `meta.txt` names both master shas.
 2. Collect the WP runs with `COLLECT_ONLY` and the matrix runs when the loops
@@ -322,9 +322,9 @@ short version.
 * `scripts/notify-new-results.sh` (cron `*/5`) puts every valid, finished, uncollected run on the
   bus with its headline; `run/notify.state` is seeded so only new numbers are reported.
 * **PR #742** (finish the atomic sweep) is being measured: the ARM half answers **NO CLAIM**
-  (`server_us -0.70 %`, band ±3.5 %); the x86 half is pending — images built on pro4s-4, jobs
+  (`server_us -0.70 %`, band ±3.5 %); the x86 half is pending — images built on x86-perf-b, jobs
   `115`/`116` written, run them one at a time when no loop job holds `run/.run.lock`.
-* Queues: pro4s-2 `matrix=5 apache=5 master=5 musl=3`, pro4s-4 `front=1 core=7 master=5 beta2=3`,
+* Queues: x86-perf-a `matrix=5 apache=5 master=5 musl=3`, x86-perf-b `front=1 core=7 master=5 beta2=3`,
   o-build idle; both x86 boxes gated by another session.
 
 ## 2026-10-31: 1.37.1 published next to 1.37.0, and the master arm is out of the published set
@@ -493,3 +493,23 @@ recorded `bad=1`, so the run came back INVALID and is not in `results/`. The sam
 shared node is valid; the difference is that the fixed-clock box ran the framework-free cell
 with 20 workers on two pinned threads, where a recycled worker can reset an in-flight
 connection - the reason the tuned cell on the shared node uses `limits.requests: 1000000`.
+
+## 2026-11-12: hosts are published as labels, not as machine names
+
+Every result and every page used to carry the machine's own name — in `meta.txt`, in
+`summary.json`, in the run-id directory names, and in the prose of these notes. The data is
+public, so the names are now stable labels that say what the machine is without saying which
+machine it is:
+
+| label | what it is |
+|---|---|
+| `x86-perf-a` | the eight-thread x86 perf box, `powersave` unless noted |
+| `x86-perf-b` | the four-core x86 perf box, `performance` since 2026-11-11 |
+| `x86-48t-shared` | the 48-thread node that runs someone else's production work |
+| `aarch64-2c` | the two-OCPU aarch64 box (no PMU, so CPU time is its primary metric) |
+| `unrecorded` | a run from before `meta.txt` carried a host at all |
+
+351 run directories were renamed and 1058 files rewritten in one pass; the numbers inside
+them are untouched, and the renderer now defaults to `unrecorded` instead of guessing a host.
+Renaming a run id changes its anchor, which is regenerated by `report/render.py` on render,
+so nothing has to be fixed by hand.

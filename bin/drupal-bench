@@ -18,7 +18,7 @@ declare(strict_types=1);
  *   drupal-bench tick freeunit B 20
  *   drupal-bench campaign scripts/campaign.steps
  *   drupal-bench watchdog 120
- *   drupal-bench collect pro4s-2
+ *   drupal-bench collect x86-perf-a
  *   drupal-bench report
  *   drupal-bench compare <results.tsv> <meta.txt>
  *   drupal-bench cli <DRUPAL operation...>      # apps/drupal_cli.php

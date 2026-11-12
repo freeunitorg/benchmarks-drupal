@@ -1,0 +1,21 @@
+NO CLAIM drupal-front-c32: inside the noise, no claim (B is 0.0 percent less server instructions per request, null band 0.0, 10 of 16 cells agree)
+job v4-d114-front  run v4-d114-front-x86-48t-shared-20261111T231548Z  A None ()  B None ()  governor schedutil/unknown  
+phase cell           metric                       A mean       B mean   delta%             95% CI   band  agree  verdict
+null  drupal-front-c32 s_instructions         18716382.341 18720713.022    +0.02     [-0.00, +0.05]   0.05  10/16  PASS
+null  drupal-front-c32 db_us                         0.000        0.000      n/a                n/a    n/a   0/16  NO DATA
+null  drupal-front-c32 p50_ms                       77.388       78.692    +1.73     [-0.50, +3.96]   3.96  10/16  PASS
+null  drupal-front-c32 p99_ms                      123.546      128.904    +4.52     [-0.92, +9.96]   9.96  12/16  NOISY
+null  drupal-front-c32 rps                         415.847      409.399    -1.52     [-3.60, +0.57]   3.60  11/16  PASS
+null  drupal-front-c32 s_cs                          9.660        9.732    +0.87     [-2.18, +3.92]   3.92   6/16  PASS
+null  drupal-front-c32 s_cycles               19975190.303 20257769.274    +1.45     [-0.63, +3.52]   3.52  11/16  PASS
+null  drupal-front-c32 s_migrations                  1.200        1.243    +4.92    [-3.97, +13.80]  13.80  10/16  NOISY
+null  drupal-front-c32 server_us                  7085.140     7194.214    +1.58     [-0.61, +3.77]   3.77  11/16  PASS
+ab    drupal-front-c32 s_instructions         18719108.771 18717209.722    -0.01     [-0.05, +0.02]   0.05  10/16  NO CLAIM
+ab    drupal-front-c32 db_us                         0.000        0.000      n/a                n/a    n/a   0/16  NO DATA
+ab    drupal-front-c32 p50_ms                       78.760       78.059    -0.82     [-2.91, +1.27]   3.96   8/16  NO CLAIM
+ab    drupal-front-c32 p99_ms                      127.920      126.456    -1.04     [-6.38, +4.29]   9.96   9/16  NOISY
+ab    drupal-front-c32 rps                         407.478      410.267    +0.75     [-1.34, +2.83]   3.60  10/16  NO CLAIM
+ab    drupal-front-c32 s_cs                          9.690        9.688    -0.03     [-3.88, +3.82]   3.92   7/16  NO CLAIM
+ab    drupal-front-c32 s_cycles               20382057.395 20240811.329    -0.63     [-2.61, +1.35]   3.52   8/16  NO CLAIM
+ab    drupal-front-c32 s_migrations                  1.226        1.265    +3.47    [-8.28, +15.23]  13.80   8/16  NOISY
+ab    drupal-front-c32 server_us                  7233.149     7177.400    -0.71     [-2.76, +1.35]   3.77   9/16  NO CLAIM
